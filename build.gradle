@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.module3'
 version = '0.0.1-SNAPSHOT'
-description = 'ccafe'
+description = 'smart-cafe'
 
 java {
     toolchain {
