@@ -3,6 +3,8 @@ package com.module3.ccafe.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,4 +21,8 @@ public class ActivityLog {
     Long id;
     String action;
     LocalDateTime time;
+
+    @ManyToOne
+    @JoinColumn(name = "id")
+    User user;
 }

@@ -1,18 +1,23 @@
 spring:
   application:
     name: Smart_Cafe
+
   datasource:
-    url: jdbc:mysql://localhost:3306/smart_cafe?createDatabaseIfNotExist=true
-    username: root
-    password: codegym
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: validate   # Flyway qu?n lý schema, Hibernate ch? ki?m tra kh?p entity
+      ddl-auto: validate   # Flyway qu?n lï¿½ schema, Hibernate ch? ki?m tra kh?p entity
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+  h2:
+    console:
+      enabled: true
   thymeleaf:
     cache: false
   flyway:
@@ -23,3 +28,5 @@ spring:
 
 server:
   port: 8080
+
+
