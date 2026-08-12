@@ -9,7 +9,8 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: validate   # Flyway qu?n l� schema, Hibernate ch? ki?m tra kh?p entity
+      ddl-auto: validate   
+
     show-sql: true
     properties:
       hibernate:

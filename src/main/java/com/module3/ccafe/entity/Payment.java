@@ -1,52 +1,59 @@
 package com.module3.ccafe.entity;
 
+import com.module3.ccafe.entity.enums.PaymentMethod;
 import com.module3.ccafe.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
-
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "payments")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
 public class Payment {
+
     @Id
-    Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "payment_id")
+    private Integer paymentId;
 
-    BigDecimal amount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    String paymentMethod;
-
-    String internalTransactionCode;
-
-    String gatewayTransactionCode;
+    @Column(name = "total", nullable = false, precision = 12, scale = 0)
+    private BigDecimal total;
 
     @Enumerated(EnumType.STRING)
-    PaymentStatus status;
+    @Column(name = "payment_method", nullable = false, length = 20)
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "ThoiGianTao")
-    LocalDateTime createdAt;
+    @Column(name = "internal_transaction_code", length = 50)
+    private String internalTransactionCode;
 
-    @Column(name = "ThoiGianXacNhan")
-    LocalDateTime confirmedAt;
+    @Column(name = "gateway_transaction_code", length = 50)
+    private String gatewayTransactionCode;
 
-    @ManyToOne
-    @JoinColumn(name = "MaDH")
-    Order order;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private PaymentStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "MaTK")
-    User user;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "payment")
-    List<PaymentGatewayLog> gatewayLogs;
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
 
+    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+    private List<PaymentGatewayLog> gatewayLogs;
 }

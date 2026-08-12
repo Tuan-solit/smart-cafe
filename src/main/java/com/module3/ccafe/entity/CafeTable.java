@@ -4,25 +4,34 @@ package com.module3.ccafe.entity;
 import com.module3.ccafe.entity.enums.TableStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+
 @Entity
+@Table(name = "tables")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class CafeTable {
+
     @Id
-    Long id;
-    String tableNumber;
-    String qrCode;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "table_id")
+    private Integer tableId;
+
+    @Column(name = "table_number", nullable = false, length = 10)
+    private String tableNumber;
+
+    @Column(name = "url_qr", length = 100)
+    private String urlQr;
 
     @Enumerated(EnumType.STRING)
-    TableStatus tableStatus;
+    @Column(name = "status", length = 20)
+    private TableStatus status;
 
     @OneToMany(mappedBy = "table")
-    List<Order> order;
+    private List<Order> orders;
 }

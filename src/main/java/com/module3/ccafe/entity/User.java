@@ -8,26 +8,47 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class User {
+
     @Id
-    Long id;
-    String fullName;
-    String phone;
-    String password;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @Column(name = "full_name", nullable = false, length = 100)
+    private String fullName;
+
+    @Column(name = "phone", length = 40)
+    private String phone;
+
+    @Column(name = "email", length = 50)
+    private String email;
+
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
     @Enumerated(EnumType.STRING)
-    UserStatus userStatus;
-
-    @ManyToOne
-    @JoinColumn(name = "id")
-    Role role;
+    @Column(name = "status", length = 20)
+    private UserStatus status;
 
     @OneToMany(mappedBy = "user")
-    List<ActivityLog> activityLog;
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "user")
+    private List<ActivityLog> activityLogs;
 }

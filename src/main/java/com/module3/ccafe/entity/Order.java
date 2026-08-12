@@ -1,37 +1,45 @@
 package com.module3.ccafe.entity;
 
 
+import com.module3.ccafe.entity.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Order {
+
     @Id
-    Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
+    private Integer orderId;
 
-    @Column(name = "ThoiGianGoi")
-    LocalDateTime orderTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "MaBan")
-    CafeTable table;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "table_id", nullable = false)
+    private CafeTable table;
 
-    @ManyToOne
-    @JoinColumn(name = "MaTK")
-    User user;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetails;
 
     @OneToMany(mappedBy = "order")
-    List<OrderDetail> orderDetails;
-
-    @OneToMany(mappedBy = "order")
-    List<Payment> payments;
+    private List<Payment> payments;
 }
