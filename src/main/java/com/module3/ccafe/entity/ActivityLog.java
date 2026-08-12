@@ -1,22 +1,32 @@
 package com.module3.ccafe.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "activity_logs")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
 public class ActivityLog {
+
     @Id
-    Long id;
-    String action;
-    LocalDateTime time;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "a_log_id")
+    private Integer aLogId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "action", nullable = false, length = 255)
+    private String action;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

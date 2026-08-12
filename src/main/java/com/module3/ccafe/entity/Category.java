@@ -1,25 +1,29 @@
 package com.module3.ccafe.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 @Entity
+@Table(name = "categories")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
 public class Category {
+
     @Id
-    Long id;
-    String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
+    private Integer categoryId;
+
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
 
     @OneToMany(mappedBy = "category")
-    List<Product> products;
+    private List<Product> products;
 }
