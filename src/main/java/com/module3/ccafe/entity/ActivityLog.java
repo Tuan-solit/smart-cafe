@@ -1,14 +1,8 @@
 package com.module3.ccafe.entity;
 
 
-<<<<<<< HEAD
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-=======
+
 import jakarta.persistence.*;
->>>>>>> origin
 import lombok.*;
 
 import java.time.LocalDateTime;

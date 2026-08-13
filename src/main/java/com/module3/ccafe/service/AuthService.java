@@ -1,41 +1,82 @@
 package com.module3.ccafe.service;
 
-
 import com.module3.ccafe.dto.request.LoginRequest;
 import com.module3.ccafe.dto.request.RegisterRequest;
 import com.module3.ccafe.dto.response.LoginResponse;
 import com.module3.ccafe.dto.response.RegisterResponse;
 import com.module3.ccafe.entity.User;
+import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthService {
-    @Autowired
-    private UserRepository userRepository ;
+    final UserRepository userRepository;
+    final PasswordEncoder passwordEncoder;
+    final AuthenticationManager authenticationManager;
 
-    public LoginResponse login(LoginRequest loginRequest){
-        User user =   userRepository.findByPhone(loginRequest.getPhone());
-        if(user.getPassword().equals(loginRequest.getPassword())){
-            LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setPhone(user.getPhone());
-            loginResponse.setPassword(user.getPassword());
-        }
-        return null;
+
+    public LoginResponse login(LoginRequest  loginRequest, HttpServletRequest request){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getPhone(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication((authentication));
+        SecurityContextHolder.setContext(context);
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,context);
+
+
+        User user = userRepository.findByPhone(loginRequest.getPhone()).orElseThrow(() ->new UsernameNotFoundException("Không tìm thấy người dùng theo tài khoản"));
+
+        return LoginResponse.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .role(user.getRole().getName())
+                .build();
     }
 
     public RegisterResponse register(RegisterRequest registerRequest){
-        User user = new User();
-        user.setFullName(registerRequest.getFullName());
-        user.setPhone(registerRequest.getPhone());
-        user.setPassword(registerRequest.getPassword());
+        if(userRepository.findByPhone(registerRequest.getPhone()).isPresent()){
+            throw new IllegalArgumentException("Số điện thoại đã được đăng ký");
+        }
+
+        User user = User.builder()
+                .fullName(registerRequest.getFullName())
+                .phone(registerRequest.getPhone())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .email(registerRequest.getEmail())
+                .status(UserStatus.ACTIVE)
+                .build();
+
         userRepository.save(user);
 
-        RegisterResponse registerResponse = new RegisterResponse();
-        registerResponse.setFullName(user.getFullName());
-        registerResponse.setPassword(user.getPassword());
-        registerResponse.setPhone(user.getPhone());
-        return registerResponse;
+        return RegisterResponse.builder()
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .build();
     }
+
 }

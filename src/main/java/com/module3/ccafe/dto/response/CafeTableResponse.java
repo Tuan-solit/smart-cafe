@@ -1,5 +1,6 @@
 package com.module3.ccafe.dto.response;
 
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,10 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-public class LoginResponse {
-    Integer userId;
-    String fullName;
-    String phone;
-    String role;
+public class CafeTableResponse {
+    private  String id;
+
 }

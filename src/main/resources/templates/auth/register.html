@@ -10,7 +10,6 @@
 
 </head>
 <body>
-<div th:replace="~{layout/header :: siteHeader}"></div>
 
 <div class="bg-light d-flex align-items-center justify-content-center">
     <div class="card shadow-lg w-100" style="max-width: 480px;">
@@ -20,30 +19,34 @@
                 <p class="card-text text-muted">Sign up below to access your account</p>
             </div>
             <div class="mt-4">
-                <form id="registerForm">
+                <form id="registerForm" th:action="@{auth/register}" th:object="${registerRequest}" method="post">
                     <div class="mb-4">
                         <label for="fullName" class="form-label text-muted">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="name required" required>
+                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="name required" th:field="*{fullName}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="form-label text-muted">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone Address" required th:field="*{phone}">
                     </div>
                     <div class="mb-4">
                         <label for="email" class="form-label text-muted">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required th:field="*{email}">
                     </div>
                     <div class="mb-4">
                         <label for="password" class="form-label text-muted">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8" th:field="*{password}">
                     </div>
 
-                    <div class="mb-4">
-                        <label for="confirmPassword" class="form-label text-muted"> Confirm Password</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Password" required>
-                    </div>
+<!--                    <div class="mb-4">-->
+<!--                        <label for="confirmPassword" class="form-label text-muted"> Confirm Password</label>-->
+<!--                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Password" required>-->
+<!--                    </div>-->
                     <div id="errorMsg" class="alert alert-danger d-none" role="alert"></div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-dark btn-lg">Sign up</button>
                     </div>
                     <p class="text-center text-muted mt-4">Already have an account?
-                        <a th:href="@{/login}" class="text-decoration-none">Sign in</a>.
+                        <a th:href="@{/register.html}" class="text-decoration-none">Sign in</a>.
                     </p>
                 </form>
             </div>
@@ -52,7 +55,6 @@
 </div>
 
 
-<div th:replace="~{layout/footer :: siteFooter}"></div>
 
 </body>
 </html>
