@@ -39,13 +39,8 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-
+    // Flyway starter (bắt buộc để auto-config trong Spring Boot 4.x)
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
 }
 
 tasks.named('test') {
