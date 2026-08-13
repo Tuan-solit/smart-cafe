@@ -1,13 +1,5 @@
 -- SMART CAFE - DATABASE SCHEMA
 
-CREATE
-DATABASE IF NOT EXISTS smart_cafe
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
-USE
-smart_cafe;
-
 CREATE TABLE roles
 (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
