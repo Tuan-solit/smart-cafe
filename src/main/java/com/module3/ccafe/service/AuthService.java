@@ -1,7 +1,9 @@
 package com.module3.ccafe.service;
 
+import com.module3.ccafe.dto.request.ChangePasswordRequest;
 import com.module3.ccafe.dto.request.LoginRequest;
 import com.module3.ccafe.dto.request.RegisterRequest;
+import com.module3.ccafe.dto.response.ChangePasswordResponse;
 import com.module3.ccafe.dto.response.LoginResponse;
 import com.module3.ccafe.dto.response.RegisterResponse;
 import com.module3.ccafe.entity.User;
@@ -76,6 +78,27 @@ public class AuthService {
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
+                .build();
+    }
+
+
+    public ChangePasswordResponse changePassword(Integer idUser , ChangePasswordRequest password){
+        User user = userRepository.findById(idUser).orElseThrow();
+        ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
+        if(passwordEncoder.matches(password.getOldPassword(),user.getPassword())){
+            return ChangePasswordResponse.builder()
+                    .message("Sai mật khẩu, vui lòng nhập lại")
+                    .build();
+        }
+        if(!password.getNewPassword().equals(password.getConfirmPassword())){
+            return ChangePasswordResponse.builder()
+                    .message("Mật khẩu không trùng khớp")
+                    .build();
+        }
+        user.setPassword(password.getNewPassword());
+        userRepository.save(user);
+        return ChangePasswordResponse.builder()
+                .message("Mật khẩu thay đổi thành công")
                 .build();
     }
 

@@ -1,13 +1,10 @@
 package com.module3.ccafe.controller;
 
-import com.module3.ccafe.dto.request.LoginRequest;
+import com.module3.ccafe.dto.request.ChangePasswordRequest;
 import com.module3.ccafe.dto.request.RegisterRequest;
-import com.module3.ccafe.dto.response.LoginResponse;
-import com.module3.ccafe.dto.response.RegisterResponse;
+import com.module3.ccafe.dto.response.ChangePasswordResponse;
 import com.module3.ccafe.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +38,12 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/register";
         }
+    }
+
+    @PostMapping("/auth/change-password")
+    public ChangePasswordResponse changePassword(ChangePasswordRequest password, Integer id){
+        ChangePasswordResponse changePasswordResponse = authService.changePassword(id,password);;
+        return changePasswordResponse;
     }
 
 }
