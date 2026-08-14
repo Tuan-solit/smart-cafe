@@ -33,3 +33,14 @@ Authorization: Basic admin 123456
 ###
 PATCH http://localhost:8080/admin/staff/2/status?status=ACTIVE
 Authorization: Basic admin 123456
+
+###
+PUT http://localhost:8080/admin/staff/1
+Content-Type: application/json
+Authorization: Basic admin 123456
+
+{
+  "fullName": "Nguyen Van A Updated",
+  "phone": "0909999999",
+  "email": "employee.updated@gmail.com"
+}
