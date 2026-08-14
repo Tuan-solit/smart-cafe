@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Category</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-category.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+
+        <div>
+            <h1>Edit Category</h1>
+            <p>Update product category information</p>
+        </div>
+
+        <a th:href="@{/admin/category/page}"
+           class="btn btn-secondary">
+            ← Back
+        </a>
+
+    </div>
+
+
+    <!-- Form Card -->
+    <div class="card category-form-card">
+
+        <form th:action="@{/admin/category/edit/{id}(id=${category.categoryId})}"
+              th:object="${categoryRequest}"
+              method="post"
+              class="category-form">
+
+
+            <!-- Category Name -->
+            <div class="form-group">
+
+                <label for="name">
+                    Category Name
+                </label>
+
+                <input id="name"
+                       type="text"
+                       th:field="*{name}"
+                       placeholder="Enter category name"
+                       autocomplete="off"
+                       autofocus>
+
+                <!-- Field error -->
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}">
+                </div>
+
+            </div>
+
+
+            <!-- General Error -->
+            <div class="form-error"
+                 th:if="${error}"
+                 th:text="${error}">
+            </div>
+
+
+            <!-- Actions -->
+            <div class="form-actions">
+
+                <a th:href="@{/admin/category/page}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Success / Error Toast -->
+
+<div class="toast-container">
+
+    <div th:if="${success}"
+         class="toast toast-success">
+
+        <div class="toast-title">
+            Thành công
+        </div>
+
+        <div class="toast-message"
+             th:text="${success}">
+        </div>
+
+    </div>
+
+
+    <div th:if="${error}"
+         class="toast toast-error">
+
+        <div class="toast-title">
+            Thất bại
+        </div>
+
+        <div class="toast-message"
+             th:text="${error}">
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Auto hide toast after 3 seconds
+    setTimeout(function () {
+
+        const toasts = document.querySelectorAll(".toast");
+
+        toasts.forEach(function (toast) {
+
+            toast.classList.add("hide");
+
+        });
+
+    }, 3000);
+
+</script>
+
+</body>
+</html>
