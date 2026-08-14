@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Add Category</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-category.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+
+        <div>
+            <h1>Add Category</h1>
+            <p>Create a new product category</p>
+        </div>
+
+        <a th:href="@{/admin/category/page}"
+           class="btn btn-secondary">
+            ← Back
+        </a>
+
+    </div>
+
+
+    <!-- Form Card -->
+    <div class="category-form-card">
+
+        <form th:action="@{/admin/category/create}"
+              th:object="${categoryRequest}"
+              method="post"
+              class="category-form">
+
+            <!-- Category Name -->
+            <div class="form-group">
+
+                <label for="name">
+                    Category Name
+                </label>
+
+                <input type="text"
+                       id="name"
+                       th:field="*{name}"
+                       placeholder="Enter category name"
+                       autocomplete="off"
+                       autofocus
+                       required>
+
+                <!-- Validation error -->
+                <div th:if="${#fields.hasErrors('name')}"
+                     class="field-error"
+                     th:errors="*{name}">
+                </div>
+
+            </div>
+
+
+            <!-- General Error -->
+            <div th:if="${error}"
+                 class="form-error"
+                 th:text="${error}">
+            </div>
+
+
+            <!-- Actions -->
+            <div class="form-actions">
+
+                <a th:href="@{/admin/category/page}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Create Category
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Error Toast -->
+<div th:if="${error}"
+     class="toast-container">
+
+    <div class="toast toast-error">
+
+        <div class="toast-title">
+            Error
+        </div>
+
+        <div class="toast-message"
+             th:text="${error}">
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    setTimeout(function () {
+
+        const toasts = document.querySelectorAll('.toast');
+
+        toasts.forEach(function (toast) {
+            toast.classList.add('hide');
+        });
+
+    }, 3000);
+
+</script>
+
+</body>
+</html>
+
