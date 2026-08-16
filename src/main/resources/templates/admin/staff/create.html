@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Staff</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-staff.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <div class="page-header">
+
+        <h1>Add Staff</h1>
+
+        <a th:href="@{/admin/staff/page}"
+           class="btn btn-secondary">
+            Back
+        </a>
+
+    </div>
+
+
+    <div class="card form-card">
+
+        <form th:action="@{/admin/staff/create}"
+              th:object="${staffRequest}"
+              method="post">
+
+            <div class="form-group">
+
+                <label for="fullName">Full Name</label>
+
+                <input id="fullName"
+                       type="text"
+                       th:field="*{fullName}"
+                       required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('fullName')}"
+                     th:errors="*{fullName}">
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="phone">Phone</label>
+
+                <input id="phone"
+                       type="text"
+                       th:field="*{phone}"
+                       required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('phone')}"
+                     th:errors="*{phone}">
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">Email</label>
+
+                <input id="email"
+                       type="email"
+                       th:field="*{email}"
+                       required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('email')}"
+                     th:errors="*{email}">
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">Password</label>
+
+                <input id="password"
+                       type="password"
+                       th:field="*{password}"
+                       required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('password')}"
+                     th:errors="*{password}">
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a th:href="@{/admin/staff/page}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Create Staff
+                </button>
+
+            </div>
+
+        </form>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

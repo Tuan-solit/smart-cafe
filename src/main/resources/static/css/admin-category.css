@@ -1,0 +1,770 @@
+/* ========================================
+   ADMIN CATEGORY
+======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6fb;
+    color: #1f2937;
+}
+
+
+/* ========================================
+   PAGE
+======================================== */
+
+.page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 30px;
+}
+
+
+/* ========================================
+   HEADER
+======================================== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+/* ========================================
+   CARD
+   Dùng cho LIST
+======================================== */
+
+.card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+
+/* ========================================
+   CATEGORY TABLE
+======================================== */
+
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.category-table thead {
+    background: #f8fafc;
+}
+
+.category-table th {
+    padding: 16px 20px;
+    text-align: left;
+
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.category-table td {
+    padding: 17px 20px;
+
+    font-size: 14px;
+    color: #374151;
+
+    border-bottom: 1px solid #eef0f3;
+}
+
+.category-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.category-table tbody tr:hover {
+    background: #fafafa;
+}
+
+
+/* ========================================
+   CATEGORY NAME
+======================================== */
+
+.category-name {
+    font-weight: 600;
+    color: #111827;
+}
+
+
+/* ========================================
+   PRODUCT COUNT
+======================================== */
+
+.product-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 35px;
+    height: 28px;
+
+    padding: 0 9px;
+
+    border-radius: 999px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ========================================
+   ACTION GROUP
+======================================== */
+
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* ========================================
+   BUTTON
+======================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            transform 0.15s ease,
+            box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+
+/* ========================================
+   PRIMARY
+======================================== */
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+
+/* ========================================
+   WARNING / EDIT
+======================================== */
+
+.btn-warning {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+}
+
+
+/* ========================================
+   DANGER / DELETE
+======================================== */
+
+.btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+
+/* ========================================
+   SECONDARY
+======================================== */
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #d1d5db;
+}
+
+
+/* ========================================
+   EMPTY TABLE
+======================================== */
+
+.empty-message {
+    text-align: center;
+    padding: 40px !important;
+
+    color: #6b7280 !important;
+    font-size: 14px !important;
+}
+
+
+/* ========================================
+   FORM CARD
+   Dùng riêng cho CREATE / EDIT
+======================================== */
+
+.category-form-card {
+    width: 100%;
+    max-width: 800px;
+
+    margin: 0 auto;
+
+    padding: 35px 40px;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ========================================
+   FORM
+======================================== */
+
+.category-form {
+    width: 100%;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* ========================================
+   INPUT
+======================================== */
+
+.form-group input {
+    display: block;
+
+    width: 100%;
+    height: 48px;
+
+    padding: 0 15px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    color: #111827;
+
+    outline: none;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+
+/* ========================================
+   FIELD ERROR
+======================================== */
+
+.field-error {
+    margin-top: 7px;
+
+    color: #dc2626;
+
+    font-size: 13px;
+}
+
+
+/* ========================================
+   GENERAL ERROR
+======================================== */
+
+.form-error {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    color: #dc2626;
+
+    font-size: 14px;
+}
+
+
+/* ========================================
+   FORM ACTIONS
+======================================== */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 12px;
+
+    padding-top: 20px;
+
+    margin-top: 10px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* ========================================
+   TOAST
+======================================== */
+
+.toast-container {
+    position: fixed;
+
+    top: 25px;
+    right: 25px;
+
+    z-index: 9999;
+}
+
+.toast {
+    min-width: 300px;
+    max-width: 400px;
+
+    padding: 16px 20px;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    animation: toast-slide-in 0.3s ease;
+}
+
+.toast-title {
+    margin-bottom: 5px;
+
+    font-weight: 700;
+}
+
+.toast-message {
+    font-size: 14px;
+}
+
+.toast-success {
+    border-left: 4px solid #16a34a;
+}
+
+.toast-success .toast-title {
+    color: #16a34a;
+}
+
+.toast-error {
+    border-left: 4px solid #dc2626;
+}
+
+.toast-error .toast-title {
+    color: #dc2626;
+}
+
+
+/* ========================================
+   TOAST ANIMATION
+======================================== */
+
+.toast.hide {
+    animation: toast-slide-out 0.3s ease forwards;
+}
+
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toast-slide-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+
+/* ========================================
+   DELETE MODAL
+======================================== */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    z-index: 10000;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.delete-modal {
+    width: 100%;
+    max-width: 430px;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+
+    animation: modal-show 0.2s ease;
+}
+
+.delete-icon {
+    width: 52px;
+    height: 52px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fee2e2;
+
+    color: #dc2626;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.delete-modal h2 {
+    margin: 0 0 12px;
+
+    font-size: 22px;
+
+    color: #111827;
+}
+
+.delete-modal p {
+    margin: 8px 0;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #6b7280;
+}
+
+.warning-text {
+    color: #dc2626 !important;
+}
+
+.modal-actions {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+@keyframes modal-show {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+
+    .page-container {
+        padding: 25px 15px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .card {
+        overflow-x: auto;
+    }
+
+    .category-table {
+        min-width: 750px;
+    }
+
+    .category-form-card {
+        padding: 25px 20px;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .toast-container {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+    }
+
+    .toast {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* ================================
+   CATEGORY EDIT
+================================ */
+
+.category-form-card {
+    max-width: 700px;
+    margin: 20px auto 0;
+}
+
+.category-form {
+    width: 100%;
+}
+
+.category-form .form-group {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.category-form .form-group label {
+    display: block;
+    margin-bottom: 10px;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.category-form .form-group input {
+    display: block;
+
+    width: 100%;
+    height: 52px;
+
+    padding: 0 16px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    font-size: 16px;
+    color: #111827;
+
+    outline: none;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.category-form .form-group input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.category-form .form-group input::placeholder {
+    color: #9ca3af;
+}
+
+
+/* Field validation error */
+
+.category-form .field-error {
+    margin-top: 8px;
+
+    color: #dc2626;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* General error */
+
+.category-form .form-error {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    color: #dc2626;
+
+    font-size: 14px;
+}
+
+
+/* Form buttons */
+
+.category-form .form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 12px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .category-form-card {
+        margin-top: 10px;
+    }
+
+    .category-form .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .category-form .form-actions .btn {
+        width: 100%;
+    }
+}

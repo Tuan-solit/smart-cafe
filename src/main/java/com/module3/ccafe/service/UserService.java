@@ -110,4 +110,8 @@ public class UserService {
                 .status(user.getStatus())
                 .build();
     }
+
+    public long countEmployee() {
+        return userRepository.countUsersByRoleName("EMPLOYEE");
+    }
 }

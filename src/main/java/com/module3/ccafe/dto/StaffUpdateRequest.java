@@ -1,15 +1,12 @@
 package com.module3.ccafe.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-//@Builder
-public class StaffRequest {
+public class StaffUpdateRequest {
     private String fullName;
     private String phone;
     private String email;
-    private String password;
 }
