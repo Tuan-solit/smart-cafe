@@ -1,27 +1,10 @@
 package com.module3.ccafe.service;
 
-import com.module3.ccafe.entity.Category;
-import com.module3.ccafe.repository.CategoryRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-@Service
-public class CategoryService implements ICategoryService{
-    private final CategoryRepository categoryRepository;
-
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
-
-    @Override
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
-    }
-}
 import com.module3.ccafe.dto.CategoryRequest;
 import com.module3.ccafe.dto.CategoryResponse;
 import com.module3.ccafe.entity.Category;
 import com.module3.ccafe.repository.CategoryRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +14,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CategoryService {
-
+public class CategoryService implements ICategoryService{
     private final CategoryRepository categoryRepository;
+    
+    @Override
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
+    }
+    
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
