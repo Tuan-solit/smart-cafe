@@ -3,16 +3,16 @@ package com.module3.ccafe.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchCafeTableResponse {
-    Integer tableId;
-    String tableNumber;
-    String urlQr;
-    String status;
-    Integer currentOrderId;
+@Builder
+public class ActivityLogResponse {
+    Integer logId;
+    String action;
+    LocalDateTime createdAt;
 }

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách bàn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/employee.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar(active='tables')}"></div>
+
+<div class="main-content">
+    <h4 class="mb-4">Danh sách bàn</h4>
+
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Bộ lọc -->
+    <form th:action="@{/employee/tables}" method="get" class="row g-2 mb-3">
+        <div class="col-auto">
+            <input type="text" name="tableNumber" class="form-control" placeholder="Số bàn"
+                   th:value="${searchCafeTableRequest.tableNumber}">
+        </div>
+        <div class="col-auto">
+            <select name="status" class="form-select">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="AVAILABLE" th:selected="${searchCafeTableRequest.status == 'AVAILABLE'}">Trống</option>
+                <option value="IN_SERVICE" th:selected="${searchCafeTableRequest.status == 'IN_SERVICE'}">Đang phục vụ</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Tìm
+            </button>
+        </div>
+    </form>
+
+    <!-- Danh sách bàn dạng lưới -->
+    <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3" th:each="table : ${cafeTables.content}">
+            <div class="panel p-3 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="fw-semibold fs-5">
+                        <i class="fa-solid fa-chair me-1"></i>
+                        <span th:text="${table.tableNumber}"></span>
+                    </div>
+                    <span class="status-badge"
+                          th:classappend="${table.status == 'AVAILABLE'} ? 'status-done' : 'status-pending'"
+                          th:text="${table.status == 'AVAILABLE'} ? 'Trống' : 'Đang phục vụ'"></span>
+                </div>
+
+                <div class="mt-auto pt-2">
+                    <!-- Bàn trống -> nút mở bàn hộ khách -->
+                    <form th:if="${table.status == 'AVAILABLE'}"
+                          th:action="@{/employee/tables/{id}/open(id=${table.tableId})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-dark w-100">
+                            <i class="fa-solid fa-plus me-1"></i>Mở bàn
+                        </button>
+                    </form>
+
+                    <!-- Bàn đang phục vụ -> link tới danh sách đơn (vì chưa lưu orderId ở đây) -->
+                    <a th:if="${table.status == 'IN_SERVICE'}"
+                       th:href="@{/employee/orders}" class="btn btn-sm btn-outline-dark w-100">
+                        <i class="fa-solid fa-eye me-1"></i>Xem đơn
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12" th:if="${cafeTables.empty}">
+            <div class="panel p-4 text-center text-muted">Không tìm thấy bàn nào</div>
+        </div>
+    </div>
+
+    <nav th:if="${cafeTables.totalPages > 1}" class="mt-4">
+        <ul class="pagination">
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, cafeTables.totalPages - 1)}"
+                th:classappend="${i == cafeTables.number} ? 'active'">
+                <a class="page-link" th:href="@{/employee/tables(page=${i})}" th:text="${i + 1}"></a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

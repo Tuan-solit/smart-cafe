@@ -1,6 +1,5 @@
 package com.module3.ccafe.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,20 +14,16 @@ import java.math.BigDecimal;
 @Builder
 public class OrderDetail {
 
-    @EmbeddedId
-    private OrderDetailId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_detail_id")
+    private Integer orderDetailId;
 
-    // @MapsId ánh xạ phần "orderId" trong OrderDetailId
-    // sang cột order_id thông qua quan hệ với entity Order.
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("orderId")
     @JoinColumn(name = "order_id")
     private Order order;
 
-    // @MapsId ánh xạ phần "productId" trong OrderDetailId
-    // sang cột product_id thông qua quan hệ với entity Product.
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("productId")
     @JoinColumn(name = "product_id")
     private Product product;
 

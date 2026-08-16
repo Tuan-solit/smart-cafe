@@ -3,8 +3,10 @@ package com.module3.ccafe.controller;
 import com.module3.ccafe.dto.request.ChangePasswordRequest;
 import com.module3.ccafe.dto.request.RegisterRequest;
 import com.module3.ccafe.dto.response.ChangePasswordResponse;
+import com.module3.ccafe.security.CustomUserPrincipal;
 import com.module3.ccafe.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +43,12 @@ public class AuthController {
     }
 
     @PostMapping("/auth/change-password")
-    public ChangePasswordResponse changePassword(ChangePasswordRequest password, Integer id){
-        ChangePasswordResponse changePasswordResponse = authService.changePassword(id,password);;
-        return changePasswordResponse;
+    public String changePassword(ChangePasswordRequest password,
+                                 @AuthenticationPrincipal CustomUserPrincipal principal,
+                                 RedirectAttributes redirectAttributes){
+        ChangePasswordResponse res = authService.changePassword(principal.getUserId(), password);
+        redirectAttributes.addFlashAttribute("message", res.getMessage());
+        return "redirect:/employee/dashboard";
     }
 
 }

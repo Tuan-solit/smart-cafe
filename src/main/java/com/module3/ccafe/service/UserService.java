@@ -2,11 +2,17 @@ package com.module3.ccafe.service;
 
 import com.module3.ccafe.dto.StaffRequest;
 import com.module3.ccafe.dto.StaffResponse;
+import com.module3.ccafe.dto.request.UpdateProfileRequest;
+import com.module3.ccafe.dto.response.UpdateProfileResponse;
 import com.module3.ccafe.entity.Role;
 import com.module3.ccafe.entity.User;
 import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.repository.RoleRepository;
 import com.module3.ccafe.repository.UserRepository;
+import com.module3.ccafe.security.CustomUserPrincipal;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -108,6 +114,47 @@ public class UserService {
                 .roleId(user.getRole().getRoleId())
                 .roleName(user.getRole().getName())
                 .status(user.getStatus())
+                .build();
+    }
+
+
+
+
+    @Transactional
+    public UpdateProfileResponse updateProfile(Integer userId, UpdateProfileRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+
+        // Nếu đổi phone/email, kiểm tra trùng với người khác
+        if (!user.getPhone().equals(req.getPhone())
+                && userRepository.findByPhone(req.getPhone()).isPresent()) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng");
+        }
+        if (req.getEmail() != null && !req.getEmail().equals(user.getEmail())
+                && userRepository.findByEmail(req.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email đã được sử dụng");
+        }
+
+        user.setFullName(req.getFullName());
+        user.setPhone(req.getPhone());
+        user.setEmail(req.getEmail());
+        userRepository.save(user);
+
+        CustomUserPrincipal updatedPrincipal = new CustomUserPrincipal(user);
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                updatedPrincipal,
+                SecurityContextHolder.getContext().getAuthentication().getCredentials(),
+                updatedPrincipal.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+
+
+        return UpdateProfileResponse.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
                 .build();
     }
 }

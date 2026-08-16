@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**"
                         ).permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(roleBasedSuccessHandler)

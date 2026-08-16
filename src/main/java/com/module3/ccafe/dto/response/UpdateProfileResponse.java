@@ -5,14 +5,13 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchCafeTableResponse {
-    Integer tableId;
-    String tableNumber;
-    String urlQr;
-    String status;
-    Integer currentOrderId;
+public class UpdateProfileResponse {
+    Integer userId;
+    String fullName;
+    String phone;
+    String email;
 }

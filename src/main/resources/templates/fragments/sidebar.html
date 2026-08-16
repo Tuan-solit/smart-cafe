@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="sidebar(active)" class="sidebar d-flex flex-column">
+  <div class="brand"><i class="fa-solid fa-mug-hot me-2 brand-icon"></i>CCAFE</div>
+  <ul class="nav flex-column mt-2">
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'"
+         th:href="@{/employee/dashboard}">
+        <i class="fa-solid fa-table-columns me-2"></i>Bảng điều khiển
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${active == 'tables'} ? 'active'"
+         th:href="@{/employee/tables}">
+        <i class="fa-solid fa-chair me-2"></i>Bàn
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${active == 'orders'} ? 'active'"
+         th:href="@{/employee/orders}">
+        <i class="fa-solid fa-receipt me-2"></i>Đơn hàng
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${active == 'profile'} ? 'active'"
+         th:href="@{/employee/profile}">
+        <i class="fa-solid fa-user me-2"></i>Tài khoản
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${active == 'logs'} ? 'active'"
+         th:href="@{/employee/activity-logs}">
+        <i class="fa-solid fa-clock-rotate-left me-2"></i>Lịch sử thao tác
+      </a>
+    </li>
+  </ul>
+
+  <div class="mt-auto p-3 border-top" style="border-color: rgba(255,255,255,0.08) !important;">
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn btn-outline-light btn-sm w-100">
+        <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Đăng xuất
+      </button>
+    </form>
+  </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,1 @@
+ALTER TABLE order_detail ADD COLUMN order_detail_id INT NOT NULL AUTO_INCREMENT FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (order_detail_id), ADD CONSTRAINT uk_order_product UNIQUE (order_id, product_id);

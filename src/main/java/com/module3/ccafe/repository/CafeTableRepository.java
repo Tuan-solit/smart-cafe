@@ -1,10 +1,12 @@
 package com.module3.ccafe.repository;
 
 import com.module3.ccafe.entity.CafeTable;
+import com.module3.ccafe.entity.enums.TableStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +19,5 @@ public interface CafeTableRepository extends JpaRepository<CafeTable,Integer> {
         WHERE (:tableNumber is null or t.tableNumber = :tableNumber)
             AND (:status is null or t.status = :status)
 """)
-    Page<CafeTable> search(String tableNumber, String status, Pageable pageable);
+    Page<CafeTable> search(@Param("tableNumber") String tableNumber,@Param("status") TableStatus status, Pageable pageable);
 }

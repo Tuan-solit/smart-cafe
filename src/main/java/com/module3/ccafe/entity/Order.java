@@ -37,7 +37,7 @@ public class Order {
     @Column(name = "status", length = 20)
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
     @OneToMany(mappedBy = "order")

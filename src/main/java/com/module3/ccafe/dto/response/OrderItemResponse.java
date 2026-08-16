@@ -3,16 +3,18 @@ package com.module3.ccafe.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchCafeTableResponse {
-    Integer tableId;
-    String tableNumber;
-    String urlQr;
-    String status;
-    Integer currentOrderId;
+public class OrderItemResponse {
+    Integer productId;
+    String productName;
+    Integer quantity;
+    BigDecimal price;
+    String note;
 }
