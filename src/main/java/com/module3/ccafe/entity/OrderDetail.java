@@ -1,6 +1,5 @@
 package com.module3.ccafe.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,12 +19,13 @@ public class OrderDetail {
     @Column(name = "order_detail_id")
     private Integer orderDetailId;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity", nullable = false)

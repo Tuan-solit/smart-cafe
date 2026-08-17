@@ -43,4 +43,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             where r.name = :roleName
             """)
     long countUsersByRoleName(@Param("roleName") String roleName);
+
+
+  Optional<User> findByEmail(String email);
 }
