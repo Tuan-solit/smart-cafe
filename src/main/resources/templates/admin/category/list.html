@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Category Management</title>
+
+  <link rel="stylesheet"
+        th:href="@{/css/admin-category.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+
+    <div>
+      <h1>Category Management</h1>
+      <p>Manage product categories</p>
+    </div>
+
+    <a th:href="@{/admin/category/create}"
+       class="btn btn-primary">
+      + Add Category
+    </a>
+
+  </div>
+
+
+  <!-- Category table -->
+  <div class="card">
+
+    <table class="category-table">
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Category Name</th>
+        <th>Products</th>
+        <th>Actions</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr th:each="category : ${categoryList}">
+
+        <td th:text="${category.categoryId}">
+          1
+        </td>
+
+        <td class="category-name"
+            th:text="${category.name}">
+          Coffee
+        </td>
+
+        <td>
+
+                    <span class="product-count"
+                          th:text="${category.productCount}">
+                        0
+                    </span>
+
+        </td>
+
+        <td>
+
+          <div class="action-group">
+
+            <!-- Edit -->
+            <a th:href="@{/admin/category/edit/{id}(id=${category.categoryId})}"
+               class="btn btn-warning">
+              Edit
+            </a>
+
+
+            <!-- Delete -->
+            <button type="button"
+                    class="btn btn-danger"
+                    th:attr="data-id=${category.categoryId},
+                                         data-name=${category.name}"
+                    onclick="openDeleteModal(this)">
+              Delete
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+
+      <!-- Empty -->
+      <tr th:if="${#lists.isEmpty(categoryList)}">
+
+        <td colspan="4"
+            class="empty-message">
+
+          Chưa có danh mục nào.
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- SUCCESS / ERROR TOAST -->
+<!-- ========================= -->
+
+<div class="toast-container">
+
+  <div th:if="${success}"
+       class="toast toast-success">
+
+    <div class="toast-title">
+      Thành công
+    </div>
+
+    <div class="toast-message"
+         th:text="${success}">
+    </div>
+
+  </div>
+
+
+  <div th:if="${error}"
+       class="toast toast-error">
+
+    <div class="toast-title">
+      Thất bại
+    </div>
+
+    <div class="toast-message"
+         th:text="${error}">
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- DELETE MODAL -->
+<!-- ========================= -->
+
+<div id="deleteModal"
+     class="modal-overlay">
+
+  <div class="delete-modal">
+
+    <div class="delete-icon">
+      !
+    </div>
+
+    <h2>Xóa danh mục?</h2>
+
+    <p>
+      Bạn có chắc chắn muốn xóa danh mục
+      <strong id="deleteCategoryName"></strong>?
+    </p>
+
+    <p class="warning-text">
+      Nếu danh mục đang có sản phẩm, hệ thống sẽ không cho phép xóa.
+    </p>
+
+
+    <div class="modal-actions">
+
+      <button type="button"
+              class="btn btn-secondary"
+              onclick="closeDeleteModal()">
+        Cancel
+      </button>
+
+      <form id="deleteForm"
+            method="post">
+
+        <button type="submit"
+                class="btn btn-danger">
+          Delete
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  function openDeleteModal(button) {
+
+    const categoryId = button.getAttribute("data-id");
+    const categoryName = button.getAttribute("data-name");
+
+    document.getElementById("deleteCategoryName").textContent =
+            categoryName;
+
+    document.getElementById("deleteForm").action =
+            "/admin/category/delete/" + categoryId;
+
+    document.getElementById("deleteModal").classList.add("show");
+  }
+
+
+  function closeDeleteModal() {
+
+    document.getElementById("deleteModal").classList.remove("show");
+  }
+
+
+  /*
+   * Click ra ngoài modal để đóng
+   */
+  document.getElementById("deleteModal")
+          .addEventListener("click", function (event) {
+
+            if (event.target === this) {
+              closeDeleteModal();
+            }
+
+          });
+
+
+  /*
+   * Tự động ẩn toast sau 3 giây
+   */
+  setTimeout(function () {
+
+    const toasts =
+            document.querySelectorAll(".toast");
+
+    toasts.forEach(function (toast) {
+
+      toast.classList.add("hide");
+
+    });
+
+  }, 3000);
+
+</script>
+
+</body>
+</html>

@@ -13,11 +13,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class OrderDetail {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_detail_id")
     private Integer orderDetailId;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

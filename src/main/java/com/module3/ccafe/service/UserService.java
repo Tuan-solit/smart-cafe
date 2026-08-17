@@ -40,7 +40,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public StaffResponse getStaffById(Integer userId) {
         User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).
-                orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+                orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
 
         return toStaffResponse(user);
     }
@@ -54,7 +54,7 @@ public class UserService {
             throw new RuntimeException("Số điện thoại đã tồn tại");
         }
 
-        Role staffRole = roleRepository.findByName(EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy Role STAFF"));
+        Role staffRole = roleRepository.findByName(EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy Role STAFF"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -72,7 +72,7 @@ public class UserService {
 
     public StaffResponse updateStaff(Integer userId, StaffRequest request) {
         User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE)
-                .orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
 
         if (!Objects.equals(user.getEmail(), request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
@@ -95,12 +95,12 @@ public class UserService {
     }
 
     public void deleteStaff(Integer userId) {
-        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
         userRepository.delete(user);
     }
 
     public StaffResponse changeStatus(Integer userId, UserStatus status) {
-        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
         user.setStatus(status);
         return toStaffResponse(userRepository.save(user));
     }
@@ -116,8 +116,6 @@ public class UserService {
                 .status(user.getStatus())
                 .build();
     }
-
-
 
 
     @Transactional
@@ -149,12 +147,16 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
 
-
         return UpdateProfileResponse.builder()
                 .userId(user.getUserId())
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .build();
+
+    }
+    public long countEmployee () {
+        return userRepository.countUsersByRoleName("EMPLOYEE");
+
     }
 }

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Management</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-staff.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1>Staff Management</h1>
+
+        <a th:href="@{/admin/staff/create}"
+           class="btn btn-primary">
+            + Add Staff
+        </a>
+    </div>
+
+    <div class="card">
+
+        <table class="staff-table">
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="staff : ${staffList}">
+
+                <td th:text="${staff.userId}">
+                    1
+                </td>
+
+                <td th:text="${staff.fullName}">
+                    Nguyen Van A
+                </td>
+
+                <td th:text="${staff.phone}">
+                    0901234567
+                </td>
+
+                <td th:text="${staff.email}">
+                    employee@gmail.com
+                </td>
+
+                <td th:text="${staff.roleName}">
+                    EMPLOYEE
+                </td>
+
+                <td>
+
+                    <span th:if="${staff.status.name() == 'ACTIVE'}"
+                          class="status status-active">
+                        ACTIVE
+                    </span>
+
+                    <span th:if="${staff.status.name() == 'INACTIVE'}"
+                          class="status status-inactive">
+                        INACTIVE
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <div class="action-group">
+
+                        <!-- EDIT -->
+                        <a th:href="@{/admin/staff/edit/{id}(id=${staff.userId})}"
+                           class="btn btn-warning">
+                            Edit
+                        </a>
+
+
+                        <!-- DELETE -->
+                        <button type="button"
+                                class="btn btn-danger"
+                                th:attr="data-id=${staff.userId},
+                                         data-name=${staff.fullName}"
+                                onclick="openDeleteModal(this)">
+                            Delete
+                        </button>
+
+
+                        <!-- DEACTIVATE -->
+                        <form th:if="${staff.status.name() == 'ACTIVE'}"
+                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
+                              method="post">
+
+                            <input type="hidden"
+                                   name="status"
+                                   value="INACTIVE">
+
+                            <button type="submit"
+                                    class="btn btn-secondary">
+                                Deactivate
+                            </button>
+
+                        </form>
+
+
+                        <!-- ACTIVATE -->
+                        <form th:if="${staff.status.name() == 'INACTIVE'}"
+                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
+                              method="post">
+
+                            <input type="hidden"
+                                   name="status"
+                                   value="ACTIVE">
+
+                            <button type="submit"
+                                    class="btn btn-success">
+                                Activate
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+
+            <!-- EMPTY -->
+            <tr th:if="${#lists.isEmpty(staffList)}">
+
+                <td colspan="7"
+                    style="text-align: center; padding: 30px;">
+                    Chưa có nhân viên nào.
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- DELETE CONFIRMATION MODAL -->
+<!-- ========================= -->
+
+<div id="deleteModal"
+     class="delete-modal-overlay">
+
+    <div class="delete-modal">
+
+        <div class="delete-modal-icon">
+            !
+        </div>
+
+        <h2>Xóa nhân viên?</h2>
+
+        <p class="delete-modal-text">
+            Bạn có chắc chắn muốn xóa nhân viên
+            <strong id="deleteStaffName"></strong>?
+        </p>
+
+        <p class="delete-modal-warning">
+            Hành động này không thể hoàn tác.
+        </p>
+
+        <div class="delete-modal-actions">
+
+            <button type="button"
+                    class="btn-modal-cancel"
+                    onclick="closeDeleteModal()">
+                Hủy
+            </button>
+
+            <form id="deleteForm"
+                  method="post">
+
+                <button type="submit"
+                        class="btn-modal-delete">
+                    Xóa nhân viên
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- TOAST -->
+<!-- ========================= -->
+
+<div class="toast-container">
+
+    <div th:if="${success}"
+         class="toast toast-success">
+
+        <div class="toast-title">
+            Thành công
+        </div>
+
+        <div class="toast-message"
+             th:text="${success}">
+        </div>
+
+    </div>
+
+
+    <div th:if="${error}"
+         class="toast toast-error">
+
+        <div class="toast-title">
+            Thất bại
+        </div>
+
+        <div class="toast-message"
+             th:text="${error}">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================= -->
+
+<script>
+
+    function openDeleteModal(button) {
+
+        const userId = button.getAttribute("data-id");
+        const staffName = button.getAttribute("data-name");
+
+        // Hiển thị tên nhân viên
+        document.getElementById("deleteStaffName").textContent = staffName;
+
+        // Gán action cho form delete
+        document.getElementById("deleteForm").action =
+            "/admin/staff/" + userId + "/delete";
+
+        // Hiển thị modal
+        document.getElementById("deleteModal").style.display = "flex";
+    }
+
+
+    function closeDeleteModal() {
+
+        document.getElementById("deleteModal").style.display = "none";
+    }
+
+
+    // Click vào vùng tối bên ngoài modal => đóng
+    document.getElementById("deleteModal").addEventListener("click", function (event) {
+
+        if (event.target === this) {
+            closeDeleteModal();
+        }
+
+    });
+
+
+    // Nhấn ESC => đóng modal
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+            closeDeleteModal();
+        }
+
+    });
+
+
+    // Toast tự động biến mất sau 3 giây
+    setTimeout(function () {
+
+        const toasts = document.querySelectorAll(".toast");
+
+        toasts.forEach(function (toast) {
+            toast.classList.add("hide");
+        });
+
+    }, 3000);
+
+</script>
+
+
+<!-- ========================= -->
+<!-- MODAL CSS -->
+<!-- ========================= -->
+
+<style>
+
+    .delete-modal-overlay {
+
+        display: none;
+
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.5);
+
+        align-items: center;
+
+        justify-content: center;
+
+        z-index: 9999;
+
+        backdrop-filter: blur(2px);
+    }
+
+
+    .delete-modal {
+
+        width: 430px;
+
+        max-width: calc(100% - 40px);
+
+        background: #ffffff;
+
+        border-radius: 18px;
+
+        padding: 32px;
+
+        text-align: center;
+
+        box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.2);
+
+        animation: deleteModalShow 0.2s ease-out;
+    }
+
+
+    .delete-modal-icon {
+
+        width: 64px;
+
+        height: 64px;
+
+        margin: 0 auto 18px;
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background: #fff3cd;
+
+        color: #dc3545;
+
+        font-size: 30px;
+
+        font-weight: bold;
+
+        border: 5px solid #fff8df;
+    }
+
+
+    .delete-modal h2 {
+
+        margin: 0 0 12px;
+
+        font-size: 24px;
+
+        color: #222;
+    }
+
+
+    .delete-modal-text {
+
+        margin: 0 auto 8px;
+
+        color: #555;
+
+        font-size: 15px;
+
+        line-height: 1.5;
+    }
+
+
+    .delete-modal-text strong {
+
+        color: #222;
+    }
+
+
+    .delete-modal-warning {
+
+        margin: 0;
+
+        color: #dc3545;
+
+        font-size: 13px;
+    }
+
+
+    .delete-modal-actions {
+
+        display: flex;
+
+        justify-content: center;
+
+        gap: 12px;
+
+        margin-top: 28px;
+    }
+
+
+    .delete-modal-actions button {
+
+        border: none;
+
+        border-radius: 8px;
+
+        padding: 11px 22px;
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        cursor: pointer;
+
+        transition: 0.2s;
+    }
+
+
+    .btn-modal-cancel {
+
+        background: #e9ecef;
+
+        color: #333;
+    }
+
+
+    .btn-modal-cancel:hover {
+
+        background: #d8dde2;
+    }
+
+
+    .btn-modal-delete {
+
+        background: #dc3545;
+
+        color: white;
+    }
+
+
+    .btn-modal-delete:hover {
+
+        background: #bb2d3b;
+    }
+
+
+    @keyframes deleteModalShow {
+
+        from {
+
+            opacity: 0;
+
+            transform: scale(0.92);
+        }
+
+        to {
+
+            opacity: 1;
+
+            transform: scale(1);
+        }
+    }
+
+</style>
+
+</body>
+</html>
+```

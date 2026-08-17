@@ -2,9 +2,11 @@ package com.module3.ccafe.controller.admin;
 
 import com.module3.ccafe.dto.StaffRequest;
 import com.module3.ccafe.dto.StaffResponse;
+import com.module3.ccafe.dto.StaffUpdateRequest;
 import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
