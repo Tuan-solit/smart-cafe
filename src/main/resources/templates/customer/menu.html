@@ -26,14 +26,15 @@
         <h1 class="logo-font">Smart Cafe</h1>
     </a>
     <div class="header-actions">
-        <button class="cart-btn" id="headerCartBtn">
+        <a th:href="@{/orders/current}"
+           class="cart-btn">
             <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
-            <span>Giỏ hàng (<span id="headerCartCount">0</span>)</span>
-        </button>
+            <span>Giỏ hàng(<span th:text="${orderDetailCount}">0</span>)</span>
+        </a>
         <button class="menu-toggle" aria-label="Menu">
             <svg class="icon" viewBox="0 0 24 24">
                 <line x1="3" y1="6" x2="21" y2="6"/>
@@ -43,6 +44,12 @@
         </button>
     </div>
 </header>
+
+<div
+        th:if="${successMessage}"
+        class="success-message"
+        th:text="${successMessage}">
+</div>
 
 <div class="page-wrap">
 
@@ -82,21 +89,60 @@
             <span>Thành tiền</span>
         </div>
 
-        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" th:if="${cart == null || #lists.isEmpty(cart.items)}">
+                Chưa có món nào trong đơn.
+            </div>
+
+            <div class="cart-item" th:each="item : ${cart?.items}">
+                <div>
+                    <div class="cart-item-name" th:text="${item.productName}">Tên món</div>
+                </div>
+
+                <input type="text"
+                       th:name="|notes[${item.productId}]|"
+                       placeholder="Ghi chú (ít đá, không cay...)"
+                       class="cart-item-note-input"
+                       form="placeOrderForm"/>
+                
+                <div class="qty-stepper">
+                    <form th:action="@{/cart/items/{id}/decrease(id=${item.productId})}" method="post"
+                          style="display:inline;">
+                        <button type="submit">-</button>
+                    </form>
+                    <span th:text="${item.quantity}">1</span>
+                    <form th:action="@{/cart/items/{id}/increase(id=${item.productId})}" method="post"
+                          style="display:inline;">
+                        <button type="submit">+</button>
+                    </form>
+                </div>
+
+                <div class="cart-item-price"
+                     th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ
+                </div>
+
+                <!-- Xóa món -->
+                <form th:action="@{/cart/items/{id}/remove(id=${item.productId})}" method="post"
+                      style="display:inline;">
+                    <button type="submit" class="remove-btn">🗑️</button>
+                </form>
+            </div>
+        </div>
 
         <div class="cart-summary">
-            <div class="summary-row"><span>Tạm tính</span><span id="sumSubtotal">0đ</span></div>
-            <div class="summary-row"><span>Phí phục vụ (8%)</span><span id="sumFee">0đ</span></div>
-            <div class="summary-row"><span>Giảm giá</span><span id="sumDiscount">0đ</span></div>
-            <div class="summary-total"><span>Tổng cộng</span><span id="sumTotal">0đ</span></div>
-            <button class="checkout-btn" id="checkoutBtn">
-                <svg class="icon" style="width:16px;height:16px;stroke:#fff" viewBox="0 0 24 24">
-                    <circle cx="9" cy="21" r="1"/>
-                    <circle cx="20" cy="21" r="1"/>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-                Xem giỏ hàng &amp; Thanh toán
-            </button>
+            <div class="summary-row">
+                <span>Tạm tính</span>
+                <span th:text="${cart != null ? #numbers.formatDecimal(cart.getTotal(), 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
+            </div>
+            <div class="summary-total">
+                <span>Tổng cộng</span>
+                <span th:text="${cart != null ? #numbers.formatDecimal(cart.getTotal(), 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
+            </div>
+            <form th:action="@{/cart/place-order}" method="post" id="placeOrderForm">
+                <button type="submit" class="checkout-btn" th:disabled="${cart == null || #lists.isEmpty(cart.items)}">
+                    Gọi món
+                </button>
+            </form>
             <div class="vat-note">Giá đã bao gồm VAT nếu có</div>
         </div>
     </aside>
@@ -186,7 +232,6 @@
 
     let activeCategory = selectedCategory || 'all';
     let searchTerm = document.getElementById('searchInput').value || '';
-    let cart = [];
 
     const fmt = (n) => n.toLocaleString('vi-VN') + 'đ';
 
@@ -232,8 +277,11 @@
       <div class="product-info">
         <div class="product-name">${p.name}</div>
         <div class="product-price">${fmt(p.price)}</div>
-        <button class="add-btn" data-id="${p.id}">${svgIcon('plus', 13)} Thêm</button>
-      </div>
+        <form action="/cart/items" method="post">
+            <input type="hidden" name="productId" value="${p.id}" />
+            <button type="submit" class="add-btn">${svgIcon('plus', 13)} Thêm</button>
+        </form>      
+        </div>
     </div>
   `).join('');
 
@@ -242,77 +290,19 @@
         });
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBox = document.querySelector('.success-message');
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s ease";
+                alertBox.style.opacity = "0";
 
-    function addToCart(productId) {
-        const product = PRODUCTS.find(p => p.id === productId);
-        const existing = cart.find(item => item.id === productId);
-        if (existing) {
-            existing.qty += 1;
-        } else {
-            cart.push({...product, qty: 1});
+                setTimeout(() => {
+                    alertBox.style.display = "none";
+                }, 500);
+            }, 4000); 
         }
-        renderCart();
-    }
-
-    function changeQty(productId, delta) {
-        const item = cart.find(i => i.id === productId);
-        if (!item) return;
-        item.qty += delta;
-        if (item.qty <= 0) {
-            cart = cart.filter(i => i.id !== productId);
-        }
-        renderCart();
-    }
-
-    function removeItem(productId) {
-        cart = cart.filter(i => i.id !== productId);
-        renderCart();
-    }
-
-    function renderCart() {
-        const wrap = document.getElementById('cartItems');
-        const checkoutBtn = document.getElementById('checkoutBtn');
-
-        if (cart.length === 0) {
-            wrap.innerHTML = '<div class="cart-empty">Chưa có món nào trong đơn.</div>';
-        } else {
-            wrap.innerHTML = cart.map(item => `
-      <div class="cart-item">
-        <div class="cart-thumb" style="background:${item.bg}">${item.emoji}</div>
-        <div>
-          <div class="cart-item-name">${item.name}</div>
-          ${item.sub ? `<div class="cart-item-sub">${item.sub}</div>` : ''}
-        </div>
-        <div class="qty-stepper">
-          <button data-action="minus" data-id="${item.id}">${svgIcon('minus', 11)}</button>
-          <span>${item.qty}</span>
-          <button data-action="plus" data-id="${item.id}">${svgIcon('plus', 11)}</button>
-        </div>
-        <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
-        <button class="remove-btn" data-action="remove" data-id="${item.id}">${svgIcon('trash', 16)}</button>
-      </div>
-    `).join('');
-
-            wrap.querySelectorAll('[data-action="plus"]').forEach(b => b.addEventListener('click', () => changeQty(Number(b.dataset.id), 1)));
-            wrap.querySelectorAll('[data-action="minus"]').forEach(b => b.addEventListener('click', () => changeQty(Number(b.dataset.id), -1)));
-            wrap.querySelectorAll('[data-action="remove"]').forEach(b => b.addEventListener('click', () => removeItem(Number(b.dataset.id))));
-        }
-
-        const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-        const fee = Math.round(subtotal * 0.08);
-        const discount = 0;
-        const total = subtotal + fee - discount;
-        const itemCount = cart.reduce((sum, i) => sum + i.qty, 0);
-
-        document.getElementById('sumSubtotal').textContent = fmt(subtotal);
-        document.getElementById('sumFee').textContent = fmt(fee);
-        document.getElementById('sumDiscount').textContent = fmt(discount);
-        document.getElementById('sumTotal').textContent = fmt(total);
-        document.getElementById('headerCartCount').textContent = itemCount;
-        checkoutBtn.disabled = cart.length === 0;
-    }
-
-
+    });
     document.getElementById('searchInput').addEventListener('input', (e) => {
         searchTerm = e.target.value;
         renderProducts();
@@ -320,7 +310,6 @@
 
     renderCategories();
     renderProducts();
-    renderCart();
 </script>
 
 </body>
