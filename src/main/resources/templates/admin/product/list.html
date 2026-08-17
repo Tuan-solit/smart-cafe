@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Management</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-product.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>Product Management</h1>
+            <p>Manage products and menu items</p>
+        </div>
+
+        <a th:href="@{/admin/product/create}"
+           class="btn btn-primary">
+            + Add Product
+        </a>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PRODUCT TABLE -->
+    <!-- ========================= -->
+
+    <div class="card">
+
+        <table class="product-table">
+
+            <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr th:each="product : ${productList}">
+
+                <!-- ID -->
+
+                <td th:text="${product.productId}">
+                    1
+                </td>
+
+
+                <!-- IMAGE -->
+
+                <td>
+
+                    <div class="product-image">
+
+                        <img th:if="${product.image != null and !product.image.isBlank()}"
+                             th:src="${product.image}"
+                             th:alt="${product.name}">
+
+                        <div th:if="${product.image == null or product.image.isBlank()}"
+                             class="image-placeholder">
+                            No Image
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <!-- NAME -->
+
+                <td class="product-name"
+                    th:text="${product.name}">
+                    Cappuccino
+                </td>
+
+
+                <!-- CATEGORY -->
+
+                <td>
+
+                    <span th:if="${product.categoryName != null}"
+                          th:text="${product.categoryName}">
+                        Coffee
+                    </span>
+
+                    <span th:if="${product.categoryName == null}"
+                          class="text-muted">
+                        -
+                    </span>
+
+                </td>
+
+
+                <!-- SIZE -->
+
+                <td>
+
+                    <span th:if="${product.sizeName != null}"
+                          th:text="${product.sizeName}">
+                        M
+                    </span>
+
+                    <span th:if="${product.sizeName == null}"
+                          class="text-muted">
+                        -
+                    </span>
+
+                </td>
+
+
+                <!-- PRICE -->
+
+                <td class="product-price">
+
+                    <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">
+                        45,000
+                    </span>
+
+                    <span>₫</span>
+
+                </td>
+
+
+                <!-- STATUS -->
+
+                <td>
+
+                    <span th:if="${product.status != null and product.status.name() == 'AVAILABLE'}"
+                          class="status status-available"
+                          th:text="${product.statusDescription}">
+                        Đang bán
+                    </span>
+
+                    <span th:if="${product.status != null and product.status.name() == 'OUT_OF_STOCK'}"
+                          class="status status-out-of-stock"
+                          th:text="${product.statusDescription}">
+                        Tạm hết hàng
+                    </span>
+
+                    <span th:if="${product.status != null and product.status.name() == 'DISCONTINUED'}"
+                          class="status status-discontinued"
+                          th:text="${product.statusDescription}">
+                        Ngừng bán vĩnh viễn
+                    </span>
+
+                </td>
+
+
+                <!-- ACTIONS -->
+
+                <td>
+
+                    <div class="action-group">
+
+                        <!-- EDIT -->
+
+                        <a th:href="@{/admin/product/edit/{id}(id=${product.productId})}"
+                           class="btn btn-warning">
+                            Edit
+                        </a>
+
+
+                        <!-- DELETE -->
+
+                        <button type="button"
+                                class="btn btn-danger"
+                                th:attr="data-id=${product.productId},
+                                         data-name=${product.name}"
+                                onclick="openDeleteModal(this)">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+
+            <!-- EMPTY -->
+
+            <tr th:if="${#lists.isEmpty(productList)}">
+
+                <td colspan="8"
+                    class="empty-message">
+
+                    Chưa có sản phẩm nào.
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- SUCCESS / ERROR TOAST -->
+<!-- ========================= -->
+
+<div class="toast-container">
+
+    <!-- SUCCESS -->
+
+    <div th:if="${success}"
+         class="toast toast-success">
+
+        <div class="toast-title">
+            Thành công
+        </div>
+
+        <div class="toast-message"
+             th:text="${success}">
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div th:if="${error}"
+         class="toast toast-error">
+
+        <div class="toast-title">
+            Thất bại
+        </div>
+
+        <div class="toast-message"
+             th:text="${error}">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- DELETE MODAL -->
+<!-- ========================= -->
+
+<div id="deleteModal"
+     class="modal-overlay">
+
+    <div class="delete-modal">
+
+        <div class="delete-icon">
+            !
+        </div>
+
+        <h2>Xóa sản phẩm?</h2>
+
+        <p>
+            Bạn có chắc chắn muốn xóa sản phẩm
+            <strong id="deleteProductName"></strong>?
+        </p>
+
+        <p class="warning-text">
+            Nếu sản phẩm đã xuất hiện trong đơn hàng,
+            hệ thống sẽ không cho phép xóa.
+        </p>
+
+
+        <div class="modal-actions">
+
+            <!-- CANCEL -->
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="closeDeleteModal()">
+                Cancel
+            </button>
+
+
+            <!-- DELETE -->
+
+            <form id="deleteForm"
+                  method="post">
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+     * Mở Delete Modal
+     */
+    function openDeleteModal(button) {
+
+        const productId =
+            button.getAttribute("data-id");
+
+        const productName =
+            button.getAttribute("data-name");
+
+
+        document.getElementById("deleteProductName")
+            .textContent = productName;
+
+
+        document.getElementById("deleteForm")
+            .action =
+            "/admin/product/delete/" + productId;
+
+
+        document.getElementById("deleteModal")
+            .classList.add("show");
+    }
+
+
+    /*
+     * Đóng Delete Modal
+     */
+    function closeDeleteModal() {
+
+        document.getElementById("deleteModal")
+            .classList.remove("show");
+    }
+
+
+    /*
+     * Click ra ngoài Modal để đóng
+     */
+    document.getElementById("deleteModal")
+        .addEventListener("click", function (event) {
+
+            if (event.target === this) {
+
+                closeDeleteModal();
+
+            }
+
+        });
+
+
+    /*
+     * Tự động ẩn Toast sau 3 giây
+     */
+    setTimeout(function () {
+
+        const toasts =
+            document.querySelectorAll(".toast");
+
+        toasts.forEach(function (toast) {
+
+            toast.classList.add("hide");
+
+        });
+
+    }, 3000);
+
+</script>
+
+</body>
+</html>

@@ -44,6 +44,8 @@ dependencies {
 
     // Flyway starter (bắt buộc để auto-config trong Spring Boot 4.x)
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
+
+    implementation 'com.cloudinary:cloudinary-http44:1.39.0'
 }
 
 tasks.named('test') {

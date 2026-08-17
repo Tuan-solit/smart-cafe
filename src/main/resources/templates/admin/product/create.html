@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    ```
+    <title>Create Product</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin-product.css}">
+    ```
+
+</head>
+
+<body>
+
+<div class="page-container">
+
+    ```
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>Create Product</h1>
+            <p>Add a new product to the menu</p>
+        </div>
+
+        <a th:href="@{/admin/product/page}"
+           class="btn btn-secondary">
+            ← Back to Products
+        </a>
+
+    </div>
+
+
+    <!-- FORM CARD -->
+
+    <div class="form-card">
+
+        <!-- GENERAL ERROR -->
+
+        <div th:if="${error}"
+             class="form-error"
+             th:text="${error}">
+        </div>
+
+
+        <form th:action="@{/admin/product/create}"
+              th:object="${productRequest}"
+              method="post"
+              enctype="multipart/form-data"
+              class="product-form">
+
+
+            <!-- PRODUCT NAME -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Product Name
+                </label>
+
+                <input type="text"
+                       id="name"
+                       th:field="*{name}"
+                       placeholder="Enter product name"
+                       required>
+
+            </div>
+
+
+            <!-- CATEGORY -->
+
+            <div class="form-group">
+
+                <label for="categoryId">
+                    Category
+                </label>
+
+                <select id="categoryId"
+                        th:field="*{categoryId}"
+                        required>
+
+                    <option value="">
+                        -- Select Category --
+                    </option>
+
+                    <option th:each="category : ${categoryList}"
+                            th:value="${category.categoryId}"
+                            th:text="${category.name}">
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SIZE -->
+
+            <div class="form-group">
+
+                <label for="sizeId">
+                    Size
+                </label>
+
+                <select id="sizeId"
+                        th:field="*{sizeId}"
+                        required>
+
+                    <option value="">
+                        -- Select Size --
+                    </option>
+
+                    <option th:each="size : ${sizeList}"
+                            th:value="${size.sizeId}"
+                            th:text="${size.name}">
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PRICE -->
+
+            <div class="form-group">
+
+                <label for="price">
+                    Price
+                </label>
+
+                <div class="price-input">
+
+                    <input type="number"
+                           id="price"
+                           th:field="*{price}"
+                           min="0"
+                           step="1000"
+                           placeholder="Enter price"
+                           required>
+
+                    <span>₫</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- IMAGE -->
+
+            <div class="form-group">
+
+                <label for="image">
+                    Product Image
+                </label>
+
+                <input type="file"
+                       id="image"
+                       th:field="*{image}"
+                       accept="image/*">
+
+                <small class="form-hint">
+                    Select an image to upload to Cloudinary.
+                </small>
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <div id="imagePreviewContainer"
+                     class="image-preview-container"
+                     style="display: none;">
+
+                    <p class="form-hint">
+                        Image Preview
+                    </p>
+
+                    <img id="imagePreview"
+                         class="image-preview"
+                         alt="Image Preview">
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select id="status"
+                        th:field="*{status}"
+                        required>
+
+                    <option value="">
+                        -- Select Status --
+                    </option>
+
+                    <option th:each="status : ${statusList}"
+                            th:value="${status}"
+                            th:text="${status.description}">
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="form-actions">
+
+                <a th:href="@{/admin/product/page}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Create Product
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+    ```
+
+</div>
+
+<!-- SUCCESS / ERROR TOAST -->
+
+<div class="toast-container">
+
+    ```
+    <div th:if="${success}"
+         class="toast toast-success">
+
+        <div class="toast-title">
+            Thành công
+        </div>
+
+        <div class="toast-message"
+             th:text="${success}">
+        </div>
+
+    </div>
+
+
+    <div th:if="${error}"
+         class="toast toast-error">
+
+        <div class="toast-title">
+            Thất bại
+        </div>
+
+        <div class="toast-message"
+             th:text="${error}">
+        </div>
+
+    </div>
+    ```
+
+</div>
+
+<script>
+
+    // ================================
+    // IMAGE PREVIEW
+    // ================================
+
+    const imageInput =
+        document.getElementById("image");
+
+    const imagePreviewContainer =
+        document.getElementById("imagePreviewContainer");
+
+    const imagePreview =
+        document.getElementById("imagePreview");
+
+
+    imageInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+
+            imagePreviewContainer.style.display = "none";
+
+            imagePreview.src = "";
+
+            return;
+        }
+
+
+        const reader = new FileReader();
+
+
+        reader.onload = function (event) {
+
+            imagePreview.src = event.target.result;
+
+            imagePreviewContainer.style.display = "block";
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+    // ================================
+    // AUTO HIDE TOAST
+    // ================================
+
+    setTimeout(function () {
+
+        const toasts =
+            document.querySelectorAll(".toast");
+
+        toasts.forEach(function (toast) {
+
+            toast.classList.add("hide");
+
+        });
+
+    }, 3000);
+
+</script>
+
+</body>
+</html>
