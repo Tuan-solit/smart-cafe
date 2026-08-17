@@ -17,6 +17,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.module3.ccafe.entity.Order;
+import com.module3.ccafe.entity.OrderDetail;
+import com.module3.ccafe.repository.OrderDetailRepository;
+import com.module3.ccafe.repository.OrderRepository;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,6 +36,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderService {
+    private static final String ORDER_ID_SESSION_KEY = "ORDER_ID";
+
     final CafeTableRepository cafeTableRepository;
     final OrderRepository orderRepository;
     final UserRepository userRepository;
@@ -160,4 +171,43 @@ public class OrderService {
         }
         orderDetailRepository.delete(detail);
     }
+
+    public Order getCurrentOrder(HttpSession session) {
+        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
+        if (orderId == null) {
+            return null;
+        }
+        return orderRepository.findById(orderId).orElse(null);
+    }
+
+    public List<OrderDetail> getCurrentOrderDetails(HttpSession session) {
+        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
+        if (orderId == null) {
+            return List.of();
+        }
+        List<OrderDetail> details = orderDetailRepository.findByOrderOrderId(orderId);
+        return details.stream().collect(Collectors.groupingBy(detail -> detail.getProduct().getProductId(),
+                Collectors.reducing((d1,d2)->{
+                    OrderDetail merged = new OrderDetail();
+                    merged.setProduct(d1.getProduct());
+                    merged.setPrice(d1.getPrice());
+                    merged.setQuantity(d1.getQuantity()+d2.getQuantity());
+                    return merged;
+                })
+        )).values().stream().flatMap(Optional::stream).toList();
+    }
+
+    public long getCurrentOrderDetailCount(HttpSession session) {
+        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
+        if (orderId == null) {
+            return 0;
+        }
+        return orderDetailRepository.countByOrderOrderId(orderId);
+    }
+
+    public BigDecimal getCurrentOrderTotal(HttpSession session) {
+        List<OrderDetail> details = getCurrentOrderDetails(session);
+        return details.stream().map(detail -> detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

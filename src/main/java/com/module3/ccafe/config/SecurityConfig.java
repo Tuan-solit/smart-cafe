@@ -34,8 +34,12 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/auth/register",
+                                "/menu/**", 
+                                "/cart/**",
+                                "/orders/**",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/images/**"
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form
