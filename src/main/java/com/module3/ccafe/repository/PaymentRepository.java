@@ -1,6 +1,7 @@
 package com.module3.ccafe.repository;
 
 import com.module3.ccafe.entity.Payment;
+import com.module3.ccafe.entity.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment,Integer> {
@@ -20,4 +22,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Integer> {
     BigDecimal sumRevenueByUserAndDateRange(@Param("userId") Integer userId,
                                             @Param("start") LocalDateTime start,
                                             @Param("end") LocalDateTime end);
+
+    Optional<Payment> findByOrder_OrderIdAndStatus(Integer orderId, PaymentStatus status);
+    Optional<Payment> findByInternalTransactionCodeAndStatus(String code, PaymentStatus status);
 }

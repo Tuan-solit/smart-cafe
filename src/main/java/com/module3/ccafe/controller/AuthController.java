@@ -42,13 +42,5 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/auth/change-password")
-    public String changePassword(ChangePasswordRequest password,
-                                 @AuthenticationPrincipal CustomUserPrincipal principal,
-                                 RedirectAttributes redirectAttributes){
-        ChangePasswordResponse res = authService.changePassword(principal.getUserId(), password);
-        redirectAttributes.addFlashAttribute("message", res.getMessage());
-        return "redirect:/employee/dashboard";
-    }
 
 }
