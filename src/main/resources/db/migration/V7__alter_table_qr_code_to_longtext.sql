@@ -1,0 +1,2 @@
+ALTER TABLE tables
+    MODIFY COLUMN url_qr LONGTEXT;

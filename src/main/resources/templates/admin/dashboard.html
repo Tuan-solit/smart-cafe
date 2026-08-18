@@ -3,249 +3,46 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Admin Dashboard - Smart Cafe</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            color: #333;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar {
-            width: 240px;
-            background: #222;
-            color: white;
-            padding: 20px 0;
-        }
-
-        .logo {
-            padding: 0 24px 30px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .menu {
-            list-style: none;
-        }
-
-        .menu li a {
-            display: block;
-            padding: 14px 24px;
-            color: #ddd;
-            text-decoration: none;
-        }
-
-        .menu li a:hover,
-        .menu li a.active {
-            background: #333;
-            color: white;
-        }
-
-        /* MAIN */
-
-        .main {
-            flex: 1;
-        }
-
-        .header {
-            height: 70px;
-            background: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 30px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .header h1 {
-            font-size: 22px;
-        }
-
-        .admin-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .content h2 {
-            margin-bottom: 25px;
-        }
-
-        /* STAT CARDS */
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .card-title {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        .card-value {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        /* QUICK ACTION */
-
-        .quick-actions {
-            background: white;
-            border-radius: 10px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .quick-actions h3 {
-            margin-bottom: 20px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 18px;
-            border-radius: 6px;
-            text-decoration: none;
-            background: #222;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.85;
-        }
-
-        @media (max-width: 1000px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 700px) {
-            .sidebar {
-                width: 180px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-<div class="layout">
+<div class="admin-layout">
 
-    <!-- SIDEBAR -->
+    <!-- =========================
+         SIDEBAR
+         ========================= -->
 
-    <aside class="sidebar">
-
-        <div class="logo">
-            ☕ Smart Cafe
-        </div>
-
-        <ul class="menu">
-
-            <li>
-                <a href="/admin/dashboard"
-                   class="active">
-                    Dashboard
-                </a>
-            </li>
-
-            <li>
-                <a href="/admin/category/page">
-                    Danh mục
-                </a>
-            </li>
-
-            <li>
-                <a href="/admin/product/page">
-                    Sản phẩm
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    Bàn
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    Đơn hàng
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    Thanh toán
-                </a>
-            </li>
-
-        </ul>
-
-    </aside>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='dashboard')}"></div>
 
 
-    <!-- MAIN -->
+    <!-- =========================
+         MAIN CONTENT
+         ========================= -->
 
-    <main class="main">
+    <main class="admin-main">
 
         <!-- HEADER -->
 
-        <header class="header">
+        <header class="admin-header">
 
             <h1>Admin Dashboard</h1>
 
             <div class="admin-info">
+
                 <span>Administrator</span>
 
-                <form th:action="@{/logout}"
-                      method="post">
-
-                    <button type="submit">
-                        Đăng xuất
-                    </button>
-
-                </form>
             </div>
 
         </header>
@@ -253,14 +50,18 @@
 
         <!-- CONTENT -->
 
-        <section class="content">
+        <section class="admin-content">
 
             <h2>Tổng quan</h2>
 
 
-            <!-- STATISTICS -->
+            <!-- =========================
+                 STATISTICS
+                 ========================= -->
 
             <div class="stats">
+
+                <!-- NHÂN VIÊN -->
 
                 <div class="card">
 
@@ -276,6 +77,8 @@
                 </div>
 
 
+                <!-- BÀN -->
+
                 <div class="card">
 
                     <div class="card-title">
@@ -289,6 +92,8 @@
                 </div>
 
 
+                <!-- ĐƠN HÀNG -->
+
                 <div class="card">
 
                     <div class="card-title">
@@ -301,6 +106,8 @@
 
                 </div>
 
+
+                <!-- DOANH THU -->
 
                 <div class="card">
 
@@ -317,7 +124,9 @@
             </div>
 
 
-            <!-- QUICK ACTION -->
+            <!-- =========================
+                 QUICK ACTION
+                 ========================= -->
 
             <div class="quick-actions">
 
@@ -325,19 +134,24 @@
 
                 <div class="actions">
 
-                    <a href="/admin/staff/page"
+                    <a th:href="@{/admin/staff/page}"
                        class="btn">
                         Quản lý nhân viên
                     </a>
 
-                    <a href="/admin/category/page"
+                    <a th:href="@{/admin/category/page}"
                        class="btn">
                         Quản lý danh mục
                     </a>
 
-                    <a href="/admin/product/page"
+                    <a th:href="@{/admin/product/page}"
                        class="btn">
                         Quản lý sản phẩm
+                    </a>
+
+                    <a th:href="@{/admin/table/page}"
+                       class="btn">
+                        Quản lý bàn
                     </a>
 
                 </div>

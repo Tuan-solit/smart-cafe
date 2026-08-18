@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <title>Add Staff</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa Bàn - Smart Cafe</title>
     <link rel="stylesheet"
           th:href="@{/css/admin-staff.css}">
 </head>
@@ -15,113 +15,57 @@
 <div class="page-container">
 
     <div class="page-header">
-
-        <h1>Add Staff</h1>
-
-        <a th:href="@{/admin/staff/page}"
+        <h1>Sửa Bàn</h1>
+        <a th:href="@{/admin/table/page}"
            class="btn btn-secondary">
-            Back
+            Quay lại
         </a>
-
     </div>
-
 
     <div class="card form-card">
 
-        <form th:action="@{/admin/staff/create}"
-              th:object="${staffRequest}"
-              method="post"
-              onsubmit="return handleSubmit(event)">
+        <form th:action="@{/admin/table/edit/{id}(id=${table.tableId})}"
+              th:object="${tableRequest}"
+              method="post">
 
             <div class="form-group">
-
-                <label for="fullName">Full Name</label>
-
-                <input id="fullName"
+                <label for="tableNumber">Số bàn</label>
+                <input id="tableNumber"
                        type="text"
-                       th:field="*{fullName}"
+                       th:field="*{tableNumber}"
+                       placeholder="VD: A1, A2, B1..."
                        required>
-
                 <div class="field-error"
-                     th:if="${#fields.hasErrors('fullName')}"
-                     th:errors="*{fullName}">
+                     th:if="${#fields.hasErrors('tableNumber')}"
+                     th:errors="*{tableNumber}">
                 </div>
-
             </div>
 
-
-            <div class="form-group">
-
-                <label for="phone">Phone</label>
-
-                <input id="phone"
-                       type="text"
-                       th:field="*{phone}"
-                       required>
-
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('phone')}"
-                     th:errors="*{phone}">
-                </div>
-
+            <div class="staff-info">
+                <div class="info-label">Mã QR</div>
+                <img th:if="${table.urlQr}"
+                     th:src="${table.urlQr}"
+                     alt="QR Code"
+                     style="max-width: 200px; height: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
             </div>
-
-
-            <div class="form-group">
-
-                <label for="email">Email</label>
-
-                <input id="email"
-                       type="email"
-                       th:field="*{email}"
-                       required>
-
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('email')}"
-                     th:errors="*{email}">
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="password">Password</label>
-
-                <input id="password"
-                       type="password"
-                       th:field="*{password}"
-                       required>
-
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('password')}"
-                     th:errors="*{password}">
-                </div>
-
-            </div>
-
 
             <div class="form-actions">
-
-                <a th:href="@{/admin/staff/page}"
+                <a th:href="@{/admin/table/page}"
                    class="btn btn-secondary">
-                    Cancel
+                    Hủy
                 </a>
-
                 <button type="submit"
                         class="btn btn-primary">
-                    Create Staff
+                    Lưu Thay Đổi
                 </button>
-
             </div>
-
-        </form>
 
         </form>
 
     </div>
 
 </div>
+
 
 <!-- ========================= -->
 <!-- SUCCESS MODAL -->
@@ -130,8 +74,8 @@
 <div th:if="${success}" id="successModal" class="success-modal-overlay" style="display: flex;">
     <div class="success-modal">
         <div class="success-modal-icon">✓</div>
-        <h2>Tạo nhân viên thành công!</h2>
-        <p>Nhân viên mới đã được thêm vào hệ thống.</p>
+        <h2>Cập nhật bàn thành công!</h2>
+        <p>Thông tin bàn đã được cập nhật.</p>
     </div>
 </div>
 
@@ -141,24 +85,12 @@
 <!-- ========================= -->
 
 <script>
-    function handleSubmit(event) {
-        const hasErrors = document.querySelectorAll('.field-error').length > 0;
-        
-        if (hasErrors) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    // Auto redirect sau 2 giây nếu tạo thành công
     document.addEventListener('DOMContentLoaded', function() {
         const successModal = document.getElementById('successModal');
         
         if (successModal) {
-            // Chỉ nếu modal tồn tại, có nghĩa là success=true
             setTimeout(function() {
-                window.location.href = '/admin/staff/page';
+                window.location.href = '/admin/table/page';
             }, 2000);
         }
     });
@@ -224,6 +156,19 @@
             opacity: 1;
             transform: scale(1);
         }
+    }
+
+    .staff-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: #666;
+        margin-bottom: 10px;
     }
 </style>
 

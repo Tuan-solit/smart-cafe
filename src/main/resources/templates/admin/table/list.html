@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Bàn - Smart Cafe</title>
+    <link rel="stylesheet"
+          th:href="@{/css/admin-staff.css}">
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <div class="page-header">
+        <h1>Quản lý Bàn</h1>
+        <a th:href="@{/admin/table/create}"
+           class="btn btn-primary">
+            + Thêm bàn
+        </a>
+    </div>
+
+    <div class="card">
+
+        <table class="staff-table">
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Số bàn</th>
+                <th>Trạng thái</th>
+                <th>Mã QR</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="table : ${tableList}">
+
+                <td th:text="${table.tableId}">
+                    1
+                </td>
+
+                <td th:text="${table.tableNumber}">
+                    A1
+                </td>
+
+                <td>
+                    <span th:if="${table.status == 'AVAILABLE'}"
+                          class="status status-active">
+                        Trống
+                    </span>
+                    <span th:if="${table.status == 'IN_SERVICE'}"
+                          class="status status-inactive">
+                        Đang phục vụ
+                    </span>
+                </td>
+
+                <td>
+                    <button type="button"
+                            class="btn btn-sm"
+                            style="background: #007bff; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;"
+                            onclick="showQRModal(this)"
+                            th:attr="data-qr=${table.urlQr},data-number=${table.tableNumber}">
+                        👁️ Xem QR
+                    </button>
+                </td>
+
+                <td>
+
+                    <div class="action-group">
+
+                        <a th:href="@{/admin/table/edit/{id}(id=${table.tableId})}"
+                           class="btn btn-warning">
+                            Sửa
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-danger"
+                                th:attr="data-id=${table.tableId},
+                                         data-name=${table.tableNumber}"
+                                onclick="openDeleteModal(this)">
+                            Xóa
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(tableList)}">
+                <td colspan="5"
+                    style="text-align: center; padding: 30px;">
+                    Chưa có bàn nào.
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- QR CODE MODAL -->
+<!-- ========================= -->
+
+<div id="qrModal" class="modal-overlay" style="display: none;">
+
+    <div class="modal-content" style="width: 450px;">
+
+        <div class="modal-header">
+            <h2>Mã QR - Bàn <span id="qrTableNumber"></span></h2>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeQRModal()">
+                ✕
+            </button>
+        </div>
+
+        <div class="modal-body" style="text-align: center; padding: 30px;">
+            <img id="qrImage"
+                 src=""
+                 alt="QR Code"
+                 style="max-width: 100%; height: auto; border: 2px solid #ddd; padding: 10px; border-radius: 8px;">
+            <p style="margin-top: 20px; color: #666;">
+                Quét mã QR này để truy cập menu
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="closeQRModal()">
+                Đóng
+            </button>
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="downloadQR()">
+                Tải xuống
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- DELETE MODAL -->
+<!-- ========================= -->
+
+<div id="deleteModal" class="delete-modal-overlay">
+
+    <div class="delete-modal">
+
+        <div class="delete-modal-icon">!</div>
+
+        <h2>Xóa bàn?</h2>
+
+        <p class="delete-modal-text">
+            Bạn có chắc chắn muốn xóa bàn
+            <strong id="deleteTableName"></strong>?
+        </p>
+
+        <p class="delete-modal-warning">
+            Hành động này không thể hoàn tác.
+        </p>
+
+        <div class="delete-modal-actions">
+
+            <button type="button"
+                    class="btn-modal-cancel"
+                    onclick="closeDeleteModal()">
+                Hủy
+            </button>
+
+            <form id="deleteForm" method="post">
+                <button type="submit" class="btn-modal-delete">
+                    Xóa bàn
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- TOAST -->
+<!-- ========================= -->
+
+<div class="toast-container">
+
+    <div th:if="${success}"
+         class="toast toast-success">
+        <div class="toast-title">Thành công</div>
+        <div class="toast-message" th:text="${success}"></div>
+    </div>
+
+    <div th:if="${error}"
+         class="toast toast-error">
+        <div class="toast-title">Thất bại</div>
+        <div class="toast-message" th:text="${error}"></div>
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- SCRIPTS & STYLES -->
+<!-- ========================= -->
+
+<script>
+
+    function showQRModal(button) {
+        const qrData = button.getAttribute('data-qr');
+        const tableNumber = button.getAttribute('data-number');
+
+        document.getElementById('qrImage').src = qrData;
+        document.getElementById('qrTableNumber').textContent = tableNumber;
+        document.getElementById('qrModal').style.display = 'flex';
+    }
+
+    function closeQRModal() {
+        document.getElementById('qrModal').style.display = 'none';
+    }
+
+    function downloadQR() {
+        const link = document.createElement('a');
+        link.href = document.getElementById('qrImage').src;
+        link.download = 'qr-code-' + document.getElementById('qrTableNumber').textContent + '.png';
+        link.click();
+    }
+
+    function openDeleteModal(button) {
+        const tableId = button.getAttribute('data-id');
+        const tableName = button.getAttribute('data-name');
+
+        document.getElementById('deleteTableName').textContent = tableName;
+        document.getElementById('deleteForm').action = '/admin/table/delete/' + tableId;
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    document.getElementById('deleteModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+            closeQRModal();
+        }
+    });
+
+    document.getElementById('qrModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeQRModal();
+        }
+    });
+
+    setTimeout(function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(function(toast) {
+            toast.classList.add('hide');
+        });
+    }, 3000);
+
+</script>
+
+<style>
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: modalShow 0.2s ease-out;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: #222;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #222;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 16px 24px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .modal-actions .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-secondary {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #d8dde2;
+    }
+
+    .btn-primary {
+        background: #222;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.85;
+    }
+
+    @keyframes modalShow {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .delete-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+    }
+
+    .delete-modal {
+        width: 430px;
+        max-width: calc(100% - 40px);
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: deleteModalShow 0.2s ease-out;
+    }
+
+    .delete-modal-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff3cd;
+        color: #dc3545;
+        font-size: 30px;
+        font-weight: bold;
+        border: 5px solid #fff8df;
+    }
+
+    .delete-modal h2 {
+        margin: 0 0 12px;
+        font-size: 24px;
+        color: #222;
+    }
+
+    .delete-modal-text {
+        margin: 0 auto 8px;
+        color: #555;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .delete-modal-text strong {
+        color: #222;
+    }
+
+    .delete-modal-warning {
+        margin: 0;
+        color: #dc3545;
+        font-size: 13px;
+    }
+
+    .delete-modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .delete-modal-actions button {
+        border: none;
+        border-radius: 8px;
+        padding: 11px 22px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-modal-cancel {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .btn-modal-cancel:hover {
+        background: #d8dde2;
+    }
+
+    .btn-modal-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-modal-delete:hover {
+        background: #bb2d3b;
+    }
+
+    @keyframes deleteModalShow {
+        from {
+            opacity: 0;
+            transform: scale(0.92);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .btn-sm {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+
+</style>
+
+</body>
+</html>
