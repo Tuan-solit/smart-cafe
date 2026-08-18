@@ -35,9 +35,16 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/auth/register",
+                                "/menu/**", 
+                                "/cart/**",
+                                "/orders/**",
                                 "/css/**",
                                 "/js/**",
+<<<<<<< HEAD
                                 "/sepay-payment/**"
+=======
+                                "/images/**"
+>>>>>>> origin
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form

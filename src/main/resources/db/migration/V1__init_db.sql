@@ -69,12 +69,12 @@ CREATE TABLE orders
 
 CREATE TABLE order_detail
 (
-	order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id   INT            NOT NULL,
     product_id INT            NOT NULL,
     quantity   INT            NOT NULL DEFAULT 1,
     price      DECIMAL(12, 0) NOT NULL,
     note       VARCHAR(255),
+    PRIMARY KEY (order_id, product_id),
     CONSTRAINT fk_order_detail_order
         FOREIGN KEY (order_id) REFERENCES orders (order_id),
     CONSTRAINT fk_order_detail_product
