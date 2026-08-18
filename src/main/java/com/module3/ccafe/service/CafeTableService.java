@@ -1,5 +1,7 @@
 package com.module3.ccafe.service;
 
+import com.module3.ccafe.dto.CafeTableRequest;
+import com.module3.ccafe.dto.CafeTableResponse;
 import com.module3.ccafe.dto.request.SearchCafeTableRequest;
 import com.module3.ccafe.dto.response.SearchCafeTableResponse;
 import com.module3.ccafe.entity.CafeTable;
@@ -72,5 +74,77 @@ public class CafeTableService {
         cafeTable.setStatus(TableStatus.AVAILABLE);
         cafeTableRepository.save(cafeTable);
 
+    }
+
+    // Admin methods
+    
+    public List<CafeTableResponse> getAllTables() {
+        return cafeTableRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public CafeTableResponse getTableById(Integer tableId) {
+        CafeTable table = cafeTableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+        return mapToResponse(table);
+    }
+
+    @Transactional
+    public CafeTableResponse createTable(CafeTableRequest request) {
+        if (request.getTableNumber() == null || request.getTableNumber().isBlank()) {
+            throw new RuntimeException("Số bàn không được để trống");
+        }
+
+        CafeTable table = CafeTable.builder()
+                .tableNumber(request.getTableNumber())
+                .status(TableStatus.AVAILABLE)
+                .build();
+
+        CafeTable saved = cafeTableRepository.save(table);
+        return mapToResponse(saved);
+    }
+
+    @Transactional
+    public CafeTableResponse updateTable(Integer tableId, CafeTableRequest request) {
+        CafeTable table = cafeTableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+
+        if (request.getTableNumber() != null && !request.getTableNumber().isBlank()) {
+            table.setTableNumber(request.getTableNumber());
+        }
+
+        CafeTable updated = cafeTableRepository.save(table);
+        return mapToResponse(updated);
+    }
+
+    @Transactional
+    public void updateTableQrCode(Integer tableId, String qrCodeUrl) {
+        CafeTable table = cafeTableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+        table.setUrlQr(qrCodeUrl);
+        cafeTableRepository.save(table);
+    }
+
+    @Transactional
+    public void deleteTable(Integer tableId) {
+        CafeTable table = cafeTableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+
+        // Kiểm tra xem bàn có đang phục vụ không
+        if (table.getStatus() == TableStatus.IN_SERVICE) {
+            throw new RuntimeException("Không thể xóa bàn đang phục vụ");
+        }
+
+        cafeTableRepository.deleteById(tableId);
+    }
+
+    private CafeTableResponse mapToResponse(CafeTable table) {
+        return CafeTableResponse.builder()
+                .tableId(table.getTableId())
+                .tableNumber(table.getTableNumber())
+                .urlQr(table.getUrlQr())
+                .status(table.getStatus().toString())
+                .build();
     }
 }
