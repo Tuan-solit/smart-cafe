@@ -1,0 +1,145 @@
+:root {
+    --ink: #1c1917;
+    --paper: #faf9f7;
+    --line: #e7e4df;
+    --accent: #6f4e37; /* coffee brown, phù hợp thương hiệu cafe */
+    --muted: #78716c;
+}
+
+body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background-color: #1c1917;
+    color: #e7e4df;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar .brand {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar .nav-link {
+    color: #d6d3d1;
+    padding: 0.65rem 1.25rem;
+    border-left: 3px solid transparent;
+    font-size: 0.92rem;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255,255,255,0.08);
+    border-left-color: var(--accent);
+    color: #fff;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 2rem 2.5rem;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+}
+
+.stat-card .stat-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.stat-card .stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+.panel-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-preparing { background: #dbeafe; color: #1e40af; }
+.status-done { background: #dcfce7; color: #166534; }
+
+.table > :not(caption) > * > * {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+.quick-action {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    transition: border-color 0.15s ease;
+}
+
+.quick-action:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+}
+
+.quick-action i {
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+/* Pagination — dùng cho các trang list (order-list, activity-logs) */
+.pagination .page-link {
+    color: var(--ink);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .sidebar { width: 100%; min-height: auto; position: static; }
+    .main-content { margin-left: 0; padding: 1.25rem; }
+}

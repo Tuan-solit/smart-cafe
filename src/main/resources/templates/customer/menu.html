@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cafe - Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+    <a th:href="@{/menu}" class="brand">
+        <div class="cup">
+            <svg class="icon" style="stroke:#fff" viewBox="0 0 24 24">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/>
+                <line x1="10" y1="1" x2="10" y2="4"/>
+                <line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+        </div>
+        <h1 class="logo-font">Smart Cafe</h1>
+    </a>
+    <div class="header-actions">
+        <a th:href="@{/orders/current}"
+           class="cart-btn">
+            <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span>Giỏ hàng(<span th:text="${orderDetailCount}">0</span>)</span>
+        </a>
+        <button class="menu-toggle" aria-label="Menu">
+            <svg class="icon" viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<div
+        th:if="${successMessage}"
+        class="success-message"
+        th:text="${successMessage}">
+</div>
+
+<div class="page-wrap">
+
+    <div>
+        <div class="categories" id="categoryTabs"></div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+
+                <input type="text" id="searchInput" placeholder="Tìm kiếm món uống, bánh...">
+            </div>
+
+        </div>
+
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <aside class="cart-panel">
+        <div class="cart-title">ĐƠN HÀNG CỦA BẠN</div>
+
+        <div class="table-row">
+            <div class="table-info">
+                <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
+                    <path d="M3 3h18M3 3v18M21 3v18M3 21h18M3 9h18M3 15h18"/>
+                </svg>
+                <span id="tableLabel">Bàn A5</span>
+            </div>
+        </div>
+
+        <div class="cart-cols">
+            <span>Sản phẩm</span>
+            <span>SL</span>
+            <span>Thành tiền</span>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" th:if="${cart == null || #lists.isEmpty(cart.items)}">
+                Chưa có món nào trong đơn.
+            </div>
+
+            <div class="cart-item" th:each="item : ${cart?.items}">
+                <div>
+                    <div class="cart-item-name" th:text="${item.productName}">Tên món</div>
+                </div>
+
+                <input type="text"
+                       th:name="|notes[${item.productId}]|"
+                       placeholder="Ghi chú (ít đá, không cay...)"
+                       class="cart-item-note-input"
+                       form="placeOrderForm"/>
+                
+                <div class="qty-stepper">
+                    <form th:action="@{/cart/items/{id}/decrease(id=${item.productId})}" method="post"
+                          style="display:inline;">
+                        <button type="submit">-</button>
+                    </form>
+                    <span th:text="${item.quantity}">1</span>
+                    <form th:action="@{/cart/items/{id}/increase(id=${item.productId})}" method="post"
+                          style="display:inline;">
+                        <button type="submit">+</button>
+                    </form>
+                </div>
+
+                <div class="cart-item-price"
+                     th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ
+                </div>
+
+                <!-- Xóa món -->
+                <form th:action="@{/cart/items/{id}/remove(id=${item.productId})}" method="post"
+                      style="display:inline;">
+                    <button type="submit" class="remove-btn">🗑️</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Tạm tính</span>
+                <span th:text="${cart != null ? #numbers.formatDecimal(cart.getTotal(), 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
+            </div>
+            <div class="summary-total">
+                <span>Tổng cộng</span>
+                <span th:text="${cart != null ? #numbers.formatDecimal(cart.getTotal(), 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">0đ</span>
+            </div>
+            <form th:action="@{/cart/place-order}" method="post" id="placeOrderForm">
+                <button type="submit" class="checkout-btn" th:disabled="${cart == null || #lists.isEmpty(cart.items)}">
+                    Gọi món
+                </button>
+            </form>
+            <div class="vat-note">Giá đã bao gồm VAT nếu có</div>
+        </div>
+    </aside>
+
+</div>
+
+<footer class="site-footer">
+    <div class="brand">
+        <div class="cup">
+            <svg class="icon" style="stroke:#fff;width:16px;height:16px" viewBox="0 0 24 24">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+            </svg>
+        </div>
+        <h1 class="logo-font">Smart Cafe</h1>
+    </div>
+    <div class="footer-thanks">Cảm ơn bạn đã chọn Smart Cafe!</div>
+    <div class="footer-wifi">
+        <svg class="icon" style="width:15px;height:15px" viewBox="0 0 24 24">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+            <line x1="12" y1="20" x2="12.01" y2="20"/>
+        </svg>
+        <span>Wifi: SmartCafe_Free&nbsp; | &nbsp;Pass: 12345678</span>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+
+    const dbCategories = JSON.parse(/*[[${categoriesJson}]]*/ '[]');
+    const dbProducts = JSON.parse(/*[[${productsJson}]]*/ '[]');
+    const selectedCategory = /*[[${selectedCategory}]]*/ null;
+
+</script>
+<script>
+    const CATEGORIES = [
+        {id: 'all', name: 'Tất cả', icon: 'grid'},
+        ...dbCategories.map(c => ({
+            id: c.categoryId,
+            name: c.name,
+            icon: getCategoryIcon(c.name)
+        }))
+    ];
+
+    const PRODUCTS = dbProducts.map(p => {
+        const hasImage = p.image && p.image.trim() != '';
+        return {
+            id: p.productId,
+            name: p.name,
+            price: p.price || 0,
+            category: p.category != null ? p.category : null,
+            emoji: hasImage ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />` : '☕',
+            bg: 'linear-gradient(160deg,#5c3a21,#2b1810)'
+        }
+    });
+
+    const ICONS = {
+        grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+        coffee: '<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>',
+        leaf: '<path d="M11 20A7 7 0 0 1 4 13V8a1 1 0 0 1 1-1h9a7 7 0 0 1 7 7 5 5 0 0 1-5 5H11z"/>',
+        cake: '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 21h16"/><path d="M12 3v6"/><path d="M9 7c0-1 1-2 3-4 2 2 3 3 3 4a3 3 0 0 1-6 0Z"/>',
+        glass: '<path d="M5 3h14l-2 17a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 3z"/><line x1="6" y1="8" x2="18" y2="8"/>',
+        ice: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+        heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+        plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+        minus: '<line x1="5" y1="12" x2="19" y2="12"/>',
+        trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'
+    };
+
+    function getCategoryIcon(name) {
+        if (!name) return 'coffee';
+        const n = name.toLowerCase();
+
+        if (n.includes('tea')) return 'leaf';
+        if (n.includes('cake')) return 'cake';
+        if (n.includes('smoothie')) return 'glass';
+        if (n.includes('freeze')) return 'ice';
+
+        return 'coffee';
+    }
+
+    function svgIcon(name, size) {
+        const iconPath = ICONS[name] || ICONS['coffee'];
+        return '<svg class="icon" style="width:' + size + 'px;height:' + size + 'px" viewBox="0 0 24 24">' + iconPath + '</svg>';
+    }
+
+    let activeCategory = selectedCategory || 'all';
+    let searchTerm = document.getElementById('searchInput').value || '';
+
+    const fmt = (n) => n.toLocaleString('vi-VN') + 'đ';
+
+
+    function renderCategories() {
+        const wrap = document.getElementById('categoryTabs');
+        wrap.innerHTML = CATEGORIES.map(cat => `
+        <button class="cat-tab ${String(cat.id) === String(activeCategory) ? 'active' : ''}" data-cat="${cat.id}">
+            ${svgIcon(cat.icon, 16)}
+            <span>${cat.name}</span>
+        </button>
+        `).join('');
+
+        wrap.querySelectorAll('.cat-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeCategory = btn.dataset.cat;
+                renderCategories();
+                renderProducts();
+            });
+        });
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('productGrid');
+        const filtered = PRODUCTS.filter(p => {
+            const matchCat = String(activeCategory) === 'all' || String(p.category) === String(activeCategory);
+            const matchSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchCat && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="empty-state">Không có món nào phù hợp.</div>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <div class="product-image" style="background:${p.bg}">
+        ${p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : ''}
+        <div class="badge-fav">${svgIcon('heart', 14)}</div>
+        <span>${p.emoji}</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${fmt(p.price)}</div>
+        <form action="/cart/items" method="post">
+            <input type="hidden" name="productId" value="${p.id}" />
+            <button type="submit" class="add-btn">${svgIcon('plus', 13)} Thêm</button>
+        </form>      
+        </div>
+    </div>
+  `).join('');
+
+        grid.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', () => addToCart(Number(btn.dataset.id)));
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBox = document.querySelector('.success-message');
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s ease";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.style.display = "none";
+                }, 500);
+            }, 4000); 
+        }
+    });
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        renderProducts();
+    });
+
+    renderCategories();
+    renderProducts();
+</script>
+
+</body>
+</html>

@@ -2,11 +2,17 @@ package com.module3.ccafe.service;
 
 import com.module3.ccafe.dto.StaffRequest;
 import com.module3.ccafe.dto.StaffResponse;
+import com.module3.ccafe.dto.request.UpdateProfileRequest;
+import com.module3.ccafe.dto.response.UpdateProfileResponse;
 import com.module3.ccafe.entity.Role;
 import com.module3.ccafe.entity.User;
 import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.repository.RoleRepository;
 import com.module3.ccafe.repository.UserRepository;
+import com.module3.ccafe.security.CustomUserPrincipal;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +40,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public StaffResponse getStaffById(Integer userId) {
         User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).
-                orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+                orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
 
         return toStaffResponse(user);
     }
@@ -48,7 +54,7 @@ public class UserService {
             throw new RuntimeException("Số điện thoại đã tồn tại");
         }
 
-        Role staffRole = roleRepository.findByName(EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy Role STAFF"));
+        Role staffRole = roleRepository.findByName(EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy Role STAFF"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -66,7 +72,7 @@ public class UserService {
 
     public StaffResponse updateStaff(Integer userId, StaffRequest request) {
         User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE)
-                .orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
 
         if (!Objects.equals(user.getEmail(), request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
@@ -89,12 +95,12 @@ public class UserService {
     }
 
     public void deleteStaff(Integer userId) {
-        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
         userRepository.delete(user);
     }
 
     public StaffResponse changeStatus(Integer userId, UserStatus status) {
-        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(()-> new RuntimeException("Không tìm thấy nhân viên"));
+        User user = userRepository.findUserByIdAndRoleName(userId, EMPLOYEE_ROLE).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
         user.setStatus(status);
         return toStaffResponse(userRepository.save(user));
     }
@@ -111,7 +117,46 @@ public class UserService {
                 .build();
     }
 
-    public long countEmployee() {
+
+    @Transactional
+    public UpdateProfileResponse updateProfile(Integer userId, UpdateProfileRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+
+        // Nếu đổi phone/email, kiểm tra trùng với người khác
+        if (!user.getPhone().equals(req.getPhone())
+                && userRepository.findByPhone(req.getPhone()).isPresent()) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng");
+        }
+        if (req.getEmail() != null && !req.getEmail().equals(user.getEmail())
+                && userRepository.findByEmail(req.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email đã được sử dụng");
+        }
+
+        user.setFullName(req.getFullName());
+        user.setPhone(req.getPhone());
+        user.setEmail(req.getEmail());
+        userRepository.save(user);
+
+        CustomUserPrincipal updatedPrincipal = new CustomUserPrincipal(user);
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                updatedPrincipal,
+                SecurityContextHolder.getContext().getAuthentication().getCredentials(),
+                updatedPrincipal.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+
+        return UpdateProfileResponse.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .build();
+
+    }
+    public long countEmployee () {
         return userRepository.countUsersByRoleName("EMPLOYEE");
+
     }
 }

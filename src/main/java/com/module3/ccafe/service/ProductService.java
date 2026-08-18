@@ -5,6 +5,7 @@ import com.module3.ccafe.dto.ProductResponse;
 import com.module3.ccafe.entity.Category;
 import com.module3.ccafe.entity.Product;
 import com.module3.ccafe.entity.Size;
+import com.module3.ccafe.entity.enums.ProductStatus;
 import com.module3.ccafe.repository.CategoryRepository;
 import com.module3.ccafe.repository.ProductRepository;
 import com.module3.ccafe.repository.SizeRepository;
@@ -17,11 +18,64 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ProductService {
+public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SizeRepository sizeRepository;
+
+    // ================================
+    // CUSTOMER
+    // ================================
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Product> findAvailableProducts() {
+
+        return productRepository.findByStatus(
+                ProductStatus.AVAILABLE
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Product> findByCategory(Integer categoryId) {
+
+        return productRepository
+                .findByCategory_CategoryIdAndStatus(
+                        categoryId,
+                        ProductStatus.AVAILABLE
+                );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Product> search(String keyword) {
+
+        return productRepository
+                .findByNameContainingIgnoreCaseAndStatus(
+                        keyword,
+                        ProductStatus.AVAILABLE
+                );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Product> searchByCategory(
+            Integer categoryId,
+            String keyword) {
+
+        return productRepository
+                .findByCategory_CategoryIdAndNameContainingIgnoreCaseAndStatus(
+                        categoryId,
+                        keyword,
+                        ProductStatus.AVAILABLE
+                );
+    }
+
+    // ================================
+    // ADMIN - PRODUCT LIST
+    // ================================
 
     @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
@@ -37,56 +91,39 @@ public class ProductService {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() ->
-                        new RuntimeException("Không tìm thấy sản phẩm"));
+                        new RuntimeException(
+                                "Không tìm thấy sản phẩm"
+                        )
+                );
 
         return toResponse(product);
     }
 
-    public ProductResponse createProduct(ProductRequest request, String imageUrl) {
+    // ================================
+    // ADMIN - CREATE
+    // ================================
 
-        if (request.getName() == null
-                || request.getName().trim().isBlank()) {
+    public ProductResponse createProduct(
+            ProductRequest request,
+            String imageUrl) {
 
-            throw new RuntimeException(
-                    "Tên sản phẩm không được để trống"
-            );
-        }
-
-        if (request.getPrice() == null
-                || request.getPrice().signum() <= 0) {
-
-            throw new RuntimeException(
-                    "Giá sản phẩm phải lớn hơn 0"
-            );
-        }
-
-        if (request.getCategoryId() == null) {
-
-            throw new RuntimeException(
-                    "Vui lòng chọn danh mục"
-            );
-        }
-
-        if (request.getSizeId() == null) {
-
-            throw new RuntimeException(
-                    "Vui lòng chọn kích thước"
-            );
-        }
+        validateProductRequest(request);
 
         Category category = categoryRepository
                 .findById(request.getCategoryId())
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy danh mục"
-                        ));
+                        )
+                );
 
         Size size = sizeRepository
                 .findById(request.getSizeId())
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy kích thước"
-                        ));
+                        )
+                );
 
         Product product = Product.builder()
                 .name(request.getName().trim())
@@ -97,10 +134,15 @@ public class ProductService {
                 .status(request.getStatus())
                 .build();
 
-        Product savedProduct = productRepository.save(product);
+        Product savedProduct =
+                productRepository.save(product);
 
         return toResponse(savedProduct);
     }
+
+    // ================================
+    // ADMIN - UPDATE
+    // ================================
 
     public ProductResponse updateProduct(
             Integer productId,
@@ -114,21 +156,24 @@ public class ProductService {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy sản phẩm"
-                        ));
+                        )
+                );
 
         Category category = categoryRepository
                 .findById(request.getCategoryId())
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy danh mục"
-                        ));
+                        )
+                );
 
         Size size = sizeRepository
                 .findById(request.getSizeId())
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy kích thước"
-                        ));
+                        )
+                );
 
         product.setName(request.getName().trim());
         product.setCategory(category);
@@ -136,10 +181,6 @@ public class ProductService {
         product.setPrice(request.getPrice());
         product.setStatus(request.getStatus());
 
-        /*
-         * Nếu có ảnh mới thì cập nhật ảnh mới.
-         * Nếu không có ảnh mới thì giữ nguyên ảnh cũ.
-         */
         if (imageUrl != null && !imageUrl.isBlank()) {
             product.setImage(imageUrl);
         }
@@ -150,13 +191,19 @@ public class ProductService {
         return toResponse(updatedProduct);
     }
 
+    // ================================
+    // ADMIN - DELETE
+    // ================================
+
     public void deleteProduct(Integer productId) {
 
-        Product product = productRepository.findById(productId)
+        Product product = productRepository
+                .findById(productId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy sản phẩm"
-                        ));
+                        )
+                );
 
         if (product.getOrderDetails() != null
                 && !product.getOrderDetails().isEmpty()) {
@@ -213,6 +260,10 @@ public class ProductService {
             );
         }
     }
+
+    // ================================
+    // RESPONSE
+    // ================================
 
     private ProductResponse toResponse(Product product) {
 
