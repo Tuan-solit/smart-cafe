@@ -29,6 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
@@ -39,7 +40,11 @@ public class SecurityConfig {
                                 "/orders/**",
                                 "/css/**",
                                 "/js/**",
+<<<<<<< HEAD
+                                "/sepay-payment/**"
+=======
                                 "/images/**"
+>>>>>>> origin
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form

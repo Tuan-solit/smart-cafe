@@ -2,6 +2,7 @@ package com.module3.ccafe.controller.employee;
 
 import com.module3.ccafe.dto.response.OrderDetailViewResponse;
 import com.module3.ccafe.entity.Order;
+import com.module3.ccafe.entity.Payment;
 import com.module3.ccafe.entity.enums.ProductStatus;
 import com.module3.ccafe.repository.ProductRepository;
 import com.module3.ccafe.security.CustomUserPrincipal;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/employee/orders")
@@ -100,5 +103,26 @@ public class EmployeeOrderController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/employee/orders/" + orderId;
+    }
+    @GetMapping("/{orderId}/pay-online")
+    public String showOnlinePaymentQr(@PathVariable Integer orderId, @AuthenticationPrincipal CustomUserPrincipal principal, Model model, RedirectAttributes redirectAttributes){
+        try{
+            Payment payment = paymentService.createOnlinePayment(orderId,principal.getUserId());
+            String qrUrl = paymentService.buildQrUrl(payment);
+            model.addAttribute("qrUrl",qrUrl);
+            model.addAttribute("paymentId", payment.getPaymentId());
+            model.addAttribute("orderId",orderId);
+            model.addAttribute("total",payment.getTotal());
+            return "employee/payment-qr";
+        }catch (IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("error",e.getMessage());
+            return "redirect:/employee/orders" + orderId;
+        }
+    }
+    @GetMapping("/payments/{paymentId}/status")
+    @ResponseBody
+    public Map<String,String> checkPayMentStatus(@PathVariable Integer paymentId){
+        Payment payment = paymentService.findByid(paymentId);
+        return Map.of("status", payment.getStatus().name());
     }
 }
