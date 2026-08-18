@@ -9,6 +9,8 @@ import com.module3.ccafe.dto.response.RegisterResponse;
 import com.module3.ccafe.entity.Role;
 import com.module3.ccafe.entity.User;
 import com.module3.ccafe.entity.enums.UserStatus;
+import com.module3.ccafe.exception.BusinessException;
+import com.module3.ccafe.exception.ErrorCode;
 import com.module3.ccafe.repository.RoleRepository;
 import com.module3.ccafe.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -64,7 +67,7 @@ public class AuthService {
 
     public RegisterResponse register(RegisterRequest registerRequest){
         if(userRepository.findByPhone(registerRequest.getPhone()).isPresent()){
-            throw new IllegalArgumentException("Số điện thoại đã được đăng ký");
+            throw new BusinessException(ErrorCode.DUPLICATE_PHONE, HttpStatus.BAD_REQUEST);
         }
         Role role = roleRepository.findById(2).orElseThrow();
 

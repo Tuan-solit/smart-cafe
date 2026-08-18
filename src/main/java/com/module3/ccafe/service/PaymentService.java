@@ -12,11 +12,15 @@ import com.module3.ccafe.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,13 @@ public class PaymentService {
     final OrderDetailRepository orderDetailRepository;
     final PaymentRepository paymentRepository;
     final UserRepository userRepository;
+
+    @Value("${sepay.bank-account}")
+    private String bankAccount;
+    @Value("${sepay.bank-name}")
+    private String bankName;
+    @Value("${sepay.accountHolder}")
+    private String accountHolder;
 
     @Transactional
     public Payment confirmCashPayment(Integer orderId, Integer employeeId){
@@ -55,4 +66,53 @@ public class PaymentService {
         return payment;
 
     }
+
+    public String buildQrUrl(Payment payment) {
+        return "https://qr.sepay.vn/img?"
+                + "acc=" + URLEncoder.encode(bankAccount, StandardCharsets.UTF_8)
+                + "&bank=" + URLEncoder.encode(bankName, StandardCharsets.UTF_8)
+                + "&amount=" + payment.getTotal().longValue()
+                + "&des=" + URLEncoder.encode(payment.getInternalTransactionCode(), StandardCharsets.UTF_8)
+                + "&template=compact"
+                + "&showinfo=false"
+                + "&holder=" + URLEncoder.encode(accountHolder, StandardCharsets.UTF_8); // thêm config mới
+    }
+    public Payment findByid(Integer paymentId){
+        return paymentRepository.findById(paymentId).orElseThrow(() -> new IllegalArgumentException("Payment không tồn tại"));
+    }
+
+
+    @Transactional
+    public Payment createOnlinePayment(Integer orderId, Integer employeeId){
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại "));
+        if(order.getStatus() == OrderStatus.PAID){
+            throw new IllegalArgumentException("ĐƠn hàng đã được thanh toán");
+        }
+        Optional<Payment> existing = paymentRepository.findByOrder_OrderIdAndStatus(orderId,PaymentStatus.PENDING);
+        if(existing.isPresent()){
+            return existing.get();
+        }
+        BigDecimal total = orderDetailRepository.sumTotalByOrderId(orderId);
+        if(total == null){
+            throw new IllegalArgumentException("Đơn hàng chưa có món ăn, không thể thanh toán");
+        }
+        String code = generatePaymentCode(orderId);
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setUser(userRepository.getReferenceById(employeeId));
+        payment.setTotal(total);
+        payment.setPaymentMethod(PaymentMethod.ONLINE);
+        payment.setStatus(PaymentStatus.PENDING);
+        payment.setInternalTransactionCode(code);
+        paymentRepository.save(payment);
+        return payment;
+    }
+
+
+    private String generatePaymentCode(Integer orderId) {
+        long timestampPart = System.currentTimeMillis() % 100000;
+        String suffix = String.format("%03d%05d", orderId % 1000, timestampPart);
+        return "DH" + suffix;
+    }
+
 }

@@ -29,13 +29,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
                                 "/register",
                                 "/auth/register",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/sepay-payment/**"
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form
