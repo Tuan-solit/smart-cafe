@@ -1,5 +1,6 @@
 package com.module3.ccafe.dto;
 
+import com.module3.ccafe.entity.enums.CategoryStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,5 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class CategoryResponse {
     Integer categoryId;
     String name;
-    Long productCount;
+    CategoryStatus status;
 }

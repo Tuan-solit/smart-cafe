@@ -5,6 +5,11 @@ import com.module3.ccafe.dto.CafeTableResponse;
 import com.module3.ccafe.service.CafeTableService;
 import com.module3.ccafe.service.QrCodeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +24,60 @@ public class AdminTableViewController {
     private final QrCodeService qrCodeService;
 
     @GetMapping("/page")
-    public String tablePage(Model model) {
-        model.addAttribute("tableList", cafeTableService.getAllTables());
+    public String tablePage(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("tableId").ascending()
+        );
+
+        Page<CafeTableResponse> tablePage =
+                cafeTableService.searchTables(
+                        keyword.trim(),
+                        status,
+                        pageable
+                );
+
+        model.addAttribute(
+                "tableList",
+                tablePage.getContent()
+        );
+
+        model.addAttribute(
+                "tablePage",
+                tablePage
+        );
+
+        model.addAttribute(
+                "keyword",
+                keyword
+        );
+
+        model.addAttribute(
+                "status",
+                status
+        );
+
+        model.addAttribute(
+                "currentPage",
+                page
+        );
+
+        model.addAttribute(
+                "pageSize",
+                size
+        );
+
         return "admin/table/list";
     }
 

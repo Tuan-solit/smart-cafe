@@ -1,99 +1,169 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Edit Category</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sửa danh mục - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
     <link rel="stylesheet"
           th:href="@{/css/admin-category.css}">
+
 </head>
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-    <!-- Header -->
-    <div class="page-header">
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-        <div>
-            <h1>Edit Category</h1>
-            <p>Update product category information</p>
-        </div>
-
-        <a th:href="@{/admin/category/page}"
-           class="btn btn-secondary">
-            ← Back
-        </a>
-
-    </div>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='category')}"></div>
 
 
-    <!-- Form Card -->
-    <div class="card category-form-card">
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
-        <form th:action="@{/admin/category/edit/{id}(id=${category.categoryId})}"
-              th:object="${categoryRequest}"
-              method="post"
-              class="category-form">
+    <main class="admin-main">
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="admin-header">
+
+            <h1>Quản lý Danh mục</h1>
+
+            <div class="admin-info">
+
+                <span>Administrator</span>
+
+            </div>
+
+        </header>
 
 
-            <!-- Category Name -->
-            <div class="form-group">
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
 
-                <label for="name">
-                    Category Name
-                </label>
+        <section class="admin-content">
 
-                <input id="name"
-                       type="text"
-                       th:field="*{name}"
-                       placeholder="Enter category name"
-                       autocomplete="off"
-                       autofocus>
+            <!-- PAGE HEADER -->
 
-                <!-- Field error -->
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('name')}"
-                     th:errors="*{name}">
+            <div class="page-header">
+
+                <div>
+
+                    <h1>Sửa danh mục</h1>
+
+                    <p class="page-description">
+                        Cập nhật thông tin danh mục sản phẩm
+                    </p>
+
                 </div>
-
-            </div>
-
-
-            <!-- General Error -->
-            <div class="form-error"
-                 th:if="${error}"
-                 th:text="${error}">
-            </div>
-
-
-            <!-- Actions -->
-            <div class="form-actions">
 
                 <a th:href="@{/admin/category/page}"
                    class="btn btn-secondary">
-                    Cancel
-                </a>
 
-                <button type="submit"
-                        class="btn btn-primary">
-                    Save Changes
-                </button>
+                    ← Quay lại danh sách
+
+                </a>
 
             </div>
 
-        </form>
 
-    </div>
+            <!-- =================================================
+                 FORM CARD
+            ================================================== -->
+
+            <div class="card category-form-card">
+
+                <form th:action="@{/admin/category/edit/{id}(id=${category.categoryId})}"
+                      th:object="${categoryRequest}"
+                      method="post"
+                      class="category-form">
+
+
+                    <!-- TÊN DANH MỤC -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Tên danh mục
+                        </label>
+
+                        <input id="name"
+                               type="text"
+                               th:field="*{name}"
+                               placeholder="Nhập tên danh mục"
+                               autocomplete="off"
+                               autofocus
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('name')}"
+                             th:errors="*{name}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- GENERAL ERROR -->
+
+                    <div class="form-error"
+                         th:if="${error}"
+                         th:text="${error}">
+
+                        Có lỗi xảy ra.
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="form-actions">
+
+                        <a th:href="@{/admin/category/page}"
+                           class="btn btn-secondary">
+
+                            Hủy
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Lưu thay đổi
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
 
-<!-- Success / Error Toast -->
+<!-- =====================================================
+     SUCCESS / ERROR TOAST
+====================================================== -->
 
 <div class="toast-container">
 
@@ -127,12 +197,16 @@
 </div>
 
 
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
 <script>
 
-    // Auto hide toast after 3 seconds
     setTimeout(function () {
 
-        const toasts = document.querySelectorAll(".toast");
+        const toasts =
+            document.querySelectorAll(".toast");
 
         toasts.forEach(function (toast) {
 
@@ -145,4 +219,5 @@
 </script>
 
 </body>
+
 </html>

@@ -9,6 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/admin/category")
@@ -18,11 +22,46 @@ public class AdminCategoryViewController {
     private final CategoryService categoryService;
 
     @GetMapping("/page")
-    public String categoryPage(Model model) {
+    public String categoryPage(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("categoryId").ascending()
+        );
+
+        Page<CategoryResponse> categoryPage =
+                categoryService.searchCategories(
+                        keyword.trim(),
+                        pageable
+                );
 
         model.addAttribute(
                 "categoryList",
-                categoryService.getAllCategories()
+                categoryPage.getContent()
+        );
+
+        model.addAttribute(
+                "categoryPage",
+                categoryPage
+        );
+
+        model.addAttribute(
+                "keyword",
+                keyword
+        );
+
+        model.addAttribute(
+                "pageSize",
+                size
         );
 
         return "admin/category/list";
@@ -169,7 +208,7 @@ public class AdminCategoryViewController {
 
             redirectAttributes.addFlashAttribute(
                     "success",
-                    "Xóa danh mục thành công!"
+                    "Ngừng hoạt động danh mục thành công!"
             );
 
         } catch (RuntimeException e) {

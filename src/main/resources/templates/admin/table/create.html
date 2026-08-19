@@ -3,143 +3,150 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Bàn - Smart Cafe</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Thêm bàn - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
+
     <link rel="stylesheet"
           th:href="@{/css/admin-staff.css}">
+
 </head>
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-    <div class="page-header">
-        <h1>Thêm Bàn</h1>
-        <a th:href="@{/admin/table/page}"
-           class="btn btn-secondary">
-            Quay lại
-        </a>
-    </div>
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-    <div class="card form-card">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='table')}"></div>
 
-        <form th:action="@{/admin/table/create}"
-              th:object="${tableRequest}"
-              method="post">
 
-            <div class="form-group">
-                <label for="tableNumber">Số bàn</label>
-                <input id="tableNumber"
-                       type="text"
-                       th:field="*{tableNumber}"
-                       placeholder="VD: A1, A2, B1..."
-                       required>
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('tableNumber')}"
-                     th:errors="*{tableNumber}">
-                </div>
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="admin-main">
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="admin-header">
+
+            <h1>Quản lý Bàn</h1>
+
+            <div class="admin-info">
+
+                <span>Administrator</span>
+
             </div>
 
-            <div class="form-actions">
+        </header>
+
+
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+        <section class="admin-content">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1>Thêm bàn</h1>
+
+                    <p class="page-description">
+                        Thêm bàn mới vào hệ thống
+                    </p>
+
+                </div>
+
                 <a th:href="@{/admin/table/page}"
                    class="btn btn-secondary">
-                    Hủy
+
+                    ← Quay lại danh sách
+
                 </a>
-                <button type="submit"
-                        class="btn btn-primary">
-                    Thêm Bàn
-                </button>
+
             </div>
 
-        </form>
 
-    </div>
+            <!-- =================================================
+                 FORM CARD
+            ================================================== -->
+
+            <div class="card form-card">
+
+                <form th:action="@{/admin/table/create}"
+                      th:object="${tableRequest}"
+                      method="post">
+
+
+                    <!-- SỐ BÀN -->
+
+                    <div class="form-group">
+
+                        <label for="tableNumber">
+                            Số bàn
+                        </label>
+
+                        <input id="tableNumber"
+                               type="text"
+                               th:field="*{tableNumber}"
+                               placeholder="VD: A1, A2, B1..."
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('tableNumber')}"
+                             th:errors="*{tableNumber}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="form-actions">
+
+                        <a th:href="@{/admin/table/page}"
+                           class="btn btn-secondary">
+
+                            Hủy
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Thêm bàn
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
-
-
-
-
-<!-- ========================= -->
-<!-- SCRIPTS & STYLES -->
-<!-- ========================= -->
-
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function() {-->
-<!--        const successModal = document.getElementById('successModal');-->
-<!--        -->
-<!--        if (successModal) {-->
-<!--            setTimeout(function() {-->
-<!--                window.location.href = '/admin/table/page';-->
-<!--            }, 2000);-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
-
-<!--<style>-->
-<!--    .success-modal-overlay {-->
-<!--        display: none;-->
-<!--        position: fixed;-->
-<!--        inset: 0;-->
-<!--        background: rgba(0, 0, 0, 0.5);-->
-<!--        align-items: center;-->
-<!--        justify-content: center;-->
-<!--        z-index: 9999;-->
-<!--        backdrop-filter: blur(2px);-->
-<!--    }-->
-
-<!--    .success-modal {-->
-<!--        width: 400px;-->
-<!--        max-width: calc(100% - 40px);-->
-<!--        background: #ffffff;-->
-<!--        border-radius: 18px;-->
-<!--        padding: 48px 32px;-->
-<!--        text-align: center;-->
-<!--        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);-->
-<!--        animation: successModalShow 0.3s ease-out;-->
-<!--    }-->
-
-<!--    .success-modal-icon {-->
-<!--        width: 80px;-->
-<!--        height: 80px;-->
-<!--        margin: 0 auto 24px;-->
-<!--        border-radius: 50%;-->
-<!--        display: flex;-->
-<!--        align-items: center;-->
-<!--        justify-content: center;-->
-<!--        background: #d4edda;-->
-<!--        color: #28a745;-->
-<!--        font-size: 40px;-->
-<!--        font-weight: bold;-->
-<!--        border: 4px solid #c3e6cb;-->
-<!--    }-->
-
-<!--    .success-modal h2 {-->
-<!--        margin: 0 0 12px;-->
-<!--        font-size: 24px;-->
-<!--        color: #222;-->
-<!--    }-->
-
-<!--    .success-modal p {-->
-<!--        margin: 0;-->
-<!--        color: #666;-->
-<!--        font-size: 15px;-->
-<!--        line-height: 1.5;-->
-<!--    }-->
-
-<!--    @keyframes successModalShow {-->
-<!--        from {-->
-<!--            opacity: 0;-->
-<!--            transform: scale(0.9);-->
-<!--        }-->
-<!--        to {-->
-<!--            opacity: 1;-->
-<!--            transform: scale(1);-->
-<!--        }-->
-<!--    }-->
-<!--</style>-->
-
 </body>
+
 </html>
