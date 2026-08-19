@@ -42,7 +42,8 @@ public class AdminStaffViewController {
         try {
             userService.createStaff(request);
 
-            return "redirect:/admin/staff/page";
+            model.addAttribute("success", true);
+            return "admin/staff/create";
 
         } catch (RuntimeException e) {
 
@@ -96,7 +97,7 @@ public class AdminStaffViewController {
             @PathVariable Integer userId,
             @ModelAttribute("staffRequest") StaffRequest request,
             BindingResult bindingResult,
-            Model model, RedirectAttributes redirectAttributes) {
+            Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("staff", userService.getStaffById(userId));
@@ -107,9 +108,11 @@ public class AdminStaffViewController {
 
             userService.updateStaff(userId, request);
 
-            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin nhân viên thành công");
+            model.addAttribute("success", true);
+            model.addAttribute("staff", userService.getStaffById(userId));
+            model.addAttribute("staffRequest", request);
 
-            return "redirect:/admin/staff/page";
+            return "admin/staff/edit";
 
         } catch (RuntimeException e) {
 
@@ -136,7 +139,6 @@ public class AdminStaffViewController {
                 model.addAttribute("error", message);
             }
 
-            // Cần staff để HTML vẫn hiển thị thông tin nhân viên
             model.addAttribute("staff", userService.getStaffById(userId));
 
             return "admin/staff/edit";

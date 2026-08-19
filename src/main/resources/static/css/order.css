@@ -228,7 +228,231 @@ body {
 .back-menu:hover {
     text-decoration: underline;
 }
+/* =========================
+   PAYMENT MODAL
+========================= */
 
+.payment-modal {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+.payment-modal.active {
+    display: flex;
+}
+
+
+.payment-modal-content {
+
+    width: 450px;
+    max-width: calc(100% - 30px);
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+
+/* HEADER */
+
+.payment-modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.payment-modal-header h2 {
+
+    margin: 0;
+
+    font-size: 21px;
+}
+
+.modal-close {
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    color: #806f60;
+}
+
+
+/* TOTAL */
+
+.payment-total {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px;
+
+    background: #f3ead9;
+
+    border-radius: 12px;
+
+    margin-bottom: 20px;
+}
+
+.payment-total span {
+
+    color: #806f60;
+}
+
+.payment-total strong {
+
+    font-size: 21px;
+
+    color: #68401f;
+}
+
+
+/* OPTIONS */
+
+.payment-options {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.payment-option {
+
+    display: block;
+
+    border: 1px solid #e3d6c4;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.payment-option:hover {
+
+    border-color: #68401f;
+
+    background: #faf6ef;
+}
+
+.payment-option:has(input:checked) {
+
+    border: 2px solid #68401f;
+
+    background: #faf6ef;
+}
+
+.payment-option input {
+
+    display: none;
+}
+
+.payment-option-content {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.payment-icon {
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #f3ead9;
+
+    border-radius: 10px;
+
+    font-size: 22px;
+}
+
+.payment-option-content strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 16px;
+}
+
+.payment-option-content span {
+
+    display: block;
+
+    color: #806f60;
+
+    font-size: 13px;
+}
+
+
+/* CONFIRM */
+
+.confirm-payment-btn {
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #68401f;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.confirm-payment-btn:hover {
+
+    background: #4f2f17;
+}
 
 /* MOBILE */
 

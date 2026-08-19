@@ -1,6 +1,7 @@
 package com.module3.ccafe.repository;
 
 import com.module3.ccafe.entity.Payment;
+import com.module3.ccafe.entity.enums.PaymentMethod;
 import com.module3.ccafe.entity.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

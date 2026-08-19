@@ -25,7 +25,8 @@ public class CafeTable {
     @Column(name = "table_number", nullable = false, length = 10)
     private String tableNumber;
 
-    @Column(name = "url_qr", length = 100)
+    @Lob
+    @Column(name = "url_qr", columnDefinition = "LONGTEXT")
     private String urlQr;
 
     @Enumerated(EnumType.STRING)

@@ -72,13 +72,13 @@ public class CartService {
             throw new RuntimeException("Giỏ hàng đang trống");
         }
         Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
-        if (orderId == null) {
-            throw new RuntimeException("Chưa có phiên bàn đang hoạt động");
-        }
 //        if (orderId == null) {
-//            orderId = 1;
-//            session.setAttribute(ORDER_ID_SESSION_KEY, orderId);
+//            throw new RuntimeException("Chưa có phiên bàn đang hoạt động");
 //        }
+        if (orderId == null) {
+            orderId = 2;
+            session.setAttribute(ORDER_ID_SESSION_KEY, orderId);
+        }
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy phiên bàn"));
         for (CartItem item : cart.getItems()) {
             Product product = productRepository.findById(item.getProductId()).orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm: " + item.getProductName()));
