@@ -92,7 +92,6 @@ public class PaymentService {
             throw new IllegalArgumentException("Đơn hàng đã được thanh toán");
         }
 
-        // Bất kỳ payment PENDING cũ nào cũng coi là rác, hủy hết trước khi tạo mới
         List<Payment> oldPendings = paymentRepository
                 .findAllByOrder_OrderIdAndStatus(orderId, PaymentStatus.PENDING);
         for (Payment old : oldPendings) {

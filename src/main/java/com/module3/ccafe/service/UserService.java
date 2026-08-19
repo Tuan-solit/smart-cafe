@@ -123,7 +123,6 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
 
-        // Nếu đổi phone/email, kiểm tra trùng với người khác
         if (!user.getPhone().equals(req.getPhone())
                 && userRepository.findByPhone(req.getPhone()).isPresent()) {
             throw new IllegalArgumentException("Số điện thoại đã được sử dụng");

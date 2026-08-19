@@ -40,7 +40,6 @@ public class CafeTableService {
 
         Page<CafeTable> cafeTables = cafeTableRepository.search(tableNumber, tableStatus, pageable);
 
-        // Lấy hết order OPEN của các bàn trong trang hiện tại, chỉ 1 query
         List<Integer> tableIds = cafeTables.getContent().stream()
                 .map(CafeTable::getTableId)
                 .toList();
