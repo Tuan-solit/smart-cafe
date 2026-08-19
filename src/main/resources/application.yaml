@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:mysql://localhost:3306/smart_cafe?createDatabaseIfNotExist=true
-    username: root
-    password: codegym
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -34,7 +34,7 @@ sepay:
   bank-account: "0721074737777"
   bank-name: MBBank
   accountHolder: Bui Huu Tam
-  api-key: OUSXKF4E533AN7JCASUVRZNLI9IXNXMRQVKSGFOQWZECCL0MFIGHYKJFBQ6WWBBT
+  api-key: ${SEPAY_API_KEY}
 
 
 cloudinary:

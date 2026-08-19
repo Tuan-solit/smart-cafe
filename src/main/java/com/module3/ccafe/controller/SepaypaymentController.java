@@ -11,6 +11,7 @@ import com.module3.ccafe.entity.enums.PaymentStatus;
 import com.module3.ccafe.repository.OrderRepository;
 import com.module3.ccafe.repository.PaymentGatewayLogRepository;
 import com.module3.ccafe.repository.PaymentRepository;
+import com.module3.ccafe.service.CafeTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,7 @@ public class SepaypaymentController {
     final OrderRepository orderRepository;
     final PaymentGatewayLogRepository paymentGatewayLogRepository;
     final ObjectMapper objectMapper;
+    final CafeTableService cafeTableService;
 
     @Value("${sepay.api-key}")
     private String apiKey;
@@ -87,6 +89,9 @@ public class SepaypaymentController {
             Order order = payment.getOrder();
             order.setStatus(OrderStatus.PAID);
             orderRepository.save(order);
+
+            cafeTableService.closeTable(order.getOrderId());
+
 
             return ResponseEntity.ok(
                     SepayResponse.builder().success(true).message("Giao dich thanh cong").build());

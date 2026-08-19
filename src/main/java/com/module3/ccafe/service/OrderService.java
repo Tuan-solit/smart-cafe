@@ -65,6 +65,7 @@ public class OrderService {
         ActivityLog log = new ActivityLog();
         log.setUser(userRepository.getReferenceById(employeeUserId));
         log.setAction("Mở bàn hộ khách - table_id= "+ tableId + ", order_id=" +order.getOrderId());
+        log.setCreatedAt(LocalDateTime.now());
 
         activityLogRepository.save(log);
         return order;
