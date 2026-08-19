@@ -1,341 +1,603 @@
 <!DOCTYPE html>
 
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>Create Product</title>
+    <title>Thêm sản phẩm - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
     <link rel="stylesheet"
           th:href="@{/css/admin-product.css}">
 
-
 </head>
+
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
 
-    <!-- HEADER -->
-
-    <div class="page-header">
-
-        <div>
-            <h1>Create Product</h1>
-            <p>Add a new product to the menu</p>
-        </div>
-
-        <a th:href="@{/admin/product/page}"
-           class="btn btn-secondary">
-            ← Back to Products
-        </a>
-
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='product')}">
     </div>
 
 
-    <!-- FORM CARD -->
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
 
-    <div class="form-card">
-
-        <!-- GENERAL ERROR -->
-
-        <div th:if="${error}"
-             class="form-error"
-             th:text="${error}">
-        </div>
+    <main class="admin-main">
 
 
-        <form th:action="@{/admin/product/create}"
-              th:object="${productRequest}"
-              method="post"
-              enctype="multipart/form-data"
-              class="product-form">
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
+        <header class="admin-header">
 
-            <!-- PRODUCT NAME -->
+            <h1>Quản lý sản phẩm</h1>
 
-            <div class="form-group">
+            <div class="admin-info">
 
-                <label for="name">
-                    Product Name
-                </label>
-
-                <input type="text"
-                       id="name"
-                       th:field="*{name}"
-                       placeholder="Enter product name"
-                       required>
+                <span>Administrator</span>
 
             </div>
 
-
-            <!-- CATEGORY -->
-
-            <div class="form-group">
-
-                <label for="categoryId">
-                    Category
-                </label>
-
-                <select id="categoryId"
-                        th:field="*{categoryId}"
-                        required>
-
-                    <option value="">
-                        -- Select Category --
-                    </option>
-
-                    <option th:each="category : ${categoryList}"
-                            th:value="${category.categoryId}"
-                            th:text="${category.name}">
-                    </option>
-
-                </select>
-
-            </div>
+        </header>
 
 
-            <!-- SIZE -->
+        <!-- =================================================
+             CONTENT
+             ================================================= -->
 
-            <div class="form-group">
-
-                <label for="sizeId">
-                    Size
-                </label>
-
-                <select id="sizeId"
-                        th:field="*{sizeId}"
-                        required>
-
-                    <option value="">
-                        -- Select Size --
-                    </option>
-
-                    <option th:each="size : ${sizeList}"
-                            th:value="${size.sizeId}"
-                            th:text="${size.name}">
-                    </option>
-
-                </select>
-
-            </div>
+        <section class="admin-content">
 
 
-            <!-- PRICE -->
+            <!-- PAGE HEADER -->
 
-            <div class="form-group">
+            <div class="page-header">
 
-                <label for="price">
-                    Price
-                </label>
+                <div>
 
-                <div class="price-input">
+                    <h2>Thêm sản phẩm</h2>
 
-                    <input type="number"
-                           id="price"
-                           th:field="*{price}"
-                           min="0"
-                           step="1000"
-                           placeholder="Enter price"
-                           required>
-
-                    <span>₫</span>
-
-                </div>
-
-            </div>
-
-
-            <!-- IMAGE -->
-
-            <div class="form-group">
-
-                <label for="image">
-                    Product Image
-                </label>
-
-                <input type="file"
-                       id="image"
-                       th:field="*{image}"
-                       accept="image/*">
-
-                <small class="form-hint">
-                    Select an image to upload to Cloudinary.
-                </small>
-
-
-                <!-- IMAGE PREVIEW -->
-
-                <div id="imagePreviewContainer"
-                     class="image-preview-container"
-                     style="display: none;">
-
-                    <p class="form-hint">
-                        Image Preview
+                    <p>
+                        Thêm sản phẩm mới vào menu của quán
                     </p>
 
-                    <img id="imagePreview"
-                         class="image-preview"
-                         alt="Image Preview">
-
                 </div>
 
-            </div>
-
-
-            <!-- STATUS -->
-
-            <div class="form-group">
-
-                <label for="status">
-                    Status
-                </label>
-
-                <select id="status"
-                        th:field="*{status}"
-                        required>
-
-                    <option value="">
-                        -- Select Status --
-                    </option>
-
-                    <option th:each="status : ${statusList}"
-                            th:value="${status}"
-                            th:text="${status.description}">
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- ACTIONS -->
-
-            <div class="form-actions">
 
                 <a th:href="@{/admin/product/page}"
                    class="btn btn-secondary">
-                    Cancel
-                </a>
 
-                <button type="submit"
-                        class="btn btn-primary">
-                    Create Product
-                </button>
+                    ← Quay lại
+
+                </a>
 
             </div>
 
-        </form>
 
-    </div>
-    ```
+            <!-- =================================================
+                 FORM CARD
+                 ================================================= -->
+
+            <div class="form-card">
+
+
+                <!-- GENERAL ERROR -->
+
+                <div th:if="${error}"
+                     class="form-error"
+                     th:text="${error}">
+                </div>
+
+
+                <!-- =================================================
+                     FORM
+                     ================================================= -->
+
+                <form th:action="@{/admin/product/create}"
+                      th:object="${productRequest}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="product-form">
+
+
+                    <!-- =================================================
+                         PRODUCT NAME
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Tên sản phẩm
+                        </label>
+
+
+                        <input type="text"
+                               id="name"
+                               th:field="*{name}"
+                               placeholder="Nhập tên sản phẩm"
+                               autocomplete="off"
+                               required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CATEGORY
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="categoryId">
+                            Danh mục
+                        </label>
+
+
+                        <select id="categoryId"
+                                th:field="*{categoryId}"
+                                required>
+
+                            <option value="">
+                                -- Chọn danh mục --
+                            </option>
+
+
+                            <option th:each="category : ${categoryList}"
+                                    th:value="${category.categoryId}"
+                                    th:text="${category.name}">
+                            </option>
+
+                        </select>
+
+
+                        <small class="form-hint">
+
+                            Nếu chọn danh mục
+                            <strong>Cafe</strong>,
+                            sản phẩm sẽ không sử dụng kích thước.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SIZE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="sizeId">
+                            Kích thước
+                        </label>
+
+
+                        <select id="sizeId"
+                                th:field="*{sizeId}">
+
+                            <!--
+                                Giá trị mặc định.
+                                Khi Cafe được chọn,
+                                JS sẽ chọn option này và disable select.
+                            -->
+
+                            <option value="">
+                                -- Chọn kích thước --
+                            </option>
+
+
+                            <option th:each="size : ${sizeList}"
+                                    th:value="${size.sizeId}"
+                                    th:text="${size.name}">
+                            </option>
+
+                        </select>
+
+
+                        <small id="sizeHint"
+                               class="form-hint">
+
+                            Chọn kích thước cho sản phẩm.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PRICE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="price">
+                            Giá sản phẩm
+                        </label>
+
+
+                        <div class="price-input">
+
+                            <input type="number"
+                                   id="price"
+                                   th:field="*{price}"
+                                   min="0"
+                                   step="1000"
+                                   placeholder="Nhập giá sản phẩm"
+                                   required>
+
+
+                            <span>
+                                ₫
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         IMAGE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="image">
+                            Hình ảnh sản phẩm
+                        </label>
+
+
+                        <input type="file"
+                               id="image"
+                               th:field="*{image}"
+                               accept="image/*">
+
+
+                        <small class="form-hint">
+
+                            Chọn hình ảnh sản phẩm để tải lên Cloudinary.
+
+                        </small>
+
+
+                        <!-- IMAGE PREVIEW -->
+
+                        <div id="imagePreviewContainer"
+                             class="image-preview-container"
+                             style="display: none;">
+
+                            <p class="form-hint">
+
+                                Xem trước hình ảnh
+
+                            </p>
+
+
+                            <img id="imagePreview"
+                                 class="image-preview"
+                                 alt="Xem trước hình ảnh">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         STATUS
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Trạng thái
+                        </label>
+
+
+                        <select id="status"
+                                th:field="*{status}"
+                                required>
+
+                            <option value="">
+                                -- Chọn trạng thái --
+                            </option>
+
+
+                            <option th:each="status : ${statusList}"
+                                    th:value="${status}"
+                                    th:text="${status.description}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ACTIONS
+                         ================================================= -->
+
+                    <div class="form-actions">
+
+
+                        <a th:href="@{/admin/product/page}"
+                           class="btn btn-secondary">
+
+                            Hủy
+
+                        </a>
+
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Thêm sản phẩm
+
+                        </button>
+
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
-<!-- SUCCESS / ERROR TOAST -->
+
+<!-- =========================================================
+     SUCCESS / ERROR TOAST
+     ========================================================= -->
 
 <div class="toast-container">
 
-    ```
+
+    <!-- SUCCESS -->
+
     <div th:if="${success}"
          class="toast toast-success">
 
         <div class="toast-title">
+
             Thành công
+
         </div>
+
 
         <div class="toast-message"
              th:text="${success}">
+
         </div>
 
     </div>
 
+
+    <!-- ERROR -->
 
     <div th:if="${error}"
          class="toast toast-error">
 
         <div class="toast-title">
+
             Thất bại
+
         </div>
+
 
         <div class="toast-message"
              th:text="${error}">
+
         </div>
 
     </div>
-    ```
 
 </div>
 
+
 <script>
 
-    // ================================
+
+    // =========================================================
+    // CATEGORY → SIZE
+    // =========================================================
+
+    const categorySelect =
+        document.getElementById("categoryId");
+
+
+    const sizeSelect =
+        document.getElementById("sizeId");
+
+
+    const sizeHint =
+        document.getElementById("sizeHint");
+
+
+    /*
+     * Kiểm tra Category có phải Cafe hay không.
+     */
+    function isCafeCategory() {
+
+        const selectedOption =
+            categorySelect.options[
+                categorySelect.selectedIndex
+                ];
+
+
+        if (!selectedOption) {
+            return false;
+        }
+
+
+        const categoryName =
+            selectedOption.textContent
+                .trim()
+                .toLowerCase();
+
+
+        return categoryName === "cafe";
+    }
+
+
+    /*
+     * Cập nhật trạng thái Size.
+     */
+    function updateSizeField() {
+
+        if (isCafeCategory()) {
+
+            // =============================================
+            // CAFE
+            // =============================================
+
+            /*
+             * Không áp dụng Size.
+             */
+
+            sizeSelect.value = "";
+
+            sizeSelect.disabled = true;
+
+
+            sizeHint.textContent =
+                "Danh mục Cafe không sử dụng kích thước.";
+
+        } else {
+
+            // =============================================
+            // CATEGORY KHÁC
+            // =============================================
+
+            sizeSelect.disabled = false;
+
+
+            sizeHint.textContent =
+                "Vui lòng chọn kích thước cho sản phẩm.";
+
+        }
+
+    }
+
+
+    /*
+     * Khi user thay đổi Category.
+     */
+    categorySelect.addEventListener(
+        "change",
+        updateSizeField
+    );
+
+
+    /*
+     * Chạy ngay khi trang load.
+     *
+     * Trường hợp form được load lại sau khi validation
+     * hoặc có dữ liệu cũ.
+     */
+    updateSizeField();
+
+
+    // =========================================================
     // IMAGE PREVIEW
-    // ================================
+    // =========================================================
 
     const imageInput =
         document.getElementById("image");
 
+
     const imagePreviewContainer =
-        document.getElementById("imagePreviewContainer");
+        document.getElementById(
+            "imagePreviewContainer"
+        );
+
 
     const imagePreview =
         document.getElementById("imagePreview");
 
 
-    imageInput.addEventListener("change", function () {
+    imageInput.addEventListener(
+        "change",
+        function () {
 
-        const file = this.files[0];
+            const file = this.files[0];
 
-        if (!file) {
 
-            imagePreviewContainer.style.display = "none";
+            if (!file) {
 
-            imagePreview.src = "";
+                imagePreviewContainer
+                    .style
+                    .display = "none";
 
-            return;
+                imagePreview.src = "";
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    imagePreview.src =
+                        event.target.result;
+
+                    imagePreviewContainer
+                        .style
+                        .display = "block";
+                };
+
+
+            reader.readAsDataURL(file);
+
         }
+    );
 
 
-        const reader = new FileReader();
-
-
-        reader.onload = function (event) {
-
-            imagePreview.src = event.target.result;
-
-            imagePreviewContainer.style.display = "block";
-        };
-
-
-        reader.readAsDataURL(file);
-
-    });
-
-
-    // ================================
+    // =========================================================
     // AUTO HIDE TOAST
-    // ================================
+    // =========================================================
 
-    setTimeout(function () {
+    setTimeout(
+        function () {
 
-        const toasts =
-            document.querySelectorAll(".toast");
+            const toasts =
+                document.querySelectorAll(".toast");
 
-        toasts.forEach(function (toast) {
 
-            toast.classList.add("hide");
+            toasts.forEach(
+                function (toast) {
 
-        });
+                    toast.classList.add("hide");
 
-    }, 3000);
+                }
+            );
+
+        },
+        3000
+    );
 
 </script>
 
+
 </body>
+
 </html>

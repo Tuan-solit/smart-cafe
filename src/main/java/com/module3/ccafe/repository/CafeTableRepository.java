@@ -19,5 +19,22 @@ public interface CafeTableRepository extends JpaRepository<CafeTable,Integer> {
         WHERE (:tableNumber is null or t.tableNumber = :tableNumber)
             AND (:status is null or t.status = :status)
 """)
-    Page<CafeTable> search(@Param("tableNumber") String tableNumber,@Param("status") TableStatus status, Pageable pageable);
+    Page<CafeTable> search(@Param("tableNumber") String tableNumber,
+                           @Param("status") TableStatus status, Pageable pageable);
+
+    @Query("""
+    SELECT t
+    FROM CafeTable t
+    WHERE
+        (:keyword = ''
+         OR LOWER(t.tableNumber) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND
+        (:status IS NULL
+         OR t.status = :status)
+""")
+    Page<CafeTable> searchTables(
+            @Param("keyword") String keyword,
+            @Param("status") TableStatus status,
+            Pageable pageable
+    );
 }

@@ -10,6 +10,8 @@ import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.repository.RoleRepository;
 import com.module3.ccafe.repository.UserRepository;
 import com.module3.ccafe.security.CustomUserPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -157,6 +159,21 @@ public class UserService {
     }
     public long countEmployee () {
         return userRepository.countUsersByRoleName("EMPLOYEE");
+    }
 
+    @Transactional(readOnly = true)
+    public Page<StaffResponse> searchStaff(
+            String keyword,
+            UserStatus status,
+            Pageable pageable) {
+
+        return userRepository
+                .searchUsersByRoleName(
+                        EMPLOYEE_ROLE,
+                        keyword.trim(),
+                        status,
+                        pageable
+                )
+                .map(this::toStaffResponse);
     }
 }

@@ -8,6 +8,10 @@ import com.module3.ccafe.service.CloudinaryService;
 import com.module3.ccafe.service.ProductService;
 import com.module3.ccafe.service.SizeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +28,70 @@ public class AdminProductViewController {
     private final CloudinaryService cloudinaryService;
 
     @GetMapping("/page")
-    public String productPage(Model model) {
+    public String productPage(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) ProductStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("productId").ascending()
+        );
+
+        Page<ProductResponse> productPage =
+                productService.searchProducts(
+                        keyword.trim(),
+                        categoryId,
+                        status,
+                        pageable
+                );
 
         model.addAttribute(
                 "productList",
-                productService.getAllProducts()
+                productPage.getContent()
+        );
+
+        model.addAttribute(
+                "productPage",
+                productPage
+        );
+
+        model.addAttribute(
+                "keyword",
+                keyword
+        );
+
+        model.addAttribute(
+                "categoryId",
+                categoryId
+        );
+
+        model.addAttribute(
+                "status",
+                status
+        );
+
+        model.addAttribute(
+                "pageSize",
+                size
+        );
+
+        model.addAttribute(
+                "categoryList",
+                categoryService.getAllCategories()
+        );
+
+        model.addAttribute(
+                "statusList",
+                ProductStatus.values()
         );
 
         return "admin/product/list";
@@ -187,7 +250,7 @@ public class AdminProductViewController {
 
 
     // ================================
-    // DELETE PRODUCT
+    // NGỪNG BÁN PRODUCT
     // ================================
 
     @PostMapping("/delete/{productId}")
@@ -201,7 +264,7 @@ public class AdminProductViewController {
 
             redirectAttributes.addFlashAttribute(
                     "success",
-                    "Xóa sản phẩm thành công!"
+                    "Ngừng bán sản phẩm thành công!"
             );
 
         } catch (RuntimeException e) {

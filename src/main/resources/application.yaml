@@ -7,13 +7,10 @@ spring:
     username: root
     password: codegym
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: validate
-  web:
-    resources:
-      add-mappings: false
-
     show-sql: true
     properties:
       hibernate:
@@ -21,25 +18,21 @@ spring:
 
   thymeleaf:
     cache: false
+
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 1
-#    baseline-on-migrate: true
-#    baseline-version: 0
 
 server:
   port: 8080
-
-
 
 sepay:
   bank-account: "0721074737777"
   bank-name: MBBank
   accountHolder: Bui Huu Tam
-  api-key: ${api-key}
-
+  api-key: OUSXKF4E533AN7JCASUVRZNLI9IXNXMRQVKSGFOQWZECCL0MFIGHYKJFBQ6WWBBT
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:}

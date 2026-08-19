@@ -1,269 +1,347 @@
 <!DOCTYPE html>
-
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    ```
-    <title>Edit Product</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sửa sản phẩm - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
     <link rel="stylesheet"
           th:href="@{/css/admin-product.css}">
-    ```
 
 </head>
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-    ```
-    <!-- HEADER -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-    <div class="page-header">
-
-        <div>
-            <h1>Edit Product</h1>
-            <p>Update product information</p>
-        </div>
-
-        <a th:href="@{/admin/product/page}"
-           class="btn btn-secondary">
-            ← Back to Products
-        </a>
-
-    </div>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='product')}"></div>
 
 
-    <!-- FORM CARD -->
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
-    <div class="form-card">
+    <main class="admin-main">
 
-        <!-- GENERAL ERROR -->
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
-        <div th:if="${error}"
-             class="form-error"
-             th:text="${error}">
-            Error message
-        </div>
+        <header class="admin-header">
 
+            <h1>Quản lý Sản phẩm</h1>
 
-        <form th:action="@{/admin/product/edit/{id}(id=${product.productId})}"
-              th:object="${productRequest}"
-              method="post"
-              enctype="multipart/form-data"
-              class="product-form">
+            <div class="admin-info">
 
-
-            <!-- PRODUCT NAME -->
-
-            <div class="form-group">
-
-                <label for="name">
-                    Product Name
-                </label>
-
-                <input type="text"
-                       id="name"
-                       th:field="*{name}"
-                       placeholder="Enter product name"
-                       required>
+                <span>Administrator</span>
 
             </div>
 
-
-            <!-- CATEGORY -->
-
-            <div class="form-group">
-
-                <label for="categoryId">
-                    Category
-                </label>
-
-                <select id="categoryId"
-                        th:field="*{categoryId}"
-                        required>
-
-                    <option value="">
-                        -- Select Category --
-                    </option>
-
-                    <option th:each="category : ${categoryList}"
-                            th:value="${category.categoryId}"
-                            th:text="${category.name}">
-                    </option>
-
-                </select>
-
-            </div>
+        </header>
 
 
-            <!-- SIZE -->
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
 
-            <div class="form-group">
-
-                <label for="sizeId">
-                    Size
-                </label>
-
-                <select id="sizeId"
-                        th:field="*{sizeId}"
-                        required>
-
-                    <option value="">
-                        -- Select Size --
-                    </option>
-
-                    <option th:each="size : ${sizeList}"
-                            th:value="${size.sizeId}"
-                            th:text="${size.name}">
-                    </option>
-
-                </select>
-
-            </div>
+        <section class="admin-content">
 
 
-            <!-- PRICE -->
+            <!-- PAGE HEADER -->
 
-            <div class="form-group">
+            <div class="page-header">
 
-                <label for="price">
-                    Price
-                </label>
+                <div>
 
-                <div class="price-input">
+                    <h1>Sửa sản phẩm</h1>
 
-                    <input type="number"
-                           id="price"
-                           th:field="*{price}"
-                           min="0"
-                           step="1000"
-                           placeholder="Enter price"
-                           required>
-
-                    <span>₫</span>
-
-                </div>
-
-            </div>
-
-
-            <!-- CURRENT IMAGE + NEW IMAGE -->
-
-            <div class="form-group">
-
-                <label for="image">
-                    Product Image
-                </label>
-
-
-                <!-- CURRENT IMAGE -->
-
-                <div th:if="${product.image != null and !product.image.isBlank()}"
-                     class="current-image-container">
-
-                    <p class="form-hint">
-                        Current Image
+                    <p class="page-description">
+                        Cập nhật thông tin sản phẩm
                     </p>
 
-                    <img th:src="${product.image}"
-                         th:alt="${product.name}"
-                         class="current-product-image">
-
                 </div>
-
-
-                <!-- FILE INPUT -->
-
-                <input type="file"
-                       id="image"
-                       th:field="*{image}"
-                       accept="image/*">
-
-
-                <small class="form-hint">
-                    Leave empty to keep the current image.
-                    Select a new image to replace it.
-                </small>
-
-
-                <!-- NEW IMAGE PREVIEW -->
-
-                <div id="imagePreviewContainer"
-                     class="image-preview-container"
-                     style="display: none;">
-
-                    <p class="form-hint">
-                        New Image Preview
-                    </p>
-
-                    <img id="imagePreview"
-                         class="image-preview"
-                         alt="New Image Preview">
-
-                </div>
-
-            </div>
-
-
-            <!-- STATUS -->
-
-            <div class="form-group">
-
-                <label for="status">
-                    Status
-                </label>
-
-                <select id="status"
-                        th:field="*{status}"
-                        required>
-
-                    <option value="">
-                        -- Select Status --
-                    </option>
-
-                    <option th:each="status : ${statusList}"
-                            th:value="${status}"
-                            th:text="${status.description}">
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- ACTIONS -->
-
-            <div class="form-actions">
 
                 <a th:href="@{/admin/product/page}"
                    class="btn btn-secondary">
-                    Cancel
-                </a>
 
-                <button type="submit"
-                        class="btn btn-primary">
-                    Update Product
-                </button>
+                    ← Quay lại danh sách
+
+                </a>
 
             </div>
 
-        </form>
 
-    </div>
-    ```
+            <!-- =================================================
+                 FORM CARD
+            ================================================== -->
+
+            <div class="card form-card">
+
+
+                <!-- GENERAL ERROR -->
+
+                <div th:if="${error}"
+                     class="form-error"
+                     th:text="${error}">
+
+                    Có lỗi xảy ra.
+
+                </div>
+
+
+                <!-- FORM -->
+
+                <form th:action="@{/admin/product/edit/{id}(id=${product.productId})}"
+                      th:object="${productRequest}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="product-form">
+
+
+                    <!-- =================================================
+                         PRODUCT NAME
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Tên sản phẩm
+                        </label>
+
+                        <input type="text"
+                               id="name"
+                               th:field="*{name}"
+                               placeholder="Nhập tên sản phẩm"
+                               required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CATEGORY
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="categoryId">
+                            Danh mục
+                        </label>
+
+                        <select id="categoryId"
+                                th:field="*{categoryId}"
+                                required>
+
+                            <option value="">
+                                -- Chọn danh mục --
+                            </option>
+
+                            <option th:each="category : ${categoryList}"
+                                    th:value="${category.categoryId}"
+                                    th:text="${category.name}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SIZE
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="sizeId">
+                            Kích thước
+                        </label>
+
+                        <select id="sizeId"
+                                th:field="*{sizeId}"
+                                required>
+
+                            <option value="">
+                                -- Chọn kích thước --
+                            </option>
+
+                            <option th:each="size : ${sizeList}"
+                                    th:value="${size.sizeId}"
+                                    th:text="${size.name}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PRICE
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="price">
+                            Giá bán
+                        </label>
+
+                        <div class="price-input">
+
+                            <input type="number"
+                                   id="price"
+                                   th:field="*{price}"
+                                   min="0"
+                                   step="1000"
+                                   placeholder="Nhập giá bán"
+                                   required>
+
+                            <span>₫</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         IMAGE
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="image">
+                            Hình ảnh sản phẩm
+                        </label>
+
+
+                        <!-- CURRENT IMAGE -->
+
+                        <div th:if="${product.image != null and !product.image.isBlank()}"
+                             class="current-image-container">
+
+                            <p class="form-hint">
+                                Hình ảnh hiện tại
+                            </p>
+
+                            <img th:src="${product.image}"
+                                 th:alt="${product.name}"
+                                 class="current-product-image">
+
+                        </div>
+
+
+                        <!-- FILE INPUT -->
+
+                        <input type="file"
+                               id="image"
+                               th:field="*{image}"
+                               accept="image/*">
+
+
+                        <small class="form-hint">
+
+                            Để trống nếu muốn giữ nguyên hình ảnh hiện tại.
+                            Chọn hình ảnh mới nếu muốn thay thế.
+
+                        </small>
+
+
+                        <!-- NEW IMAGE PREVIEW -->
+
+                        <div id="imagePreviewContainer"
+                             class="image-preview-container"
+                             style="display: none;">
+
+                            <p class="form-hint">
+                                Xem trước hình ảnh mới
+                            </p>
+
+                            <img id="imagePreview"
+                                 class="image-preview"
+                                 alt="Xem trước hình ảnh mới">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         STATUS
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Trạng thái
+                        </label>
+
+                        <select id="status"
+                                th:field="*{status}"
+                                required>
+
+                            <option value="">
+                                -- Chọn trạng thái --
+                            </option>
+
+                            <option th:each="status : ${statusList}"
+                                    th:value="${status}"
+                                    th:text="${status.description}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ACTIONS
+                    ================================================== -->
+
+                    <div class="form-actions">
+
+                        <a th:href="@{/admin/product/page}"
+                           class="btn btn-secondary">
+
+                            Hủy
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Lưu thay đổi
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
-<!-- SUCCESS / ERROR TOAST -->
+
+<!-- =====================================================
+     SUCCESS / ERROR TOAST
+====================================================== -->
 
 <div class="toast-container">
 
-    ```
     <div th:if="${success}"
          class="toast toast-success">
 
@@ -290,9 +368,13 @@
         </div>
 
     </div>
-    ```
 
 </div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script>
 
@@ -324,14 +406,18 @@
         }
 
 
-        const reader = new FileReader();
+        const reader =
+            new FileReader();
 
 
         reader.onload = function (event) {
 
-            imagePreview.src = event.target.result;
+            imagePreview.src =
+                event.target.result;
 
-            imagePreviewContainer.style.display = "block";
+            imagePreviewContainer.style.display =
+                "block";
+
         };
 
 
@@ -360,4 +446,5 @@
 </script>
 
 </body>
+
 </html>

@@ -1,198 +1,467 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Category Management</title>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Quản lý danh mục - Smart Cafe</title>
+
+  <link rel="stylesheet"
+        th:href="@{/css/admin.css}">
 
   <link rel="stylesheet"
         th:href="@{/css/admin-category.css}">
+
 </head>
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-  <!-- Header -->
-  <div class="page-header">
+  <!-- =========================
+       SIDEBAR
+       ========================= -->
 
-    <div>
-      <h1>Category Management</h1>
-      <p>Manage product categories</p>
-    </div>
-
-    <a th:href="@{/admin/category/create}"
-       class="btn btn-primary">
-      + Add Category
-    </a>
-
-  </div>
+  <div th:replace="~{fragments/admin-sidebar :: sidebar(active='category')}"></div>
 
 
-  <!-- Category table -->
-  <div class="card">
+  <!-- =========================
+       MAIN
+       ========================= -->
 
-    <table class="category-table">
+  <main class="admin-main">
 
-      <thead>
+    <!-- HEADER -->
 
-      <tr>
-        <th>ID</th>
-        <th>Category Name</th>
-        <th>Products</th>
-        <th>Actions</th>
-      </tr>
+    <header class="admin-header">
 
-      </thead>
+      <h1>Quản lý danh mục</h1>
 
-      <tbody>
+      <div class="admin-info">
+        <span>Quản trị viên</span>
+      </div>
 
-      <tr th:each="category : ${categoryList}">
-
-        <td th:text="${category.categoryId}">
-          1
-        </td>
-
-        <td class="category-name"
-            th:text="${category.name}">
-          Coffee
-        </td>
-
-        <td>
-
-                    <span class="product-count"
-                          th:text="${category.productCount}">
-                        0
-                    </span>
-
-        </td>
-
-        <td>
-
-          <div class="action-group">
-
-            <!-- Edit -->
-            <a th:href="@{/admin/category/edit/{id}(id=${category.categoryId})}"
-               class="btn btn-warning">
-              Edit
-            </a>
+    </header>
 
 
-            <!-- Delete -->
-            <button type="button"
-                    class="btn btn-danger"
-                    th:attr="data-id=${category.categoryId},
-                                         data-name=${category.name}"
-                    onclick="openDeleteModal(this)">
-              Delete
-            </button>
+    <!-- CONTENT -->
+
+    <section class="admin-content">
+
+      <!-- PAGE HEADER -->
+
+      <div class="page-header">
+
+        <div>
+
+          <h2>Danh mục sản phẩm</h2>
+
+          <p>
+            Quản lý các danh mục của quán
+          </p>
+
+        </div>
+
+
+        <a th:href="@{/admin/category/create}"
+           class="btn btn-primary">
+
+          + Thêm danh mục
+
+        </a>
+
+      </div>
+
+
+      <!-- =========================
+           SEARCH
+           ========================= -->
+
+      <div class="search-section">
+
+        <form th:action="@{/admin/category/page}"
+              method="get"
+              class="search-form">
+
+          <input type="text"
+                 name="keyword"
+                 th:value="${keyword}"
+                 placeholder="Tìm kiếm danh mục..."
+                 class="search-input">
+
+
+          <input type="hidden"
+                 name="size"
+                 th:value="${pageSize}">
+
+
+          <button type="submit"
+                  class="btn btn-primary">
+
+            Tìm kiếm
+
+          </button>
+
+
+          <a th:href="@{/admin/category/page}"
+             class="btn btn-secondary">
+
+            Xóa lọc
+
+          </a>
+
+        </form>
+
+      </div>
+
+
+      <!-- =========================
+           CATEGORY TABLE
+           ========================= -->
+
+      <div class="card">
+
+        <table class="category-table">
+
+          <thead>
+
+          <tr>
+
+            <!-- STT -->
+
+            <th>STT</th>
+
+
+            <!-- TÊN -->
+
+            <th>Tên danh mục</th>
+
+
+            <!-- TRẠNG THÁI -->
+
+            <th>Trạng thái</th>
+
+
+            <!-- THAO TÁC -->
+
+            <th>Thao tác</th>
+
+          </tr>
+
+          </thead>
+
+
+          <tbody>
+
+          <tr th:each="category, categoryStat : ${categoryList}">
+
+            <!-- =========================
+                 STT
+                 ========================= -->
+
+            <td th:text="${categoryPage.number * pageSize + categoryStat.index + 1}">
+
+              1
+
+            </td>
+
+
+            <!-- =========================
+                 TÊN DANH MỤC
+                 ========================= -->
+
+            <td class="category-name"
+                th:text="${category.name}">
+
+              Cà phê
+
+            </td>
+
+
+            <!-- =========================
+                 TRẠNG THÁI
+                 ========================= -->
+
+            <td>
+
+              <!-- ACTIVE -->
+
+              <span th:if="${category.status.name() == 'ACTIVE'}"
+                    class="status-badge status-active">
+
+                Đang hoạt động
+
+              </span>
+
+
+              <!-- INACTIVE -->
+
+              <span th:if="${category.status.name() == 'INACTIVE'}"
+                    class="status-badge status-inactive">
+
+                Ngừng hoạt động
+
+              </span>
+
+            </td>
+
+
+            <!-- =========================
+                 THAO TÁC
+                 ========================= -->
+
+            <td>
+
+              <div class="action-group">
+
+                <!-- =========================
+                     SỬA
+                     Chỉ cho sửa Category ACTIVE
+                     ========================= -->
+
+                <a th:if="${category.status.name() == 'ACTIVE'}"
+                   th:href="@{/admin/category/edit/{id}(id=${category.categoryId})}"
+                   class="btn btn-warning">
+
+                  Sửa
+
+                </a>
+
+
+                <!-- =========================
+                     NGỪNG HOẠT ĐỘNG
+                     ========================= -->
+
+                <button th:if="${category.status.name() == 'ACTIVE'}"
+                        type="button"
+                        class="btn btn-danger"
+                        th:attr="
+                            data-id=${category.categoryId},
+                            data-name=${category.name}"
+                        onclick="openDeleteModal(this)">
+
+                  Ngừng hoạt động
+
+                </button>
+
+
+                <!-- =========================
+                     CATEGORY ĐÃ INACTIVE
+                     ========================= -->
+
+                <span th:if="${category.status.name() == 'INACTIVE'}"
+                      class="text-muted">
+
+                  Không có thao tác
+
+                </span>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+
+          <!-- =========================
+               EMPTY
+               ========================= -->
+
+          <tr th:if="${#lists.isEmpty(categoryList)}">
+
+            <td colspan="4"
+                class="empty-message">
+
+              Không có danh mục nào.
+
+            </td>
+
+          </tr>
+
+          </tbody>
+
+        </table>
+
+
+        <!-- =================================================
+     PAGINATION
+================================================== -->
+
+        <div class="pagination-wrapper"
+             th:if="${categoryPage != null and categoryPage.totalPages > 0}">
+
+          <!-- PAGINATION INFO -->
+
+          <div class="pagination-info">
+
+            Hiển thị
+
+            <strong th:text="${categoryList.size()}">
+              10
+            </strong>
+
+            danh mục /
+
+            tổng số
+
+            <strong th:text="${categoryPage.totalElements}">
+              20
+            </strong>
+
+            danh mục
 
           </div>
 
-        </td>
 
-      </tr>
+          <!-- PAGINATION -->
+
+          <div class="pagination">
+
+            <!-- PREVIOUS -->
+
+            <a th:if="${categoryPage.hasPrevious()}"
+               th:href="@{/admin/category/page(
+                page=${categoryPage.number - 1},
+                size=${pageSize},
+                keyword=${keyword}
+           )}">
+
+              ‹
+
+            </a>
+
+            <span th:unless="${categoryPage.hasPrevious()}"
+                  class="disabled">
+
+            ‹
+
+        </span>
 
 
-      <!-- Empty -->
-      <tr th:if="${#lists.isEmpty(categoryList)}">
+            <!-- PAGE NUMBERS -->
 
-        <td colspan="4"
-            class="empty-message">
+            <a th:each="i : ${#numbers.sequence(0, categoryPage.totalPages - 1)}"
 
-          Chưa có danh mục nào.
+               th:href="@{/admin/category/page(
+                page=${i},
+                size=${pageSize},
+                keyword=${keyword}
+           )}"
 
-        </td>
+               th:text="${i + 1}"
 
-      </tr>
+               th:classappend="${i == categoryPage.number} ? 'active' : ''">
 
-      </tbody>
+              1
 
-    </table>
+            </a>
 
-  </div>
+
+            <!-- NEXT -->
+
+            <a th:if="${categoryPage.hasNext()}"
+               th:href="@{/admin/category/page(
+                page=${categoryPage.number + 1},
+                size=${pageSize},
+                keyword=${keyword}
+           )}">
+
+              ›
+
+            </a>
+
+            <span th:unless="${categoryPage.hasNext()}"
+                  class="disabled">
+
+            ›
+
+        </span>
+
+          </div>
+
+        </div>
+
+    </section>
+
+  </main>
 
 </div>
 
 
-<!-- ========================= -->
-<!-- SUCCESS / ERROR TOAST -->
-<!-- ========================= -->
-
-<div class="toast-container">
-
-  <div th:if="${success}"
-       class="toast toast-success">
-
-    <div class="toast-title">
-      Thành công
-    </div>
-
-    <div class="toast-message"
-         th:text="${success}">
-    </div>
-
-  </div>
-
-
-  <div th:if="${error}"
-       class="toast toast-error">
-
-    <div class="toast-title">
-      Thất bại
-    </div>
-
-    <div class="toast-message"
-         th:text="${error}">
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- ========================= -->
-<!-- DELETE MODAL -->
-<!-- ========================= -->
+<!-- =========================
+     DELETE / DEACTIVATE MODAL
+     ========================= -->
 
 <div id="deleteModal"
      class="modal-overlay">
 
   <div class="delete-modal">
 
+    <!-- ICON -->
+
     <div class="delete-icon">
       !
     </div>
 
-    <h2>Xóa danh mục?</h2>
+
+    <!-- TITLE -->
+
+    <h2>
+      Ngừng hoạt động danh mục?
+    </h2>
+
+
+    <!-- MESSAGE -->
 
     <p>
-      Bạn có chắc chắn muốn xóa danh mục
+
+      Bạn có chắc chắn muốn ngừng hoạt động danh mục
+
       <strong id="deleteCategoryName"></strong>?
+
     </p>
+
+
+    <!-- WARNING -->
 
     <p class="warning-text">
-      Nếu danh mục đang có sản phẩm, hệ thống sẽ không cho phép xóa.
+
+      Danh mục sẽ không còn được sử dụng
+      trong hệ thống sau khi ngừng hoạt động.
+
     </p>
 
 
+    <!-- ACTIONS -->
+
     <div class="modal-actions">
+
+      <!-- HỦY -->
 
       <button type="button"
               class="btn btn-secondary"
               onclick="closeDeleteModal()">
-        Cancel
+
+        Hủy
+
       </button>
+
+
+      <!-- XÁC NHẬN -->
 
       <form id="deleteForm"
             method="post">
 
         <button type="submit"
                 class="btn btn-danger">
-          Delete
+
+          Ngừng hoạt động
+
         </button>
 
       </form>
@@ -204,45 +473,133 @@
 </div>
 
 
+<!-- =========================
+     TOAST
+     ========================= -->
+
+<div class="toast-container">
+
+  <!-- SUCCESS -->
+
+  <div th:if="${success}"
+       class="toast toast-success">
+
+    <div class="toast-title">
+
+      Thành công
+
+    </div>
+
+    <div class="toast-message"
+         th:text="${success}">
+
+    </div>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div th:if="${error}"
+       class="toast toast-error">
+
+    <div class="toast-title">
+
+      Thất bại
+
+    </div>
+
+    <div class="toast-message"
+         th:text="${error}">
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+     ========================= -->
+
 <script>
+
+  /*
+   * Mở modal ngừng hoạt động
+   */
 
   function openDeleteModal(button) {
 
-    const categoryId = button.getAttribute("data-id");
-    const categoryName = button.getAttribute("data-name");
+    const categoryId =
+            button.getAttribute("data-id");
 
-    document.getElementById("deleteCategoryName").textContent =
-            categoryName;
+    const categoryName =
+            button.getAttribute("data-name");
 
-    document.getElementById("deleteForm").action =
+
+    document.getElementById("deleteCategoryName")
+            .textContent = categoryName;
+
+
+    document.getElementById("deleteForm")
+            .action =
             "/admin/category/delete/" + categoryId;
 
-    document.getElementById("deleteModal").classList.add("show");
+
+    document.getElementById("deleteModal")
+            .classList.add("show");
+
   }
 
 
+  /*
+   * Đóng modal
+   */
+
   function closeDeleteModal() {
 
-    document.getElementById("deleteModal").classList.remove("show");
+    document.getElementById("deleteModal")
+            .classList.remove("show");
+
   }
 
 
   /*
    * Click ra ngoài modal để đóng
    */
+
   document.getElementById("deleteModal")
           .addEventListener("click", function (event) {
 
             if (event.target === this) {
+
               closeDeleteModal();
+
             }
 
           });
 
 
   /*
-   * Tự động ẩn toast sau 3 giây
+   * Nhấn ESC để đóng modal
    */
+
+  document.addEventListener("keydown", function (event) {
+
+    if (event.key === "Escape") {
+
+      closeDeleteModal();
+
+    }
+
+  });
+
+
+  /*
+   * Tự động ẩn thông báo sau 3 giây
+   */
+
   setTimeout(function () {
 
     const toasts =
@@ -259,4 +616,5 @@
 </script>
 
 </body>
+
 </html>

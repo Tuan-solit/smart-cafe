@@ -1,231 +1,414 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Add Staff</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Thêm nhân viên - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
     <link rel="stylesheet"
           th:href="@{/css/admin-staff.css}">
+
 </head>
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-    <div class="page-header">
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-        <h1>Add Staff</h1>
-
-        <a th:href="@{/admin/staff/page}"
-           class="btn btn-secondary">
-            Back
-        </a>
-
-    </div>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='staff')}"></div>
 
 
-    <div class="card form-card">
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
-        <form th:action="@{/admin/staff/create}"
-              th:object="${staffRequest}"
-              method="post"
-              onsubmit="return handleSubmit(event)">
+    <main class="admin-main">
 
-            <div class="form-group">
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
-                <label for="fullName">Full Name</label>
+        <header class="admin-header">
 
-                <input id="fullName"
-                       type="text"
-                       th:field="*{fullName}"
-                       required>
+            <h1>Quản lý Nhân viên</h1>
 
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('fullName')}"
-                     th:errors="*{fullName}">
-                </div>
+            <div class="admin-info">
+
+                <span>Administrator</span>
 
             </div>
 
+        </header>
 
-            <div class="form-group">
 
-                <label for="phone">Phone</label>
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
 
-                <input id="phone"
-                       type="text"
-                       th:field="*{phone}"
-                       required>
+        <section class="admin-content">
 
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('phone')}"
-                     th:errors="*{phone}">
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1>Thêm nhân viên</h1>
+
+                    <p class="page-description">
+                        Thêm nhân viên mới vào hệ thống
+                    </p>
+
                 </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="email">Email</label>
-
-                <input id="email"
-                       type="email"
-                       th:field="*{email}"
-                       required>
-
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('email')}"
-                     th:errors="*{email}">
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="password">Password</label>
-
-                <input id="password"
-                       type="password"
-                       th:field="*{password}"
-                       required>
-
-                <div class="field-error"
-                     th:if="${#fields.hasErrors('password')}"
-                     th:errors="*{password}">
-                </div>
-
-            </div>
-
-
-            <div class="form-actions">
 
                 <a th:href="@{/admin/staff/page}"
                    class="btn btn-secondary">
-                    Cancel
-                </a>
 
-                <button type="submit"
-                        class="btn btn-primary">
-                    Create Staff
-                </button>
+                    ← Quay lại danh sách
+
+                </a>
 
             </div>
 
-        </form>
 
-        </form>
+            <!-- =================================================
+                 FORM CARD
+            ================================================== -->
 
-    </div>
+            <div class="card form-card">
+
+                <form th:action="@{/admin/staff/create}"
+                      th:object="${staffRequest}"
+                      method="post"
+                      onsubmit="return handleSubmit(event)">
+
+
+                    <!-- HỌ VÀ TÊN -->
+
+                    <div class="form-group">
+
+                        <label for="fullName">
+                            Họ và tên
+                        </label>
+
+                        <input id="fullName"
+                               type="text"
+                               th:field="*{fullName}"
+                               placeholder="Nhập họ và tên"
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('fullName')}"
+                             th:errors="*{fullName}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- SỐ ĐIỆN THOẠI -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Số điện thoại
+                        </label>
+
+                        <input id="phone"
+                               type="text"
+                               th:field="*{phone}"
+                               placeholder="Nhập số điện thoại"
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('phone')}"
+                             th:errors="*{phone}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input id="email"
+                               type="email"
+                               th:field="*{email}"
+                               placeholder="Nhập email"
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- MẬT KHẨU -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Mật khẩu
+                        </label>
+
+                        <input id="password"
+                               type="password"
+                               th:field="*{password}"
+                               placeholder="Nhập mật khẩu"
+                               required>
+
+                        <div class="field-error"
+                             th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="form-actions">
+
+                        <a th:href="@{/admin/staff/page}"
+                           class="btn btn-secondary">
+
+                            Hủy
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Thêm nhân viên
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
-<!-- ========================= -->
-<!-- SUCCESS MODAL -->
-<!-- ========================= -->
 
-<div th:if="${success}" id="successModal" class="success-modal-overlay" style="display: flex;">
+<!-- =====================================================
+     SUCCESS MODAL
+====================================================== -->
+
+<div th:if="${success}"
+     id="successModal"
+     class="success-modal-overlay"
+     style="display: flex;">
+
     <div class="success-modal">
-        <div class="success-modal-icon">✓</div>
-        <h2>Tạo nhân viên thành công!</h2>
-        <p>Nhân viên mới đã được thêm vào hệ thống.</p>
+
+        <div class="success-modal-icon">
+            ✓
+        </div>
+
+        <h2>
+            Tạo nhân viên thành công!
+        </h2>
+
+        <p>
+            Nhân viên mới đã được thêm vào hệ thống.
+        </p>
+
     </div>
+
 </div>
 
 
-<!-- ========================= -->
-<!-- SCRIPTS & STYLES -->
-<!-- ========================= -->
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script>
+
     function handleSubmit(event) {
-        const hasErrors = document.querySelectorAll('.field-error').length > 0;
-        
+
+        const hasErrors =
+            document.querySelectorAll('.field-error').length > 0;
+
         if (hasErrors) {
             return false;
         }
-        
+
         return true;
     }
 
-    // Auto redirect sau 2 giây nếu tạo thành công
-    document.addEventListener('DOMContentLoaded', function() {
-        const successModal = document.getElementById('successModal');
-        
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const successModal =
+            document.getElementById('successModal');
+
+
         if (successModal) {
-            // Chỉ nếu modal tồn tại, có nghĩa là success=true
-            setTimeout(function() {
-                window.location.href = '/admin/staff/page';
+
+            setTimeout(function () {
+
+                window.location.href =
+                    '/admin/staff/page';
+
             }, 2000);
+
         }
+
     });
+
 </script>
 
+
+<!-- =====================================================
+     SUCCESS MODAL CSS
+====================================================== -->
+
 <style>
+
     .success-modal-overlay {
+
         display: none;
+
         position: fixed;
+
         inset: 0;
+
         background: rgba(0, 0, 0, 0.5);
+
         align-items: center;
+
         justify-content: center;
+
         z-index: 9999;
+
         backdrop-filter: blur(2px);
+
     }
+
 
     .success-modal {
+
         width: 400px;
+
         max-width: calc(100% - 40px);
+
         background: #ffffff;
+
         border-radius: 18px;
+
         padding: 48px 32px;
+
         text-align: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        animation: successModalShow 0.3s ease-out;
+
+        box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.2);
+
+        animation:
+                successModalShow 0.3s ease-out;
+
     }
+
 
     .success-modal-icon {
+
         width: 80px;
+
         height: 80px;
+
         margin: 0 auto 24px;
+
         border-radius: 50%;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         background: #d4edda;
+
         color: #28a745;
+
         font-size: 40px;
+
         font-weight: bold;
+
         border: 4px solid #c3e6cb;
+
     }
+
 
     .success-modal h2 {
+
         margin: 0 0 12px;
+
         font-size: 24px;
+
         color: #222;
+
     }
+
 
     .success-modal p {
+
         margin: 0;
+
         color: #666;
+
         font-size: 15px;
+
         line-height: 1.5;
+
     }
 
+
     @keyframes successModalShow {
+
         from {
+
             opacity: 0;
+
             transform: scale(0.9);
+
         }
+
         to {
+
             opacity: 1;
+
             transform: scale(1);
+
         }
+
     }
+
 </style>
 
 </body>
+
 </html>

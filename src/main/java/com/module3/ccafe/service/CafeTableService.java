@@ -139,6 +139,21 @@ public class CafeTableService {
         cafeTableRepository.deleteById(tableId);
     }
 
+    public Page<CafeTableResponse> searchTables(
+            String keyword,
+            String status,
+            Pageable pageable) {
+
+        TableStatus tableStatus = null;
+        if (status != null && !status.isBlank()) {
+            tableStatus = TableStatus.valueOf(status.toUpperCase());
+        }
+
+        return cafeTableRepository
+                .searchTables(keyword, tableStatus, pageable)
+                .map(this::mapToResponse);
+    }
+
     private CafeTableResponse mapToResponse(CafeTable table) {
         return CafeTableResponse.builder()
                 .tableId(table.getTableId())

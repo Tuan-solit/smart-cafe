@@ -1,9 +1,14 @@
 package com.module3.ccafe.controller.admin;
 
 import com.module3.ccafe.dto.StaffRequest;
+import com.module3.ccafe.dto.StaffResponse;
 import com.module3.ccafe.entity.enums.UserStatus;
 import com.module3.ccafe.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +23,65 @@ public class AdminStaffViewController {
     private final UserService userService;
 
     @GetMapping("/page")
-    public String staffPage(Model model) {
-        model.addAttribute("staffList", userService.getAllStaff());
+    public String staffPage(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(required = false) UserStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("userId").ascending()
+        );
+
+        Page<StaffResponse> staffPage =
+                userService.searchStaff(
+                        keyword.trim(),
+                        status,
+                        pageable
+                );
+
+        model.addAttribute(
+                "staffList",
+                staffPage.getContent()
+        );
+
+        model.addAttribute(
+                "staffPage",
+                staffPage
+        );
+
+        model.addAttribute(
+                "keyword",
+                keyword
+        );
+
+        model.addAttribute(
+                "status",
+                status
+        );
+
+        model.addAttribute(
+                "statusList",
+                UserStatus.values()
+        );
+
+        model.addAttribute(
+                "currentPage",
+                page
+        );
+
+        model.addAttribute(
+                "pageSize",
+                size
+        );
+
         return "admin/staff/list";
     }
 

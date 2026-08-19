@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <title>Staff Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý nhân viên - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
 
     <link rel="stylesheet"
           th:href="@{/css/admin-staff.css}">
@@ -12,155 +19,473 @@
 
 <body>
 
-<div class="page-container">
+<div class="admin-layout">
 
-    <div class="page-header">
-        <h1>Staff Management</h1>
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-        <a th:href="@{/admin/staff/create}"
-           class="btn btn-primary">
-            + Add Staff
-        </a>
-    </div>
-
-    <div class="card">
-
-        <table class="staff-table">
-
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-
-            <tbody>
-
-            <tr th:each="staff : ${staffList}">
-
-                <td th:text="${staff.userId}">
-                    1
-                </td>
-
-                <td th:text="${staff.fullName}">
-                    Nguyen Van A
-                </td>
-
-                <td th:text="${staff.phone}">
-                    0901234567
-                </td>
-
-                <td th:text="${staff.email}">
-                    employee@gmail.com
-                </td>
-
-                <td th:text="${staff.roleName}">
-                    EMPLOYEE
-                </td>
-
-                <td>
-
-                    <span th:if="${staff.status.name() == 'ACTIVE'}"
-                          class="status status-active">
-                        ACTIVE
-                    </span>
-
-                    <span th:if="${staff.status.name() == 'INACTIVE'}"
-                          class="status status-inactive">
-                        INACTIVE
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <div class="action-group">
-
-                        <!-- EDIT -->
-                        <a th:href="@{/admin/staff/edit/{id}(id=${staff.userId})}"
-                           class="btn btn-warning">
-                            Edit
-                        </a>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='staff')}"></div>
 
 
-                        <!-- DELETE -->
-                        <button type="button"
-                                class="btn btn-danger"
-                                th:attr="data-id=${staff.userId},
-                                         data-name=${staff.fullName}"
-                                onclick="openDeleteModal(this)">
-                            Delete
-                        </button>
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="admin-main">
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="admin-header">
+
+            <h1>Quản lý nhân viên</h1>
+
+            <div class="admin-info">
+
+                <span>Administrator</span>
+
+            </div>
+
+        </header>
 
 
-                        <!-- DEACTIVATE -->
-                        <form th:if="${staff.status.name() == 'ACTIVE'}"
-                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
-                              method="post">
+        <!-- =================================================
+             STAFF CONTENT
+        ================================================== -->
 
-                            <input type="hidden"
-                                   name="status"
-                                   value="INACTIVE">
+        <section class="admin-content">
 
-                            <button type="submit"
-                                    class="btn btn-secondary">
-                                Deactivate
-                            </button>
+            <div class="page-container">
 
-                        </form>
+                <!-- =================================================
+                     PAGE HEADER
+                ================================================== -->
 
+                <div class="page-header">
 
-                        <!-- ACTIVATE -->
-                        <form th:if="${staff.status.name() == 'INACTIVE'}"
-                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
-                              method="post">
+                    <div>
 
-                            <input type="hidden"
-                                   name="status"
-                                   value="ACTIVE">
+                        <h1>Quản lý nhân viên</h1>
 
-                            <button type="submit"
-                                    class="btn btn-success">
-                                Activate
-                            </button>
-
-                        </form>
+                        <p class="page-description">
+                            Quản lý thông tin và trạng thái tài khoản nhân viên
+                        </p>
 
                     </div>
 
-                </td>
+                    <a th:href="@{/admin/staff/create}"
+                       class="btn btn-primary">
 
-            </tr>
+                        + Thêm nhân viên
+
+                    </a>
+
+                </div>
 
 
-            <!-- EMPTY -->
-            <tr th:if="${#lists.isEmpty(staffList)}">
+                <!-- =================================================
+                     CARD
+                ================================================== -->
 
-                <td colspan="7"
-                    style="text-align: center; padding: 30px;">
-                    Chưa có nhân viên nào.
-                </td>
+                <div class="card">
 
-            </tr>
 
-            </tbody>
+                    <!-- =================================================
+                         FILTER
+                    ================================================== -->
 
-        </table>
+                    <form th:action="@{/admin/staff/page}"
+                          method="get"
+                          class="filter-bar">
 
-    </div>
+                        <!-- SEARCH -->
+
+                        <div class="filter-group search-group">
+
+                            <label for="keyword">
+                                Tìm kiếm nhân viên
+                            </label>
+
+                            <input id="keyword"
+                                   type="text"
+                                   name="keyword"
+                                   th:value="${keyword}"
+                                   placeholder="Nhập tên, số điện thoại hoặc email...">
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div class="filter-group">
+
+                            <label for="status">
+                                Trạng thái
+                            </label>
+
+                            <select id="status"
+                                    name="status">
+
+                                <option value="">
+                                    Tất cả trạng thái
+                                </option>
+
+                                <option value="ACTIVE"
+                                        th:selected="${status != null and status.name() == 'ACTIVE'}">
+
+                                    Đang hoạt động
+
+                                </option>
+
+                                <option value="INACTIVE"
+                                        th:selected="${status != null and status.name() == 'INACTIVE'}">
+
+                                    Đã vô hiệu hóa
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="filter-actions">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+
+                                Tìm kiếm
+
+                            </button>
+
+                            <a th:href="@{/admin/staff/page}"
+                               class="btn btn-secondary">
+
+                                Đặt lại
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- =================================================
+                         TABLE
+                    ================================================== -->
+
+                    <div class="table-wrapper">
+
+                        <table class="staff-table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>STT</th>
+
+                                <th>Họ và tên</th>
+
+                                <th>Số điện thoại</th>
+
+                                <th>Email</th>
+
+                                <th>Vai trò</th>
+
+                                <th>Trạng thái</th>
+
+                                <th>Thao tác</th>
+
+                            </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                            <tr th:each="staff, stat : ${staffList}">
+
+                                <!-- STT -->
+
+                                <td th:text="${currentPage * pageSize + stat.index + 1}">
+                                    1
+                                </td>
+
+
+                                <!-- NAME -->
+
+                                <td class="staff-name"
+                                    th:text="${staff.fullName}">
+
+                                    Nguyễn Văn A
+
+                                </td>
+
+
+                                <!-- PHONE -->
+
+                                <td class="staff-phone"
+                                    th:text="${staff.phone}">
+
+                                    0901234567
+
+                                </td>
+
+
+                                <!-- EMAIL -->
+
+                                <td class="staff-email"
+                                    th:text="${staff.email}">
+
+                                    employee@gmail.com
+
+                                </td>
+
+
+                                <!-- ROLE -->
+
+                                <td>
+
+                                    <span class="role-badge"
+                                          th:text="${staff.roleName}">
+
+                                        EMPLOYEE
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span th:if="${staff.status.name() == 'ACTIVE'}"
+                                          class="status status-active">
+
+                                        Đang hoạt động
+
+                                    </span>
+
+                                    <span th:if="${staff.status.name() == 'INACTIVE'}"
+                                          class="status status-inactive">
+
+                                        Đã vô hiệu hóa
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <!-- EDIT -->
+
+                                        <a th:href="@{/admin/staff/edit/{id}(id=${staff.userId})}"
+                                           class="btn btn-warning">
+
+                                            Sửa
+
+                                        </a>
+
+
+                                        <!-- DELETE -->
+
+                                        <button type="button"
+                                                class="btn btn-danger"
+
+                                                th:attr="
+                                                    data-id=${staff.userId},
+                                                    data-name=${staff.fullName}
+                                                "
+
+                                                onclick="openDeleteModal(this)">
+
+                                            Xóa
+
+                                        </button>
+
+
+                                        <!-- DEACTIVATE -->
+
+                                        <form th:if="${staff.status.name() == 'ACTIVE'}"
+
+                                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
+
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="status"
+                                                   value="INACTIVE">
+
+                                            <button type="submit"
+                                                    class="btn btn-secondary">
+
+                                                Vô hiệu hóa
+
+                                            </button>
+
+                                        </form>
+
+
+                                        <!-- ACTIVATE -->
+
+                                        <form th:if="${staff.status.name() == 'INACTIVE'}"
+
+                                              th:action="@{/admin/staff/{id}/status(id=${staff.userId})}"
+
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="status"
+                                                   value="ACTIVE">
+
+                                            <button type="submit"
+                                                    class="btn btn-success">
+
+                                                Kích hoạt
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- EMPTY -->
+
+                            <tr th:if="${#lists.isEmpty(staffList)}">
+
+                                <td colspan="7"
+                                    class="empty-message">
+
+                                    Không tìm thấy nhân viên phù hợp.
+
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PAGINATION
+                    ================================================== -->
+
+                    <div class="pagination-wrapper"
+                         th:if="${staffPage != null and staffPage.totalPages > 0}">
+
+                        <div class="pagination-info">
+
+                            Hiển thị
+                            <strong th:text="${staffList.size()}">10</strong>
+                            nhân viên /
+                            tổng số
+                            <strong th:text="${staffPage.totalElements}">20</strong>
+                            nhân viên
+
+                        </div>
+
+
+                        <div class="pagination">
+
+                            <!-- PREVIOUS -->
+
+                            <a th:if="${staffPage.hasPrevious()}"
+                               th:href="@{/admin/staff/page(
+                                    page=${currentPage - 1},
+                                    size=${pageSize},
+                                    keyword=${keyword},
+                                    status=${status}
+                               )}">
+
+                                ‹
+
+                            </a>
+
+                            <span th:unless="${staffPage.hasPrevious()}"
+                                  class="disabled">
+
+                                ‹
+
+                            </span>
+
+
+                            <!-- PAGE NUMBERS -->
+
+                            <a th:each="i : ${#numbers.sequence(0, staffPage.totalPages - 1)}"
+
+                               th:href="@{/admin/staff/page(
+                                    page=${i},
+                                    size=${pageSize},
+                                    keyword=${keyword},
+                                    status=${status}
+                               )}"
+
+                               th:text="${i + 1}"
+
+                               th:classappend="${i == currentPage} ? 'active' : ''">
+
+                                1
+
+                            </a>
+
+
+                            <!-- NEXT -->
+
+                            <a th:if="${staffPage.hasNext()}"
+                               th:href="@{/admin/staff/page(
+                                    page=${currentPage + 1},
+                                    size=${pageSize},
+                                    keyword=${keyword},
+                                    status=${status}
+                               )}">
+
+                                ›
+
+                            </a>
+
+                            <span th:unless="${staffPage.hasNext()}"
+                                  class="disabled">
+
+                                ›
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
-</div>
 
 
-<!-- ========================= -->
-<!-- DELETE CONFIRMATION MODAL -->
-<!-- ========================= -->
+<!-- =====================================================
+     DELETE MODAL
+====================================================== -->
 
 <div id="deleteModal"
      class="delete-modal-overlay">
@@ -174,28 +499,39 @@
         <h2>Xóa nhân viên?</h2>
 
         <p class="delete-modal-text">
+
             Bạn có chắc chắn muốn xóa nhân viên
+
             <strong id="deleteStaffName"></strong>?
+
         </p>
 
         <p class="delete-modal-warning">
+
             Hành động này không thể hoàn tác.
+
         </p>
+
 
         <div class="delete-modal-actions">
 
             <button type="button"
                     class="btn-modal-cancel"
                     onclick="closeDeleteModal()">
+
                 Hủy
+
             </button>
+
 
             <form id="deleteForm"
                   method="post">
 
                 <button type="submit"
                         class="btn-modal-delete">
+
                     Xóa nhân viên
+
                 </button>
 
             </form>
@@ -207,21 +543,25 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- TOAST -->
-<!-- ========================= -->
+<!-- =====================================================
+     TOAST
+====================================================== -->
 
 <div class="toast-container">
 
     <div th:if="${success}"
          class="toast toast-success">
 
-        <div class="toast-title">
-            Thành công
-        </div>
+        <div>
 
-        <div class="toast-message"
-             th:text="${success}">
+            <div class="toast-title">
+                Thành công
+            </div>
+
+            <div class="toast-message"
+                 th:text="${success}">
+            </div>
+
         </div>
 
     </div>
@@ -230,12 +570,16 @@
     <div th:if="${error}"
          class="toast toast-error">
 
-        <div class="toast-title">
-            Thất bại
-        </div>
+        <div>
 
-        <div class="toast-message"
-             th:text="${error}">
+            <div class="toast-title">
+                Thất bại
+            </div>
+
+            <div class="toast-message"
+                 th:text="${error}">
+            </div>
+
         </div>
 
     </div>
@@ -243,42 +587,61 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================= -->
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script>
 
     function openDeleteModal(button) {
 
-        const userId = button.getAttribute("data-id");
-        const staffName = button.getAttribute("data-name");
+        const userId =
+            button.getAttribute("data-id");
 
-        document.getElementById("deleteStaffName").textContent = staffName;
-        document.getElementById("deleteForm").action = "/admin/staff/delete/" + userId;
-        document.getElementById("deleteModal").style.display = "flex";
+        const staffName =
+            button.getAttribute("data-name");
+
+
+        document.getElementById("deleteStaffName")
+            .textContent = staffName;
+
+
+        document.getElementById("deleteForm")
+            .action =
+            "/admin/staff/delete/" + userId;
+
+
+        document.getElementById("deleteModal")
+            .style.display = "flex";
     }
 
 
     function closeDeleteModal() {
 
-        document.getElementById("deleteModal").style.display = "none";
+        document.getElementById("deleteModal")
+            .style.display = "none";
     }
 
 
-    document.getElementById("deleteModal").addEventListener("click", function (event) {
+    document
+        .getElementById("deleteModal")
+        .addEventListener("click", function (event) {
 
-        if (event.target === this) {
-            closeDeleteModal();
-        }
+            if (event.target === this) {
 
-    });
+                closeDeleteModal();
+
+            }
+
+        });
 
 
     document.addEventListener("keydown", function (event) {
 
         if (event.key === "Escape") {
+
             closeDeleteModal();
+
         }
 
     });
@@ -286,207 +649,19 @@
 
     setTimeout(function () {
 
-        const toasts = document.querySelectorAll(".toast");
+        const toasts =
+            document.querySelectorAll(".toast");
 
         toasts.forEach(function (toast) {
+
             toast.classList.add("hide");
+
         });
 
     }, 3000);
 
 </script>
 
-
-<!-- ========================= -->
-<!-- MODAL CSS -->
-<!-- ========================= -->
-
-<style>
-
-    .delete-modal-overlay {
-
-        display: none;
-
-        position: fixed;
-
-        inset: 0;
-
-        background: rgba(0, 0, 0, 0.5);
-
-        align-items: center;
-
-        justify-content: center;
-
-        z-index: 9999;
-
-        backdrop-filter: blur(2px);
-    }
-
-
-    .delete-modal {
-
-        width: 430px;
-
-        max-width: calc(100% - 40px);
-
-        background: #ffffff;
-
-        border-radius: 18px;
-
-        padding: 32px;
-
-        text-align: center;
-
-        box-shadow:
-                0 20px 50px rgba(0, 0, 0, 0.2);
-
-        animation: deleteModalShow 0.2s ease-out;
-    }
-
-
-    .delete-modal-icon {
-
-        width: 64px;
-
-        height: 64px;
-
-        margin: 0 auto 18px;
-
-        border-radius: 50%;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        background: #fff3cd;
-
-        color: #dc3545;
-
-        font-size: 30px;
-
-        font-weight: bold;
-
-        border: 5px solid #fff8df;
-    }
-
-
-    .delete-modal h2 {
-
-        margin: 0 0 12px;
-
-        font-size: 24px;
-
-        color: #222;
-    }
-
-
-    .delete-modal-text {
-
-        margin: 0 auto 8px;
-
-        color: #555;
-
-        font-size: 15px;
-
-        line-height: 1.5;
-    }
-
-
-    .delete-modal-text strong {
-
-        color: #222;
-    }
-
-
-    .delete-modal-warning {
-
-        margin: 0;
-
-        color: #dc3545;
-
-        font-size: 13px;
-    }
-
-
-    .delete-modal-actions {
-
-        display: flex;
-
-        justify-content: center;
-
-        gap: 12px;
-
-        margin-top: 28px;
-    }
-
-
-    .delete-modal-actions button {
-
-        border: none;
-
-        border-radius: 8px;
-
-        padding: 11px 22px;
-
-        font-size: 14px;
-
-        font-weight: 500;
-
-        cursor: pointer;
-
-        transition: 0.2s;
-    }
-
-
-    .btn-modal-cancel {
-
-        background: #e9ecef;
-
-        color: #333;
-    }
-
-
-    .btn-modal-cancel:hover {
-
-        background: #d8dde2;
-    }
-
-
-    .btn-modal-delete {
-
-        background: #dc3545;
-
-        color: white;
-    }
-
-
-    .btn-modal-delete:hover {
-
-        background: #bb2d3b;
-    }
-
-
-    @keyframes deleteModalShow {
-
-        from {
-
-            opacity: 0;
-
-            transform: scale(0.92);
-        }
-
-        to {
-
-            opacity: 1;
-
-            transform: scale(1);
-        }
-    }
-
-</style>
-
 </body>
+
 </html>
-```
