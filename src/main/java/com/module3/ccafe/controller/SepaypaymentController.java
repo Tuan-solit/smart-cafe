@@ -1,4 +1,4 @@
-package com.module3.ccafe.service;
+package com.module3.ccafe.controller;
 
 import com.module3.ccafe.dto.request.SepayRequest;
 import com.module3.ccafe.dto.response.SepayResponse;
@@ -11,6 +11,7 @@ import com.module3.ccafe.entity.enums.PaymentStatus;
 import com.module3.ccafe.repository.OrderRepository;
 import com.module3.ccafe.repository.PaymentGatewayLogRepository;
 import com.module3.ccafe.repository.PaymentRepository;
+import com.module3.ccafe.service.CafeTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/sepay-payment")
 @RequiredArgsConstructor
-public class SepaypaymentService {
+public class SepaypaymentController {
 
     final PaymentRepository paymentRepository;
     final OrderRepository orderRepository;
