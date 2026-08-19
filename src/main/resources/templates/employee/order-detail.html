@@ -36,10 +36,19 @@
         </tr>
         <tr th:each="item : ${orderDetail.items}">
           <td th:text="${item.productName}"></td>
-          <td th:text="${item.quantity}"></td>
+          <td>
+            <form th:if="${orderDetail.status == 'OPEN'}"
+                  th:action="@{/employee/orders/{orderId}/items/{productId}/update(orderId=${orderDetail.orderId}, productId=${item.productId})}"
+                  method="post" class="d-inline">
+              <input type="number" name="quantity" th:value="${item.quantity}"
+                     min="1" style="width: 70px" class="form-control form-control-sm"
+                     onchange="this.form.submit()">
+            </form>
+            <span th:if="${orderDetail.status != 'OPEN'}" th:text="${item.quantity}"></span>
+          </td>
           <td th:text="${item.price + ' đ'}"></td>
           <td th:text="${item.note}"></td>
-          <td class="text-end" th:text="${item.price * item.quantity + ' đ'}"></td>
+          <td class="text-end" th:text="${item.price * item.quantity + ' đ'}" ></td>
           <td th:if="${orderDetail.status == 'OPEN'}">
             <button type="button" class="btn btn-sm btn-outline-danger"
                     data-bs-toggle="modal" data-bs-target="#removeItemModal"
@@ -61,7 +70,6 @@
       </table>
     </div>
 
-    <!-- Form thêm món -->
     <div class="panel p-3 mt-3" th:if="${orderDetail.status == 'OPEN'}">
       <h6 class="mb-3">Thêm món vào đơn</h6>
       <form th:action="@{/employee/orders/{id}/items(id=${orderDetail.orderId})}" method="post"
@@ -129,8 +137,47 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="removeItemModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Xác nhận xóa món
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">Xóa món <strong id="removeItemProductName"></strong> khỏi đơn hàng?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+            <form id="removeItemForm" method="post">
+              <button type="submit" class="btn btn-danger">
+                <i class="fa-solid fa-trash me-1"></i>Xóa
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+<script th:inline="javascript">
+  const removeItemModal = document.getElementById('removeItemModal');
+  removeItemModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget; // nút vừa bấm để mở modal
+    const orderId = button.getAttribute('data-order-id');
+    const productId = button.getAttribute('data-product-id');
+    const productName = button.getAttribute('data-product-name');
+
+    document.getElementById('removeItemProductName').textContent = productName;
+
+    const form = document.getElementById('removeItemForm');
+    form.action = `/employee/orders/${orderId}/items/${productId}/remove`;
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

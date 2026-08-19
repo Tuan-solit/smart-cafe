@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,4 +26,5 @@ public interface PaymentRepository extends JpaRepository<Payment,Integer> {
 
     Optional<Payment> findByOrder_OrderIdAndStatus(Integer orderId, PaymentStatus status);
     Optional<Payment> findByInternalTransactionCodeAndStatus(String code, PaymentStatus status);
+    List<Payment> findAllByOrder_OrderIdAndStatus(Integer orderId, PaymentStatus status);
 }
