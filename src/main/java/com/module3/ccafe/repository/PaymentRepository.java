@@ -1,6 +1,7 @@
 package com.module3.ccafe.repository;
 
 import com.module3.ccafe.entity.Payment;
+import com.module3.ccafe.entity.enums.PaymentMethod;
 import com.module3.ccafe.entity.enums.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,4 +27,5 @@ public interface PaymentRepository extends JpaRepository<Payment,Integer> {
 
     Optional<Payment> findByOrder_OrderIdAndStatus(Integer orderId, PaymentStatus status);
     Optional<Payment> findByInternalTransactionCodeAndStatus(String code, PaymentStatus status);
+    List<Payment> findAllByOrder_OrderIdAndStatus(Integer orderId, PaymentStatus status);
 }

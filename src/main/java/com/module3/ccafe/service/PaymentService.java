@@ -2,6 +2,7 @@ package com.module3.ccafe.service;
 
 import com.module3.ccafe.entity.Order;
 import com.module3.ccafe.entity.Payment;
+import com.module3.ccafe.entity.User;
 import com.module3.ccafe.entity.enums.OrderStatus;
 import com.module3.ccafe.entity.enums.PaymentMethod;
 import com.module3.ccafe.entity.enums.PaymentStatus;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,7 +39,8 @@ public class PaymentService {
     private String bankName;
     @Value("${sepay.accountHolder}")
     private String accountHolder;
-
+    
+    //nhan vien tao payment giup khach
     @Transactional
     public Payment confirmCashPayment(Integer orderId, Integer employeeId){
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Dơn hàng không tồn tại"));
@@ -55,7 +58,7 @@ public class PaymentService {
         payment.setUser(userRepository.getReferenceById(employeeId));
         payment.setTotal(total);
         payment.setPaymentMethod(PaymentMethod.CASH);
-        payment.setInternalTransactionCode(LocalDateTime.now().toString());
+        payment.setInternalTransactionCode(generateTransactionCode(orderId));
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setConfirmedAt(LocalDateTime.now());
         paymentRepository.save(payment);
@@ -65,6 +68,13 @@ public class PaymentService {
 
         return payment;
 
+    }
+
+    private String generateTransactionCode(Integer orderId) {
+        return "CASH-"
+                + orderId
+                + "-"
+                + System.currentTimeMillis();
     }
 
     public String buildQrUrl(Payment payment) {
@@ -83,27 +93,38 @@ public class PaymentService {
 
 
     @Transactional
-    public Payment createOnlinePayment(Integer orderId, Integer employeeId){
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại "));
-        if(order.getStatus() == OrderStatus.PAID){
-            throw new IllegalArgumentException("ĐƠn hàng đã được thanh toán");
+    public Payment createOnlinePayment(Integer orderId, Integer employeeId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại"));
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new IllegalArgumentException("Đơn hàng đã được thanh toán");
         }
-        Optional<Payment> existing = paymentRepository.findByOrder_OrderIdAndStatus(orderId,PaymentStatus.PENDING);
-        if(existing.isPresent()){
-            return existing.get();
+
+        List<Payment> oldPendings = paymentRepository
+                .findAllByOrder_OrderIdAndStatus(orderId, PaymentStatus.PENDING);
+        for (Payment old : oldPendings) {
+            old.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(old);
         }
+
         BigDecimal total = orderDetailRepository.sumTotalByOrderId(orderId);
-        if(total == null){
+        if (total == null) {
             throw new IllegalArgumentException("Đơn hàng chưa có món ăn, không thể thanh toán");
         }
+
         String code = generatePaymentCode(orderId);
-        Payment payment = new Payment();
-        payment.setOrder(order);
-        payment.setUser(userRepository.getReferenceById(employeeId));
-        payment.setTotal(total);
-        payment.setPaymentMethod(PaymentMethod.ONLINE);
-        payment.setStatus(PaymentStatus.PENDING);
-        payment.setInternalTransactionCode(code);
+
+        Payment payment = Payment.builder()
+                .order(order)
+                .user(userRepository.getReferenceById(employeeId))
+                .total(total)
+                .paymentMethod(PaymentMethod.ONLINE)
+                .status(PaymentStatus.PENDING)
+                .internalTransactionCode(code)
+                .createdAt(LocalDateTime.now())
+                .build();
+
         paymentRepository.save(payment);
         return payment;
     }
@@ -115,4 +136,17 @@ public class PaymentService {
         return "DH" + suffix;
     }
 
-}
+    @Transactional
+    public void cancelPayment(Integer paymentId) {
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow();
+        if (payment.getStatus() == PaymentStatus.PENDING) {
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
+        }
+    }
+
+
+    public Payment findById(Integer paymentId) {
+        return paymentRepository.findById(paymentId).orElseThrow();
+    }
+    }

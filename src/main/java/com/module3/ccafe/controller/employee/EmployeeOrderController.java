@@ -6,10 +6,12 @@ import com.module3.ccafe.entity.Payment;
 import com.module3.ccafe.entity.enums.ProductStatus;
 import com.module3.ccafe.repository.ProductRepository;
 import com.module3.ccafe.security.CustomUserPrincipal;
+import com.module3.ccafe.service.CafeTableService;
 import com.module3.ccafe.service.OrderService;
 import com.module3.ccafe.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +28,7 @@ public class EmployeeOrderController {
     private final OrderService orderService;
     private final PaymentService paymentService;
     private final ProductRepository productRepository;
+    private final CafeTableService cafeTableService;
 
     @GetMapping
     public String listPendingOrders(@RequestParam(defaultValue = "0") int page,
@@ -98,6 +101,7 @@ public class EmployeeOrderController {
                                      RedirectAttributes redirectAttributes){
         try {
             paymentService.confirmCashPayment(orderId, principal.getUserId());
+            cafeTableService.closeTable(orderId);
             redirectAttributes.addFlashAttribute("message", "Xác nhận thanh toán thành công");
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -116,7 +120,7 @@ public class EmployeeOrderController {
             return "employee/payment-qr";
         }catch (IllegalArgumentException e){
             redirectAttributes.addFlashAttribute("error",e.getMessage());
-            return "redirect:/employee/orders" + orderId;
+            return "redirect:/employee/orders/" + orderId;
         }
     }
     @GetMapping("/payments/{paymentId}/status")
@@ -124,5 +128,13 @@ public class EmployeeOrderController {
     public Map<String,String> checkPayMentStatus(@PathVariable Integer paymentId){
         Payment payment = paymentService.findByid(paymentId);
         return Map.of("status", payment.getStatus().name());
+    }
+
+
+    @PostMapping("/payments/{paymentId}/cancel")
+    @ResponseBody
+    public ResponseEntity<Void> cancelPayment(@PathVariable Integer paymentId) {
+        paymentService.cancelPayment(paymentId);
+        return ResponseEntity.ok().build();
     }
 }

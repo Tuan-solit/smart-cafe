@@ -17,7 +17,7 @@
     <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-    <!-- Bộ lọc -->
+
     <form th:action="@{/employee/tables}" method="get" class="row g-2 mb-3">
         <div class="col-auto">
             <input type="text" name="tableNumber" class="form-control" placeholder="Số bàn"
@@ -37,7 +37,6 @@
         </div>
     </form>
 
-    <!-- Danh sách bàn dạng lưới -->
     <div class="row g-3">
         <div class="col-6 col-md-4 col-lg-3" th:each="table : ${cafeTables.content}">
             <div class="panel p-3 h-100 d-flex flex-column">
@@ -56,11 +55,10 @@
                     <form th:if="${table.status == 'AVAILABLE'}"
                           th:action="@{/employee/tables/{id}/open(id=${table.tableId})}" method="post">
                         <button type="submit" class="btn btn-sm btn-dark w-100">
-                            <i class="fa-solid fa-plus me-1"></i>Mở bàn
+                            <i class="fa-solid fa-plus me-1"></i>Chọn bàn
                         </button>
                     </form>
 
-                    <!-- Bàn đang phục vụ -> link tới danh sách đơn (vì chưa lưu orderId ở đây) -->
                     <a th:if="${table.status == 'IN_SERVICE'}"
                        th:href="@{/employee/orders}" class="btn btn-sm btn-outline-dark w-100">
                         <i class="fa-solid fa-eye me-1"></i>Xem đơn
