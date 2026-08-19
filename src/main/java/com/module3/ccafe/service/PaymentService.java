@@ -2,6 +2,7 @@ package com.module3.ccafe.service;
 
 import com.module3.ccafe.entity.Order;
 import com.module3.ccafe.entity.Payment;
+import com.module3.ccafe.entity.User;
 import com.module3.ccafe.entity.enums.OrderStatus;
 import com.module3.ccafe.entity.enums.PaymentMethod;
 import com.module3.ccafe.entity.enums.PaymentStatus;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,7 +39,8 @@ public class PaymentService {
     private String bankName;
     @Value("${sepay.accountHolder}")
     private String accountHolder;
-
+    
+    //nhan vien tao payment giup khach
     @Transactional
     public Payment confirmCashPayment(Integer orderId, Integer employeeId){
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Dơn hàng không tồn tại"));
@@ -55,7 +58,7 @@ public class PaymentService {
         payment.setUser(userRepository.getReferenceById(employeeId));
         payment.setTotal(total);
         payment.setPaymentMethod(PaymentMethod.CASH);
-        payment.setInternalTransactionCode(LocalDateTime.now().toString());
+        payment.setInternalTransactionCode(generateTransactionCode(orderId));
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setConfirmedAt(LocalDateTime.now());
         paymentRepository.save(payment);
@@ -65,6 +68,13 @@ public class PaymentService {
 
         return payment;
 
+    }
+
+    private String generateTransactionCode(Integer orderId) {
+        return "CASH-"
+                + orderId
+                + "-"
+                + System.currentTimeMillis();
     }
 
     public String buildQrUrl(Payment payment) {

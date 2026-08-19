@@ -40,11 +40,9 @@ public class SecurityConfig {
                                 "/orders/**",
                                 "/css/**",
                                 "/js/**",
-<<<<<<< HEAD
-                                "/sepay-payment/**"
-=======
-                                "/images/**"
->>>>>>> origin
+                                "/sepay-payment/**",
+                                "/images/**",
+                                "/ws/**"
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form

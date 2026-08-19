@@ -10,10 +10,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-  web:
-    resources:
-      add-mappings: false
-
     show-sql: true
     properties:
       hibernate:
@@ -38,7 +34,7 @@ sepay:
   bank-account: "0721074737777"
   bank-name: MBBank
   accountHolder: Bui Huu Tam
-  api-key: ${api-key}
+  api-key: OUSXKF4E533AN7JCASUVRZNLI9IXNXMRQVKSGFOQWZECCL0MFIGHYKJFBQ6WWBBT
 
 
 cloudinary:

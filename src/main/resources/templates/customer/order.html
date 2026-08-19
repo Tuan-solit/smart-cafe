@@ -26,13 +26,13 @@
         </span>
 
     </div>
-    
+
     <div class="order-header">
         <span>Sản phẩm</span>
         <span>SL</span>
         <span>Thành tiền</span>
     </div>
-    
+
     <div class="order-item"
          th:each="detail : ${orderDetails}">
         <div class="product-info">
@@ -41,10 +41,10 @@
             <span th:text="${detail.product.name}">
             </span>
         </div>
-        
+
         <div class="quantity"
              th:text="${detail.quantity}">
-            
+
         </div>
 
         <div class="item-total">
@@ -72,14 +72,124 @@
                 0,
                 'POINT'
             ) + 'đ'}">
-            
+
         </strong>
 
     </div>
-    <a th:href="@{/payment}"
-       class="payment-btn">
+    <button type="button"
+            class="payment-btn"
+            onclick="openPaymentModal()">
         Thanh toán
-    </a>
+    </button>
 </div>
+
+<div id="paymentModal"
+     class="payment-modal">
+    <div class="payment-modal-content">
+        <div class="payment-modal-header">
+            <h2>Chọn phương thức thanh toán</h2>
+            <button type="button"
+                    class="modal-close"
+                    onclick="closePaymentModal()">
+                ×
+            </button>
+        </div>
+<!--        <div class="payment-total">-->
+<!--            <span>Tổng thanh toán</span>-->
+<!--            <strong-->
+<!--                    th:text="${#numbers.formatDecimal(-->
+<!--                    total,-->
+<!--                    0,-->
+<!--                    'COMMA',-->
+<!--                    0,-->
+<!--                    'POINT'-->
+<!--                ) + 'đ'}">-->
+<!--                183.000đ-->
+<!--            </strong>-->
+<!--        </div>-->
+        <div class="payment-options">
+            <label class="payment-option">
+                <input type="radio"
+                       name="paymentMethod"
+                       value="CASH">
+                <div class="payment-option-content">
+                    <div class="payment-icon">💵</div>
+                    <div>
+                        <strong>Tiền mặt</strong>
+                        <span>Thanh toán trực tiếp tại quầy</span>
+                    </div>
+                </div>
+            </label>
+            <label class="payment-option">
+                <input type="radio"
+                       name="paymentMethod"
+                       value="ONLINE">
+                <div class="payment-option-content">
+                    <div class="payment-icon">🏦</div>
+                    <div>
+                        <strong>Chuyển khoản</strong>
+                        <span>Thanh toán qua QR với PayOS</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <input type="hidden" id="currentOrderId" th:value="${order != null ? order.orderId : ''}">
+        <button type="button"
+                class="confirm-payment-btn"
+                onclick="confirmPayment()">
+            Xác nhận thanh toán
+        </button>
+    </div>
+
+</div>
+
+<script>
+    function openPaymentModal() {
+        document.getElementById("paymentModal").classList.add("active");
+    }
+    
+    function closePaymentModal() {
+        document.getElementById("paymentModal").classList.remove("active");
+    }
+
+    function confirmPayment() {
+        const selected =
+            document.querySelector('input[name="paymentMethod"]:checked');
+        if (!selected) {
+            alert("Vui lòng chọn phương thức thanh toán.");
+            return;
+        }
+        if (selected.value === "CASH") {
+            payByCash();
+        } else if (selected.value === "ONLINE") {
+            payByOnline();
+        }
+    }
+
+    function payByCash() {
+        const orderIdInput = document.getElementById("currentOrderId");
+        const orderId = orderIdInput ? orderIdInput.value : null;
+
+        if (!orderId) {
+            alert("Không tìm thấy thông tin đơn hàng!");
+            return;
+        }
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/payment/cash/request";
+
+        const inputOrderId = document.createElement("input");
+        inputOrderId.type = "hidden";
+        inputOrderId.name = "orderId"; 
+        inputOrderId.value = orderId;
+        form.appendChild(inputOrderId)
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function payByOnline() {
+        window.location.href = "/payment/online";
+    }
+</script>
 </body>
 </html>
