@@ -22,7 +22,7 @@ public class QrCodeService {
 
     public String generateQrCode(Integer tableId) {
         try {
-            String qrContent = baseUrl + "/menu?table=" + tableId;
+            String qrContent = baseUrl + "/qr-scan?tableId=" + tableId;
             
             BitMatrix bitMatrix = new MultiFormatWriter().encode(
                     qrContent,
