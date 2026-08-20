@@ -2,10 +2,14 @@ package com.module3.ccafe.service;
 
 import com.module3.ccafe.dto.Cart;
 import com.module3.ccafe.dto.CartItem;
+import com.module3.ccafe.entity.CafeTable;
 import com.module3.ccafe.entity.Order;
 import com.module3.ccafe.entity.OrderDetail;
 import com.module3.ccafe.entity.Product;
+import com.module3.ccafe.entity.enums.OrderStatus;
 import com.module3.ccafe.entity.enums.ProductStatus;
+import com.module3.ccafe.entity.enums.TableStatus;
+import com.module3.ccafe.repository.CafeTableRepository;
 import com.module3.ccafe.repository.OrderDetailRepository;
 import com.module3.ccafe.repository.OrderRepository;
 import com.module3.ccafe.repository.ProductRepository;
@@ -14,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -21,10 +26,12 @@ import java.util.Map;
 public class CartService {
     private static final String CART_SESSION_KEY = "CART";
     private static final String ORDER_ID_SESSION_KEY = "ORDER_ID";
+    private static final String TABLE_ID_SESSION_KEY = "TABLE_ID";
 
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final CafeTableRepository cafeTableRepository;
 
     public Cart getCart(HttpSession session) {
         Cart cart = (Cart) session.getAttribute(CART_SESSION_KEY);
@@ -71,15 +78,38 @@ public class CartService {
         if (cart.isEmpty()) {
             throw new RuntimeException("Giỏ hàng đang trống");
         }
-        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
-//        if (orderId == null) {
-//            throw new RuntimeException("Chưa có phiên bàn đang hoạt động");
-//        }
-        if (orderId == null) {
-            orderId = 2;
-            session.setAttribute(ORDER_ID_SESSION_KEY, orderId);
+        Integer tableId = (Integer) session.getAttribute(TABLE_ID_SESSION_KEY);
+        if (tableId == null) {
+            throw new RuntimeException("Vui lòng quét mã QR tại bàn để thực hiện gọi món");
         }
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy phiên bàn"));
+        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
+        Order order = null;
+        if (orderId != null) {
+            order = orderRepository.findById(orderId).orElse(null);
+            if (order != null && order.getStatus() == OrderStatus.PAID) {
+                session.removeAttribute(ORDER_ID_SESSION_KEY);
+                orderId = null;
+                order = null;
+            }
+        }
+        if (orderId == null) {
+            CafeTable table = cafeTableRepository.findById(tableId).orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+            table.setStatus(TableStatus.IN_SERVICE);
+            cafeTableRepository.save(table);
+            order = new Order();
+            order.setTable(table);
+            order.setCreatedAt(LocalDateTime.now());
+            order.setStatus(OrderStatus.OPEN);
+            order = orderRepository.save(order);
+            session.setAttribute(ORDER_ID_SESSION_KEY, order.getOrderId());
+        } else {
+            if (order == null) {
+                order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+            }
+            if (order.getStatus() != OrderStatus.OPEN) {
+                throw new RuntimeException("Đơn hàng đã đóng, vui lòng quét lại mã QR");
+            }
+        }
         for (CartItem item : cart.getItems()) {
             Product product = productRepository.findById(item.getProductId()).orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm: " + item.getProductName()));
             if (product.getStatus() != ProductStatus.AVAILABLE) {

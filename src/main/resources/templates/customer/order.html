@@ -188,7 +188,12 @@
     }
     
     function payByOnline() {
-        window.location.href = "/payment/online";
+        const orderId = document.getElementById("currentOrderId")?.value;
+        if (!orderId) {
+            alert("Không tìm thấy thông tin đơn hàng!");
+            return;
+        }
+        window.location.href = "/payment/" + orderId + "/online";
     }
 </script>
 </body>
