@@ -1,12 +1,16 @@
 package com.module3.ccafe.controller.customer;
 
 import com.module3.ccafe.dto.Cart;
+import com.module3.ccafe.entity.CafeTable;
 import com.module3.ccafe.entity.Category;
 import com.module3.ccafe.entity.Product;
+import com.module3.ccafe.entity.enums.TableStatus;
+import com.module3.ccafe.repository.CafeTableRepository;
 import com.module3.ccafe.service.CartService;
 import com.module3.ccafe.service.ICategoryService;
 import com.module3.ccafe.service.IProductService;
 import com.module3.ccafe.service.OrderService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,6 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
@@ -26,13 +31,18 @@ public class MenuController {
     private final ICategoryService categoryService;
     private final IProductService productService;
     private final CartService cartService;
-    private final OrderService orderService;
+    private final CafeTableRepository cafeTableRepository;
 
     @GetMapping("/menu")
     public String showMenu(@RequestParam(required = false) Integer categoryId,
                            @RequestParam(required = false) String keyword,
                            HttpSession session,
                            Model model) {
+        Integer tableId = (Integer) session.getAttribute("TABLE_ID");
+        if (tableId != null) {
+            CafeTable table = cafeTableRepository.findById(tableId).orElse(null);
+            model.addAttribute("currentTable", table);
+        }
         List<Category> categories = categoryService.findAll();
         List<Product> products = productService.findAvailableProducts();
         List<Map<String, Object>> categoryList = categories.stream().map(c -> {
@@ -56,7 +66,6 @@ public class MenuController {
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = cartService.getCart(session);
         model.addAttribute("cart", cart);
-        model.addAttribute("orderDetailCount",orderService.getCurrentOrderDetailCount(session));
         model.addAttribute("categoriesJson", mapper.writeValueAsString(categoryList));
         model.addAttribute("productsJson", mapper.writeValueAsString(productList));
         model.addAttribute("selectedCategory", categoryId);

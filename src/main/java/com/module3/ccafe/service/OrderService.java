@@ -198,14 +198,6 @@ public class OrderService {
         )).values().stream().flatMap(Optional::stream).toList();
     }
 
-    public long getCurrentOrderDetailCount(HttpSession session) {
-        Integer orderId = (Integer) session.getAttribute(ORDER_ID_SESSION_KEY);
-        if (orderId == null) {
-            return 0;
-        }
-        return orderDetailRepository.countByOrderOrderId(orderId);
-    }
-
     public BigDecimal getCurrentOrderTotal(HttpSession session) {
         List<OrderDetail> details = getCurrentOrderDetails(session);
         return details.stream().map(detail -> detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add);
