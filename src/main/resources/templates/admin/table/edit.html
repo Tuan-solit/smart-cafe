@@ -88,6 +88,22 @@
                  FORM CARD
             ================================================== -->
 
+            <!-- ERROR MESSAGE -->
+
+            <div th:if="${error}"
+                 class="error-message">
+
+                <span th:text="${error}"></span>
+
+            </div>
+
+
+            <div class="card form-card">
+
+                <form th:action="@{/admin/table/edit/{id}(id=${table.tableId})}"
+                      th:object="${tableRequest}"
+                      method="post">
+
             <div class="card form-card">
 
                 <form th:action="@{/admin/table/edit/{id}(id=${table.tableId})}"
@@ -387,6 +403,24 @@
         color: #666;
 
         margin-bottom: 12px;
+
+    }
+
+    .error-message {
+
+        background: #fde2e2;
+
+        color: #b42318;
+
+        border: 1px solid #f5b5b5;
+
+        padding: 12px 16px;
+
+        border-radius: 6px;
+
+        margin-bottom: 20px;
+
+        font-size: 14px;
 
     }
 

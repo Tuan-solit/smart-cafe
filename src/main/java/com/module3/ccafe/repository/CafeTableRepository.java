@@ -37,4 +37,11 @@ public interface CafeTableRepository extends JpaRepository<CafeTable,Integer> {
             @Param("status") TableStatus status,
             Pageable pageable
     );
+
+    boolean existsByTableNumber(String tableNumber);
+
+    boolean existsByTableNumberAndTableIdNot(
+            String tableNumber,
+            Integer tableId
+    );
 }

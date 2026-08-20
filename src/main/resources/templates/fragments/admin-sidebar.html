@@ -1,113 +1,93 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
 
 <body>
 
 <nav th:fragment="sidebar(active)"
      class="admin-sidebar">
 
-    <!-- LOGO -->
-
     <div class="admin-brand">
+
         <span>☕</span>
+
         <span>Smart Cafe</span>
+
     </div>
 
 
-    <!-- MENU -->
-
     <ul class="admin-menu">
-
-        <!-- DASHBOARD -->
 
         <li>
             <a th:href="@{/admin/dashboard}"
                th:classappend="${active == 'dashboard'} ? 'active'">
 
                 <span>▦</span>
-
                 <span>Dashboard</span>
 
             </a>
         </li>
 
 
-        <!-- NHÂN VIÊN -->
-
         <li>
             <a th:href="@{/admin/staff/page}"
                th:classappend="${active == 'staff'} ? 'active'">
 
                 <span>👥</span>
-
                 <span>Nhân viên</span>
 
             </a>
         </li>
 
 
-        <!-- DANH MỤC -->
-
         <li>
             <a th:href="@{/admin/category/page}"
                th:classappend="${active == 'category'} ? 'active'">
 
                 <span>☷</span>
-
                 <span>Danh mục</span>
 
             </a>
         </li>
 
 
-        <!-- SẢN PHẨM -->
-
         <li>
             <a th:href="@{/admin/product/page}"
                th:classappend="${active == 'product'} ? 'active'">
 
                 <span>☕</span>
-
                 <span>Sản phẩm</span>
 
             </a>
         </li>
 
 
-        <!-- BÀN -->
-
         <li>
             <a th:href="@{/admin/table/page}"
                th:classappend="${active == 'table'} ? 'active'">
 
                 <span>🪑</span>
-
                 <span>Bàn</span>
 
             </a>
         </li>
 
 
-        <!-- ĐƠN HÀNG -->
-
         <li>
             <a href="#">
 
                 <span>🧾</span>
-
                 <span>Đơn hàng</span>
 
             </a>
         </li>
 
-        <!-- THANH TOÁN -->
 
         <li>
             <a th:href="@{/admin/payments}"
                th:classappend="${active == 'payments'} ? 'active'">
 
                 <span>💰</span>
-
                 <span>Thanh toán</span>
 
             </a>
@@ -115,8 +95,6 @@
 
     </ul>
 
-
-    <!-- LOGOUT -->
 
     <div class="admin-sidebar-bottom">
 
@@ -134,5 +112,4 @@
 </nav>
 
 </body>
-
 </html>

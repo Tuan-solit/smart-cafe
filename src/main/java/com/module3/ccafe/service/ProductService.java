@@ -421,6 +421,10 @@ public class ProductService implements IProductService {
             return null;
         }
 
+        if (isCakeCategory(category)) {
+            return null;
+        }
+
 
         // -----------------------------------------------------
         // CATEGORY KHÁC CAFE
@@ -465,6 +469,10 @@ public class ProductService implements IProductService {
                 && category.getName()
                 .trim()
                 .equalsIgnoreCase("Cafe");
+    }
+
+    private boolean isCakeCategory(Category category) {
+        return category.getName() != null && category.getName().trim().equalsIgnoreCase("Cake");
     }
 
 

@@ -167,7 +167,7 @@
                         <small class="form-hint">
 
                             Nếu chọn danh mục
-                            <strong>Cafe</strong>,
+                            <strong>Cafe</strong>, <strong>Cake</strong>
                             sản phẩm sẽ không sử dụng kích thước.
 
                         </small>
@@ -454,6 +454,28 @@
         return categoryName === "cafe";
     }
 
+    function isCakeCategory() {
+
+        const selectedOption =
+            categorySelect.options[
+                categorySelect.selectedIndex
+                ];
+
+
+        if (!selectedOption) {
+            return false;
+        }
+
+
+        const categoryName =
+            selectedOption.textContent
+                .trim()
+                .toLowerCase();
+
+
+        return categoryName === "cake";
+    }
+
 
     /*
      * Cập nhật trạng thái Size.
@@ -478,6 +500,14 @@
             sizeHint.textContent =
                 "Danh mục Cafe không sử dụng kích thước.";
 
+        } else if (isCakeCategory()) {
+            sizeSelect.value = "";
+
+            sizeSelect.disabled = true;
+
+
+            sizeHint.textContent =
+                "Danh mục Cake không sử dụng kích thước.";
         } else {
 
             // =============================================

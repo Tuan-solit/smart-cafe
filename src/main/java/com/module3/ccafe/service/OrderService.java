@@ -211,4 +211,19 @@ public class OrderService {
         return details.stream().map(detail -> detail.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public long countTodayOrders() {
+
+        LocalDateTime startOfDay =
+                LocalDateTime.now()
+                        .toLocalDate()
+                        .atStartOfDay();
+
+        LocalDateTime endOfDay =
+                startOfDay.plusDays(1);
+
+        return orderRepository.countByCreatedAtBetween(
+                startOfDay,
+                endOfDay
+        );
+    }
 }

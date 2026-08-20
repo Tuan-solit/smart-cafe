@@ -67,4 +67,16 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
             Pageable pageable
     );
 
+    @Query("""
+    SELECT COALESCE(SUM(p.total), 0)
+    FROM Payment p
+    WHERE p.status = :status
+    AND p.confirmedAt >= :start
+    AND p.confirmedAt < :end
+""")
+    BigDecimal sumRevenueByStatusAndConfirmedAtBetween(
+            @Param("status") PaymentStatus status,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }

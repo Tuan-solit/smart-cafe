@@ -419,4 +419,21 @@ public class PaymentService {
         return "DH" + suffix;
     }
 
+    public BigDecimal getTodayRevenue() {
+
+        LocalDateTime startOfDay =
+                LocalDateTime.now()
+                        .toLocalDate()
+                        .atStartOfDay();
+
+        LocalDateTime endOfDay =
+                startOfDay.plusDays(1);
+
+        return paymentRepository
+                .sumRevenueByStatusAndConfirmedAtBetween(
+                        PaymentStatus.SUCCESS,
+                        startOfDay,
+                        endOfDay
+                );
+    }
 }

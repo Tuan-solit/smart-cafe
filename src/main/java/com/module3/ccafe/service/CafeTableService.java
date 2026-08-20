@@ -91,29 +91,70 @@ public class CafeTableService {
 
     @Transactional
     public CafeTableResponse createTable(CafeTableRequest request) {
-        if (request.getTableNumber() == null || request.getTableNumber().isBlank()) {
+
+        if (request.getTableNumber() == null
+                || request.getTableNumber().isBlank()) {
+
             throw new RuntimeException("Số bàn không được để trống");
         }
 
+        String tableNumber = request.getTableNumber().trim();
+
+        // Kiểm tra bàn đã tồn tại chưa
+        if (cafeTableRepository.existsByTableNumber(tableNumber)) {
+
+            throw new RuntimeException(
+                    "Tên bàn '" + tableNumber + "' đã tồn tại"
+            );
+        }
+
         CafeTable table = CafeTable.builder()
-                .tableNumber(request.getTableNumber())
+                .tableNumber(tableNumber)
                 .status(TableStatus.AVAILABLE)
                 .build();
 
         CafeTable saved = cafeTableRepository.save(table);
+
         return mapToResponse(saved);
     }
 
     @Transactional
-    public CafeTableResponse updateTable(Integer tableId, CafeTableRequest request) {
-        CafeTable table = cafeTableRepository.findById(tableId)
-                .orElseThrow(() -> new RuntimeException("Bàn không tồn tại"));
+    public CafeTableResponse updateTable(
+            Integer tableId,
+            CafeTableRequest request
+    ) {
 
-        if (request.getTableNumber() != null && !request.getTableNumber().isBlank()) {
-            table.setTableNumber(request.getTableNumber());
+        CafeTable table = cafeTableRepository.findById(tableId)
+                .orElseThrow(() ->
+                        new RuntimeException("Bàn không tồn tại")
+                );
+
+        if (request.getTableNumber() == null
+                || request.getTableNumber().isBlank()) {
+
+            throw new RuntimeException(
+                    "Số bàn không được để trống"
+            );
         }
 
+        String tableNumber = request.getTableNumber().trim();
+
+        // Kiểm tra tên bàn mới có trùng với bàn khác không
+        if (cafeTableRepository
+                .existsByTableNumberAndTableIdNot(
+                        tableNumber,
+                        tableId
+                )) {
+
+            throw new RuntimeException(
+                    "Tên bàn '" + tableNumber + "' đã tồn tại"
+            );
+        }
+
+        table.setTableNumber(tableNumber);
+
         CafeTable updated = cafeTableRepository.save(table);
+
         return mapToResponse(updated);
     }
 
