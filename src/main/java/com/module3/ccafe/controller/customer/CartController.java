@@ -50,19 +50,23 @@ public class CartController {
     }
 
     @PostMapping("/place-order")
-    public String placeOrder(@RequestParam Map<String,String> params,
+    public String placeOrder(@RequestParam Map<String, String> params,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
-        Map<Integer,String> notes = new HashMap<>();
-        params.forEach((key,value) ->{
-            if(key.startsWith("notes[")){
-                String productIdString = key.substring(6,key.length()-1);
+        Map<Integer, String> notes = new HashMap<>();
+        params.forEach((key, value) -> {
+            if (key.startsWith("notes[")) {
+                String productIdString = key.substring(6, key.length() - 1);
                 Integer productId = Integer.valueOf(productIdString);
-                notes.put(productId,value);
+                notes.put(productId, value);
             }
         });
-        cartService.placeOrder(session, notes);
-        redirectAttributes.addFlashAttribute("successMessage", "Gọi món thành công!");
+        try {
+            cartService.placeOrder(session, notes);
+            redirectAttributes.addFlashAttribute("success", "Gọi món thành công!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/menu";
     }
 }

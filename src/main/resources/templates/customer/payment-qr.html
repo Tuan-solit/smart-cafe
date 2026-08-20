@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Thanh toán chuyển khoản - Smart Cafe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brown-950: #2B1810; --brown-900: #3D2317; --brown-800: #5C3A21;
+            --cream-50: #FAF6EE; --white: #FFFFFF; --text-dark: #2B1810;
+            --text-muted: #8F8071; --border: #E9E0CE; --green: #3E7D3E; --red: #C0392B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--cream-50); color: var(--text-dark); min-height: 100vh; }
+        .logo-font { font-family: 'Playfair Display', serif; font-style: italic; }
+
+        .site-header { background: var(--brown-950); color: #fff; padding: 16px 32px; display: flex; align-items: center; gap: 12px; }
+        .site-header h1 { font-size: 22px; font-weight: 600; }
+
+        .wrap { max-width: 420px; margin: 32px auto; padding: 0 16px; }
+        .back-link { display: inline-block; margin-bottom: 16px; color: var(--text-muted); text-decoration: none; font-size: 14px; }
+
+        .panel { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 28px; text-align: center; }
+        .panel h2 { font-size: 17px; margin-bottom: 6px; }
+        .panel .amount { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+        .panel img { max-width: 260px; width: 100%; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 18px; }
+
+        .countdown { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+        .countdown span { font-weight: 700; color: var(--text-dark); }
+
+        .status-box { padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .status-pending { background: #FBF0DD; color: #9A6B1F; }
+        .status-success { background: #E4F3E4; color: var(--green); }
+        .status-failed { background: #FBEAE8; color: var(--red); }
+
+        .spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .retry-btn { margin-top: 14px; display: inline-block; background: var(--brown-800); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <span class="logo-font"><h1>Smart Cafe</h1></span>
+</header>
+
+<div class="wrap">
+    <a class="back-link" th:href="@{/menu(tableId=${tableId})}">&larr; Quay lại thực đơn</a>
+
+    <div class="panel">
+        <h2>Thanh toán đơn hàng #<span th:text="${orderId}">12</span></h2>
+        <div class="amount">
+            Số tiền: <span th:text="${#numbers.formatDecimal(total, 1, 'POINT', 0, 'COMMA')} + 'đ'">39.000đ</span>
+        </div>
+
+        <img th:src="${qrUrl}" alt="QR thanh toán">
+
+        <div class="countdown">Còn lại: <span id="countdown">15:00</span></div>
+
+        <div id="statusBox" class="status-box status-pending">
+            <span class="spinner"></span>
+            <span id="statusText">Đang chờ chuyển khoản...</span>
+        </div>
+
+        <a id="retryLink" class="retry-btn" style="display:none" th:href="@{/orders/{orderId}/pay-online(orderId=${orderId})}">Thử lại</a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const paymentId = /*[[${paymentId}]]*/ 0;
+    const tableId = /*[[${tableId}]]*/ 0;
+
+    let remaining = 15 * 60;
+    const countdownEl = document.getElementById('countdown');
+    const countdownInterval = setInterval(() => {
+        remaining--;
+        const m = Math.floor(remaining / 60), s = remaining % 60;
+        countdownEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        if (remaining <= 0) clearInterval(countdownInterval);
+    }, 1000);
+
+    const statusInterval = setInterval(() => {
+        fetch(`/payment/payments/${paymentId}/status`)
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('statusBox');
+                const text = document.getElementById('statusText');
+
+                if (data.status === 'SUCCESS') {
+                    clearInterval(statusInterval);
+                    clearInterval(countdownInterval);
+                    box.className = 'status-box status-success';
+                    box.querySelector('.spinner')?.remove();
+                    text.innerText = 'Thanh toán thành công! Cảm ơn quý khách.';
+                } else if (data.status === 'FAILED') {
+                    clearInterval(statusInterval);
+                    clearInterval(countdownInterval);
+                    box.className = 'status-box status-failed';
+                    box.querySelector('.spinner')?.remove();
+                    text.innerText = 'Thanh toán thất bại hoặc hết thời gian.';
+                    document.getElementById('retryLink').style.display = 'inline-block';
+                }
+            });
+    }, 3000);
+</script>
+
+</body>
+</html>
