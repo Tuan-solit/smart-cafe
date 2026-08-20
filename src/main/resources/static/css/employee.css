@@ -129,6 +129,67 @@ body {
     color: var(--accent);
 }
 
+#payment-toast-container {
+    position: fixed !important;
+    top: 80px !important;     /* Bạn có thể chỉnh lại 80px tùy header */
+    right: 25px !important;
+    z-index: 99999 !important;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 360px;
+}
+
+.payment-toast {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px 18px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+    border-left: 5px solid #6f4326;
+
+    cursor: pointer;
+
+    animation: toast-slide-in 0.3s ease;
+}
+
+.payment-toast:hover {
+    background: #faf7f3;
+}
+
+.payment-toast-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.payment-toast-message {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.payment-toast-time {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 /* Pagination — dùng cho các trang list (order-list, activity-logs) */
 .pagination .page-link {
     color: var(--ink);

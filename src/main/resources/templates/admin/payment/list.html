@@ -412,11 +412,9 @@
 
                 -
 
-                <span th:text="${T(java.lang.Math).min(
-                        (paymentPage.number + 1)
-                        * paymentPage.size,
-                        paymentPage.totalElements
-                    )}">
+                <span th:text="${paymentPage.numberOfElements > 0
+                        ? paymentPage.number * paymentPage.size + paymentPage.numberOfElements
+                        : 0}">
                     10
                 </span>
 

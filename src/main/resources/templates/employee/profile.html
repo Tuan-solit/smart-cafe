@@ -18,22 +18,20 @@
   <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
   <div class="panel p-4 mb-4">
-    <form th:action="@{/employee/profile}" th:object="${updateProfileRequest}" method="post">
+    <form action="#" th:object="${updateProfileRequest}" method="post">
       <div class="mb-3">
         <label class="form-label">Họ tên</label>
-        <input type="text" class="form-control" th:field="*{fullName}">
+        <input type="text" class="form-control" th:field="*{fullName}" readonly >
       </div>
       <div class="mb-3">
         <label class="form-label">Số điện thoại</label>
-        <input type="text" class="form-control" th:field="*{phone}">
+        <input type="text" class="form-control" th:field="*{phone}" readonly>
       </div>
       <div class="mb-3">
         <label class="form-label">Email</label>
-        <input type="email" class="form-control" th:field="*{email}">
+        <input type="email" class="form-control" th:field="*{email}" readonly>
       </div>
-      <button type="submit" class="btn btn-dark">
-        <i class="fa-solid fa-floppy-disk me-1"></i>Lưu thay đổi
-      </button>
+
     </form>
   </div>
 

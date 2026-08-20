@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +36,6 @@ public class PaymentService {
     final PaymentRepository paymentRepository;
     final UserRepository userRepository;
 
-
     @Value("${sepay.bank-account}")
     String bankAccount;
 
@@ -46,6 +45,10 @@ public class PaymentService {
     @Value("${sepay.accountHolder}")
     String accountHolder;
 
+
+    // =========================
+    // THANH TOÁN TIỀN MẶT
+    // =========================
 
     @Transactional
     public Payment confirmCashPayment(
@@ -76,14 +79,17 @@ public class PaymentService {
         }
 
         LocalDateTime now = LocalDateTime.now();
+
         Payment payment = new Payment();
 
         payment.setOrder(order);
+
         payment.setUser(
                 userRepository.getReferenceById(employeeId)
         );
 
         payment.setTotal(total);
+
         payment.setPaymentMethod(
                 PaymentMethod.CASH
         );
@@ -97,22 +103,34 @@ public class PaymentService {
         );
 
         payment.setCreatedAt(now);
+
         payment.setConfirmedAt(now);
+
         paymentRepository.save(payment);
+
+
+        // Cập nhật trạng thái đơn hàng
+
         order.setStatus(
                 OrderStatus.PAID
         );
 
         orderRepository.save(order);
+
         return payment;
     }
 
+
+    // =========================
+    // TẠO THANH TOÁN ONLINE
+    // =========================
 
     @Transactional
     public Payment createOnlinePayment(
             Integer orderId,
             Integer employeeId
     ) {
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
@@ -127,15 +145,27 @@ public class PaymentService {
         }
 
 
-        Optional<Payment> existing =
+        /*
+         * Nếu trước đó đã có payment PENDING
+         * thì chuyển các payment cũ thành FAILED.
+         *
+         * Sau đó tạo một payment mới với mã QR mới.
+         */
+
+        List<Payment> oldPendings =
                 paymentRepository
-                        .findByOrder_OrderIdAndStatus(
+                        .findAllByOrder_OrderIdAndStatus(
                                 orderId,
                                 PaymentStatus.PENDING
                         );
 
-        if (existing.isPresent()) {
-            return existing.get();
+        for (Payment oldPayment : oldPendings) {
+
+            oldPayment.setStatus(
+                    PaymentStatus.FAILED
+            );
+
+            paymentRepository.save(oldPayment);
         }
 
 
@@ -152,43 +182,54 @@ public class PaymentService {
         String code =
                 generatePaymentCode(orderId);
 
-        LocalDateTime now =
-                LocalDateTime.now();
 
+        Payment payment =
+                Payment.builder()
 
-        Payment payment = new Payment();
-        payment.setOrder(order);
-        payment.setUser(
-                userRepository.getReferenceById(employeeId)
-        );
+                        .order(order)
 
-        payment.setTotal(total);
-        payment.setPaymentMethod(
-                PaymentMethod.ONLINE
-        );
+                        .user(
+                                userRepository
+                                        .getReferenceById(employeeId)
+                        )
 
-        payment.setStatus(
-                PaymentStatus.PENDING
-        );
+                        .total(total)
 
-        payment.setInternalTransactionCode(
-                code
-        );
+                        .paymentMethod(
+                                PaymentMethod.ONLINE
+                        )
 
-        payment.setCreatedAt(
-                now
-        );
+                        .status(
+                                PaymentStatus.PENDING
+                        )
+
+                        .internalTransactionCode(
+                                code
+                        )
+
+                        .createdAt(
+                                LocalDateTime.now()
+                        )
+
+                        .build();
+
 
         paymentRepository.save(payment);
+
         return payment;
     }
 
+
+    // =========================
+    // TẠO QR THANH TOÁN
+    // =========================
 
     public String buildQrUrl(
             Payment payment
     ) {
 
         return "https://qr.sepay.vn/img?"
+
                 + "acc="
                 + URLEncoder.encode(
                 bankAccount,
@@ -203,6 +244,7 @@ public class PaymentService {
 
                 + "&amount="
                 + payment.getTotal().longValue()
+
                 + "&des="
                 + URLEncoder.encode(
                 payment.getInternalTransactionCode(),
@@ -210,7 +252,9 @@ public class PaymentService {
         )
 
                 + "&template=compact"
+
                 + "&showinfo=false"
+
                 + "&holder="
                 + URLEncoder.encode(
                 accountHolder,
@@ -219,6 +263,11 @@ public class PaymentService {
     }
 
 
+    // =========================
+    // TÌM PAYMENT THEO ID
+    // =========================
+
+    @Transactional(readOnly = true)
     public Payment findById(
             Integer paymentId
     ) {
@@ -232,6 +281,34 @@ public class PaymentService {
     }
 
 
+    // =========================
+    // HỦY PAYMENT
+    // =========================
+
+    @Transactional
+    public void cancelPayment(
+            Integer paymentId
+    ) {
+
+        Payment payment =
+                findById(paymentId);
+
+        if (payment.getStatus()
+                == PaymentStatus.PENDING) {
+
+            payment.setStatus(
+                    PaymentStatus.FAILED
+            );
+
+            paymentRepository.save(payment);
+        }
+    }
+
+
+    // =========================
+    // PAYMENT HISTORY
+    // =========================
+
     @Transactional(readOnly = true)
     public Page<PaymentHistoryResponse> getPaymentHistory(
             int page,
@@ -242,7 +319,10 @@ public class PaymentService {
     ) {
 
         Pageable pageable =
-                PageRequest.of(page, size);
+                PageRequest.of(
+                        page,
+                        size
+                );
 
 
         return paymentRepository.searchPayments(
@@ -317,6 +397,10 @@ public class PaymentService {
                 );
     }
 
+
+    // =========================
+    // GENERATE PAYMENT CODE
+    // =========================
 
     private String generatePaymentCode(
             Integer orderId

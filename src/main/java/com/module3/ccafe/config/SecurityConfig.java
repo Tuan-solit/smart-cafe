@@ -41,8 +41,8 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/sepay-payment/**",
-                                "/images/**"
-
+                                "/images/**",
+                                "/ws/**"
                         ).permitAll()
                         .anyRequest().permitAll())
                 .formLogin(form -> form
