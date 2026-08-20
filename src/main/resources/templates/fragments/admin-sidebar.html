@@ -100,11 +100,11 @@
             </a>
         </li>
 
-
         <!-- THANH TOÁN -->
 
         <li>
-            <a href="#">
+            <a th:href="@{/admin/payments}"
+               th:classappend="${active == 'payments'} ? 'active'">
 
                 <span>💰</span>
 

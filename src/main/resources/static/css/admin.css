@@ -668,3 +668,212 @@ body {
     }
 
 }
+
+/* =========================
+   ADMIN CONTENT
+   ========================= */
+
+.admin-content {
+    padding: 30px;
+}
+
+
+/* =========================
+   FILTER
+   ========================= */
+
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 24px;
+
+    flex-wrap: wrap;
+}
+
+.filter-form input,
+.filter-form select {
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    background: #fff;
+}
+
+.filter-form input {
+    min-width: 220px;
+}
+
+
+/* =========================
+   TABLE
+   ========================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: white;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    margin-bottom: 20px;
+}
+
+
+.admin-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.admin-table th,
+.admin-table td {
+    padding: 14px 16px;
+
+    text-align: left;
+
+    border-bottom: 1px solid #eee;
+
+    vertical-align: middle;
+}
+
+
+.admin-table th {
+    background: #f8f9fa;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.admin-table td {
+    font-size: 14px;
+}
+
+
+/* Hover */
+
+.admin-table tbody tr:hover {
+    background: #fafafa;
+}
+
+
+/* =========================
+   PAGINATION
+   ========================= */
+
+.pagination-wrapper {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 10px;
+
+    margin-bottom: 16px;
+}
+
+
+.pagination-btn {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+
+    height: 36px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+
+    text-decoration: none;
+
+    color: #333;
+
+    background: white;
+}
+
+
+.pagination-btn:hover {
+    background: #f3f3f3;
+}
+
+
+.pagination-btn.active {
+    background: #333;
+
+    color: white;
+
+    border-color: #333;
+}
+
+
+/* =========================
+   PAGE INFO
+   ========================= */
+
+.page-info {
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    color: #777;
+}
+
+
+/* =========================
+   STATUS
+   ========================= */
+
+.status-success,
+.status-failed,
+.status-pending {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+.status-success {
+    background: #e8f7ee;
+
+    color: #198754;
+}
+
+
+.status-failed {
+    background: #fdeaea;
+
+    color: #dc3545;
+}
+
+
+.status-pending {
+    background: #fff4db;
+
+    color: #d39e00;
+}

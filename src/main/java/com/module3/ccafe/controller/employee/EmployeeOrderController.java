@@ -122,7 +122,7 @@ public class EmployeeOrderController {
     @GetMapping("/payments/{paymentId}/status")
     @ResponseBody
     public Map<String,String> checkPayMentStatus(@PathVariable Integer paymentId){
-        Payment payment = paymentService.findByid(paymentId);
+        Payment payment = paymentService.findById(paymentId);
         return Map.of("status", payment.getStatus().name());
     }
 }

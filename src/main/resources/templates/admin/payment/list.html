@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Lịch sử thanh toán - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =========================
+         SIDEBAR
+         ========================= -->
+
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='payment')}"></div>
+
+
+    <!-- =========================
+         MAIN CONTENT
+         ========================= -->
+
+    <main class="admin-main">
+
+        <!-- HEADER -->
+
+        <header class="admin-header">
+
+            <h1>Lịch sử thanh toán</h1>
+
+            <div class="admin-info">
+
+                <span>Administrator</span>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="admin-content">
+
+
+            <!-- =========================
+                 FILTER
+                 ========================= -->
+
+            <form method="get"
+                  th:action="@{/admin/payments}"
+                  class="filter-form">
+
+                <!-- SEARCH -->
+
+                <input type="text"
+                       name="keyword"
+                       placeholder="Tìm mã giao dịch..."
+                       th:value="${keyword}">
+
+
+                <!-- STATUS -->
+
+                <select name="status">
+
+                    <option value="">
+                        Tất cả trạng thái
+                    </option>
+
+                    <option th:each="item : ${paymentStatuses}"
+                            th:value="${item}"
+                            th:text="${item.description}"
+                            th:selected="${status == item}">
+                    </option>
+
+                </select>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <select name="paymentMethod">
+
+                    <option value="">
+                        Tất cả phương thức
+                    </option>
+
+                    <option th:each="item : ${paymentMethods}"
+                            th:value="${item}"
+                            th:text="${item.description}"
+                            th:selected="${paymentMethod == item}">
+                    </option>
+
+                </select>
+
+
+                <!-- PAGE SIZE -->
+
+                <select name="size">
+
+                    <option value="5"
+                            th:selected="${pageSize == 5}">
+                        5
+                    </option>
+
+                    <option value="10"
+                            th:selected="${pageSize == 10}">
+                        10
+                    </option>
+
+                    <option value="20"
+                            th:selected="${pageSize == 20}">
+                        20
+                    </option>
+
+                </select>
+
+
+                <button type="submit"
+                        class="btn">
+
+                    Tìm kiếm
+
+                </button>
+
+            </form>
+
+
+            <!-- =========================
+                 PAYMENT TABLE
+                 ========================= -->
+
+            <div class="table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Đơn hàng</th>
+
+                        <th>Bàn</th>
+
+                        <th>Nhân viên</th>
+
+                        <th>Số tiền</th>
+
+                        <th>Phương thức</th>
+
+                        <th>Mã giao dịch</th>
+
+                        <th>Trạng thái</th>
+
+                        <th>Thời gian</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    <tr th:each="payment : ${paymentList}">
+
+                        <!-- PAYMENT ID -->
+
+                        <td th:text="${payment.paymentId}">
+                            1
+                        </td>
+
+
+                        <!-- ORDER -->
+
+                        <td th:text="${payment.orderId}">
+                            1
+                        </td>
+
+
+                        <!-- TABLE -->
+
+                        <td th:text="${payment.tableNumber}">
+                            B01
+                        </td>
+
+
+                        <!-- EMPLOYEE -->
+
+                        <td th:text="${payment.employeeName}">
+                            Nhân viên
+                        </td>
+
+
+                        <!-- TOTAL -->
+
+                        <td>
+
+                            <span th:text="${#numbers.formatDecimal(
+                                    payment.total,
+                                    0,
+                                    'COMMA',
+                                    0,
+                                    'POINT'
+                                )}">
+                                100000
+                            </span>
+
+                            ₫
+
+                        </td>
+
+
+                        <!-- PAYMENT METHOD -->
+
+                        <td>
+
+                            <span th:if="${payment.paymentMethod == 'CASH'}">
+
+                                Tiền mặt
+
+                            </span>
+
+
+                            <span th:if="${payment.paymentMethod == 'ONLINE'}">
+
+                                Trực tuyến
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- TRANSACTION CODE -->
+
+                        <td>
+
+                            <div>
+
+                                <strong th:text="${payment.internalTransactionCode}">
+                                    DH001
+                                </strong>
+
+                            </div>
+
+
+                            <small th:if="${payment.gatewayTransactionCode != null}"
+                                   th:text="${payment.gatewayTransactionCode}">
+                            </small>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            <span th:text="${payment.statusDescription}"
+                                  th:classappend="${payment.status == 'SUCCESS'} ? ' status-success' :
+                                                  (${payment.status == 'FAILED'} ? ' status-failed' :
+                                                   ' status-pending')">
+
+                                Trạng thái
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- CREATED AT -->
+
+                        <td>
+
+                            <div th:text="${#temporals.format(
+                                    payment.createdAt,
+                                    'dd/MM/yyyy'
+                                )}">
+                            </div>
+
+
+                            <small th:text="${#temporals.format(
+                                    payment.createdAt,
+                                    'HH:mm:ss'
+                                )}">
+                            </small>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    <!-- EMPTY -->
+
+                    <tr th:if="${paymentList.isEmpty()}">
+
+                        <td colspan="9"
+                            class="empty-message">
+
+                            Không tìm thấy giao dịch nào
+
+                        </td>
+
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- =========================
+                 PAGINATION
+                 ========================= -->
+
+            <div class="pagination-wrapper"
+                 th:if="${paymentPage.totalPages > 0}">
+
+
+                <!-- PREVIOUS -->
+
+                <a th:if="${!paymentPage.first}"
+
+                   th:href="@{/admin/payments(
+                        page=${currentPage - 1},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        status=${status},
+                        paymentMethod=${paymentMethod}
+                   )}"
+
+                   class="pagination-btn">
+
+                    ‹
+
+                </a>
+
+
+                <!-- PAGE NUMBERS -->
+
+                <a th:each="pageNumber :
+                   ${#numbers.sequence(
+                        0,
+                        paymentPage.totalPages - 1
+                   )}"
+
+                   th:href="@{/admin/payments(
+                        page=${pageNumber},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        status=${status},
+                        paymentMethod=${paymentMethod}
+                   )}"
+
+                   th:text="${pageNumber + 1}"
+
+                   th:classappend="${pageNumber == currentPage}
+                        ? ' active'"
+
+                   class="pagination-btn">
+
+                </a>
+
+
+                <!-- NEXT -->
+
+                <a th:if="${!paymentPage.last}"
+
+                   th:href="@{/admin/payments(
+                        page=${currentPage + 1},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        status=${status},
+                        paymentMethod=${paymentMethod}
+                   )}"
+
+                   class="pagination-btn">
+
+                    ›
+
+                </a>
+
+
+            </div>
+
+
+            <!-- =========================
+                 PAGE INFO
+                 ========================= -->
+
+            <div class="page-info"
+                 th:if="${paymentPage.totalElements > 0}">
+
+                Hiển thị
+
+                <span th:text="${paymentPage.number * paymentPage.size + 1}">
+                    1
+                </span>
+
+                -
+
+                <span th:text="${T(java.lang.Math).min(
+                        (paymentPage.number + 1)
+                        * paymentPage.size,
+                        paymentPage.totalElements
+                    )}">
+                    10
+                </span>
+
+                trong tổng số
+
+                <span th:text="${paymentPage.totalElements}">
+                    100
+                </span>
+
+                giao dịch
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
