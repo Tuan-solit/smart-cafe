@@ -169,11 +169,10 @@
                         </label>
 
                         <select id="sizeId"
-                                th:field="*{sizeId}"
-                                required>
+                                th:field="*{sizeId}">
 
                             <option value="">
-                                -- Chọn kích thước --
+                                -- Không áp dụng --
                             </option>
 
                             <option th:each="size : ${sizeList}"
@@ -182,6 +181,11 @@
                             </option>
 
                         </select>
+
+                        <small id="sizeHint"
+                               class="form-hint">
+                            Vui lòng chọn kích thước.
+                        </small>
 
                     </div>
 
@@ -442,6 +446,94 @@
         });
 
     }, 3000);
+
+    // ================================
+    // SIZE - ENABLE / DISABLE THEO CATEGORY
+    // ================================
+
+    const categorySelect =
+        document.getElementById("categoryId");
+
+    const sizeSelect =
+        document.getElementById("sizeId");
+
+    const sizeHint =
+        document.getElementById("sizeHint");
+
+
+    function updateSizeField() {
+
+        const selectedOption =
+            categorySelect.options[
+                categorySelect.selectedIndex
+                ];
+
+        if (!selectedOption) {
+            return;
+        }
+
+        const categoryName =
+            selectedOption.text
+                .trim()
+                .toLowerCase();
+
+
+        // ================================
+        // CAFE / CAKE
+        // ================================
+
+        if (
+            categoryName === "cafe" ||
+            categoryName === "cake"
+        ) {
+
+            // Không cho chọn kích thước
+            sizeSelect.disabled = true;
+
+            // Không bắt buộc
+            sizeSelect.required = false;
+
+            // Xóa giá trị size
+            sizeSelect.value = "";
+
+            sizeHint.textContent =
+                "Danh mục Cafe/Cake không sử dụng kích thước.";
+
+        }
+
+            // ================================
+            // CATEGORY KHÁC
+        // ================================
+
+        else {
+
+            // Cho phép chọn
+            sizeSelect.disabled = false;
+
+            // Bắt buộc chọn
+            sizeSelect.required = true;
+
+            sizeHint.textContent =
+                "Vui lòng chọn kích thước.";
+        }
+    }
+
+
+    // ================================
+    // KHI THAY ĐỔI DANH MỤC
+    // ================================
+
+    categorySelect.addEventListener(
+        "change",
+        updateSizeField
+    );
+
+
+    // ================================
+    // KHI MỞ TRANG EDIT
+    // ================================
+
+    updateSizeField();
 
 </script>
 

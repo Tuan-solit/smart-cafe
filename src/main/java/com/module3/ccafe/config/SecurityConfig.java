@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/auth/register",
-                                "/menu/**", 
+                                "/menu/**",
                                 "/cart/**",
                                 "/orders/**",
                                 "/css/**",
@@ -44,7 +44,12 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/ws/**"
                         ).permitAll()
-                        .anyRequest().permitAll())
+
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/employee/**").hasRole("EMPLOYEE")
+
+                        .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(roleBasedSuccessHandler)

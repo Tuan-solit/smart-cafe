@@ -22,7 +22,7 @@ public class CafeTable {
     @Column(name = "table_id")
     private Integer tableId;
 
-    @Column(name = "table_number", nullable = false, length = 10)
+    @Column(name = "table_number", nullable = false, unique = true,length = 10)
     private String tableNumber;
 
     @Lob

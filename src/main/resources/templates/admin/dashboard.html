@@ -3,17 +3,13 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Dashboard - Smart Cafe</title>
+    <title>Dashboard - Smart Cafe</title>
 
     <link rel="stylesheet"
           th:href="@{/css/admin.css}">
-
 </head>
 
 <body>
@@ -28,31 +24,79 @@
 
 
     <!-- =========================
-         MAIN CONTENT
+         MAIN
          ========================= -->
 
     <main class="admin-main">
 
-        <!-- HEADER -->
+        <!-- =========================
+             HEADER
+             ========================= -->
 
         <header class="admin-header">
 
-            <h1>Admin Dashboard</h1>
+            <div class="header-title">
+
+                <p class="header-eyebrow">
+                    SMART CAFE MANAGEMENT
+                </p>
+
+                <h1>
+                    Admin Dashboard
+                </h1>
+
+            </div>
+
 
             <div class="admin-info">
 
-                <span>Administrator</span>
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div class="admin-profile">
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Quản trị hệ thống
+                    </span>
+
+                </div>
 
             </div>
 
         </header>
 
 
-        <!-- CONTENT -->
+        <!-- =========================
+             CONTENT
+             ========================= -->
 
         <section class="admin-content">
 
-            <h2>Tổng quan</h2>
+
+            <!-- =========================
+                 DASHBOARD TITLE
+                 ========================= -->
+
+            <div class="dashboard-title">
+
+                <div>
+
+                    <h2>
+                        Tổng quan
+                    </h2>
+
+                    <p>
+                        Tổng quan hoạt động của Smart Cafe
+                    </p>
+
+                </div>
+
+            </div>
 
 
             <!-- =========================
@@ -61,17 +105,30 @@
 
             <div class="stats">
 
+
                 <!-- NHÂN VIÊN -->
 
-                <div class="card">
+                <div class="card dashboard-stat-card">
 
-                    <div class="card-title">
-                        Nhân viên
+                    <div class="stat-icon">
+                        👥
                     </div>
 
-                    <div class="card-value"
-                         th:text="${employeeCount}">
-                        0
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Nhân viên
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${employeeCount}">
+                            0
+                        </div>
+
+                        <div class="stat-description">
+                            Tổng số nhân viên
+                        </div>
+
                     </div>
 
                 </div>
@@ -79,14 +136,27 @@
 
                 <!-- BÀN -->
 
-                <div class="card">
+                <div class="card dashboard-stat-card">
 
-                    <div class="card-title">
-                        Bàn
+                    <div class="stat-icon">
+                        ☕
                     </div>
 
-                    <div class="card-value">
-                        -
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Bàn
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${tableCount}">
+                            0
+                        </div>
+
+                        <div class="stat-description">
+                            Tổng số bàn
+                        </div>
+
                     </div>
 
                 </div>
@@ -94,14 +164,27 @@
 
                 <!-- ĐƠN HÀNG -->
 
-                <div class="card">
+                <div class="card dashboard-stat-card">
 
-                    <div class="card-title">
-                        Đơn hàng hôm nay
+                    <div class="stat-icon">
+                        🧾
                     </div>
 
-                    <div class="card-value">
-                        -
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Đơn hàng hôm nay
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${todayOrderCount}">
+                            0
+                        </div>
+
+                        <div class="stat-description">
+                            Đơn hàng trong ngày
+                        </div>
+
                     </div>
 
                 </div>
@@ -109,14 +192,27 @@
 
                 <!-- DOANH THU -->
 
-                <div class="card">
+                <div class="card dashboard-stat-card">
 
-                    <div class="card-title">
-                        Doanh thu hôm nay
+                    <div class="stat-icon">
+                        💰
                     </div>
 
-                    <div class="card-value">
-                        -
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Doanh thu hôm nay
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${#numbers.formatDecimal(todayRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                            0 đ
+                        </div>
+
+                        <div class="stat-description">
+                            Doanh thu trong ngày
+                        </div>
+
                     </div>
 
                 </div>
@@ -125,33 +221,91 @@
 
 
             <!-- =========================
-                 QUICK ACTION
+                 QUICK ACTIONS
                  ========================= -->
 
             <div class="quick-actions">
 
-                <h3>Thao tác nhanh</h3>
+                <div class="section-heading">
+
+                    <div>
+
+                        <h3>
+                            Thao tác nhanh
+                        </h3>
+
+                        <p>
+                            Truy cập nhanh các chức năng quản lý
+                        </p>
+
+                    </div>
+
+                </div>
+
 
                 <div class="actions">
 
+                    <!-- STAFF -->
+
                     <a th:href="@{/admin/staff/page}"
                        class="btn">
-                        Quản lý nhân viên
+
+                        <span class="action-icon">
+                            👥
+                        </span>
+
+                        <span>
+                            Quản lý nhân viên
+                        </span>
+
                     </a>
+
+
+                    <!-- CATEGORY -->
 
                     <a th:href="@{/admin/category/page}"
                        class="btn">
-                        Quản lý danh mục
+
+                        <span class="action-icon">
+                            ☕
+                        </span>
+
+                        <span>
+                            Quản lý danh mục
+                        </span>
+
                     </a>
+
+
+                    <!-- PRODUCT -->
 
                     <a th:href="@{/admin/product/page}"
                        class="btn">
-                        Quản lý sản phẩm
+
+                        <span class="action-icon">
+                            🧁
+                        </span>
+
+                        <span>
+                            Quản lý sản phẩm
+                        </span>
+
                     </a>
+
+
+                    <!-- TABLE -->
 
                     <a th:href="@{/admin/table/page}"
                        class="btn">
-                        Quản lý bàn
+
+                        <span class="action-icon">
+                            🪑
+                        </span>
+
+                        <span>
+                            Quản lý bàn
+                        </span>
+
                     </a>
 
                 </div>
