@@ -79,7 +79,7 @@
                 <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
                     <path d="M3 3h18M3 3v18M21 3v18M3 21h18M3 9h18M3 15h18"/>
                 </svg>
-                <span id="tableLabel">Bàn A5</span>
+                <span id="tableLabel" th:text="${currentTable != null ? 'Bàn ' + currentTable.tableNumber : 'Chưa chọn bàn'}">Bàn A5</span>
             </div>
         </div>
 

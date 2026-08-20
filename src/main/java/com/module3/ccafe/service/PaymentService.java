@@ -34,7 +34,7 @@ public class PaymentService {
     final OrderRepository orderRepository;
     final OrderDetailRepository orderDetailRepository;
     final PaymentRepository paymentRepository;
-    final UserRepository userRepository;
+    final UserRepository userRepository;    
 
     @Value("${sepay.bank-account}")
     String bankAccount;
@@ -125,6 +125,7 @@ public class PaymentService {
     // TẠO THANH TOÁN ONLINE
     // =========================
 
+    //employee
     @Transactional
     public Payment createOnlinePayment(
             Integer orderId,
@@ -219,6 +220,41 @@ public class PaymentService {
         return payment;
     }
 
+    //customer
+    @Transactional
+    public Payment createOnlinePayment(Integer orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại"));
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new IllegalArgumentException("Đơn hàng đã được thanh toán");
+        }
+
+        List<Payment> oldPendings = paymentRepository
+                .findAllByOrder_OrderIdAndStatus(orderId, PaymentStatus.PENDING);
+        for (Payment old : oldPendings) {
+            old.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(old);
+        }
+
+        BigDecimal total = orderDetailRepository.sumTotalByOrderId(orderId);
+        if (total == null) {
+            throw new IllegalArgumentException("Đơn hàng chưa có món ăn, không thể thanh toán");
+        }
+
+        String code = generatePaymentCode(orderId);
+
+        Payment payment = Payment.builder()
+                .order(order)
+                .user(null)
+                .total(total)
+                .paymentMethod(PaymentMethod.ONLINE)
+                .status(PaymentStatus.PENDING)
+                .internalTransactionCode(code)
+                .createdAt(LocalDateTime.now())
+                .build();
+        return paymentRepository.save(payment);
+    }
 
     // =========================
     // TẠO QR THANH TOÁN
@@ -395,6 +431,8 @@ public class PaymentService {
 
                                 .build()
                 );
+    public Payment findById(Integer paymentId) {
+        return paymentRepository.findById(paymentId).orElseThrow(()->new IllegalArgumentException("Payment không tồn tại"));
     }
 
 
