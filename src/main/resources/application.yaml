@@ -20,7 +20,7 @@ spring:
     cache: false
 
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 1

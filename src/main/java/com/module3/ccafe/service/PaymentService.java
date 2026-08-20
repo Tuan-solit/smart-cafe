@@ -144,14 +144,6 @@ public class PaymentService {
             );
         }
 
-
-        /*
-         * Nếu trước đó đã có payment PENDING
-         * thì chuyển các payment cũ thành FAILED.
-         *
-         * Sau đó tạo một payment mới với mã QR mới.
-         */
-
         List<Payment> oldPendings =
                 paymentRepository
                         .findAllByOrder_OrderIdAndStatus(
@@ -168,7 +160,6 @@ public class PaymentService {
             paymentRepository.save(oldPayment);
         }
 
-
         BigDecimal total =
                 orderDetailRepository.sumTotalByOrderId(orderId);
 
@@ -178,10 +169,8 @@ public class PaymentService {
             );
         }
 
-
         String code =
                 generatePaymentCode(orderId);
-
 
         Payment payment =
                 Payment.builder()
@@ -213,10 +202,81 @@ public class PaymentService {
 
                         .build();
 
+        return paymentRepository.save(payment);
+    }
 
-        paymentRepository.save(payment);
+    @Transactional
+    public Payment createOnlinePayment(Integer orderId) {
 
-        return payment;
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Đơn hàng không tồn tại"
+                        )
+                );
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new IllegalArgumentException(
+                    "Đơn hàng đã được thanh toán"
+            );
+        }
+
+        List<Payment> oldPendings =
+                paymentRepository
+                        .findAllByOrder_OrderIdAndStatus(
+                                orderId,
+                                PaymentStatus.PENDING
+                        );
+
+        for (Payment old : oldPendings) {
+
+            old.setStatus(
+                    PaymentStatus.FAILED
+            );
+
+            paymentRepository.save(old);
+        }
+
+        BigDecimal total =
+                orderDetailRepository.sumTotalByOrderId(orderId);
+
+        if (total == null) {
+            throw new IllegalArgumentException(
+                    "Đơn hàng chưa có món ăn, không thể thanh toán"
+            );
+        }
+
+        String code =
+                generatePaymentCode(orderId);
+
+        Payment payment =
+                Payment.builder()
+
+                        .order(order)
+
+                        .user(null)
+
+                        .total(total)
+
+                        .paymentMethod(
+                                PaymentMethod.ONLINE
+                        )
+
+                        .status(
+                                PaymentStatus.PENDING
+                        )
+
+                        .internalTransactionCode(
+                                code
+                        )
+
+                        .createdAt(
+                                LocalDateTime.now()
+                        )
+
+                        .build();
+
+        return paymentRepository.save(payment);
     }
 
 
