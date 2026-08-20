@@ -125,6 +125,7 @@ public class PaymentService {
     // TẠO THANH TOÁN ONLINE
     // =========================
 
+    // employee
     @Transactional
     public Payment createOnlinePayment(
             Integer orderId,
@@ -143,7 +144,6 @@ public class PaymentService {
                     "Đơn hàng đã được thanh toán"
             );
         }
-
 
         /*
          * Nếu trước đó đã có payment PENDING
@@ -217,6 +217,82 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         return payment;
+    }
+
+
+    // customer
+    @Transactional
+    public Payment createOnlinePayment(Integer orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Đơn hàng không tồn tại"
+                        )
+                );
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new IllegalArgumentException(
+                    "Đơn hàng đã được thanh toán"
+            );
+        }
+
+        List<Payment> oldPendings =
+                paymentRepository
+                        .findAllByOrder_OrderIdAndStatus(
+                                orderId,
+                                PaymentStatus.PENDING
+                        );
+
+        for (Payment old : oldPendings) {
+
+            old.setStatus(
+                    PaymentStatus.FAILED
+            );
+
+            paymentRepository.save(old);
+        }
+
+        BigDecimal total =
+                orderDetailRepository.sumTotalByOrderId(orderId);
+
+        if (total == null) {
+            throw new IllegalArgumentException(
+                    "Đơn hàng chưa có món ăn, không thể thanh toán"
+            );
+        }
+
+        String code =
+                generatePaymentCode(orderId);
+
+        Payment payment =
+                Payment.builder()
+
+                        .order(order)
+
+                        .user(null)
+
+                        .total(total)
+
+                        .paymentMethod(
+                                PaymentMethod.ONLINE
+                        )
+
+                        .status(
+                                PaymentStatus.PENDING
+                        )
+
+                        .internalTransactionCode(
+                                code
+                        )
+
+                        .createdAt(
+                                LocalDateTime.now()
+                        )
+
+                        .build();
+
+        return paymentRepository.save(payment);
     }
 
 
@@ -324,7 +400,6 @@ public class PaymentService {
                         size
                 );
 
-
         return paymentRepository.searchPayments(
                         keyword,
                         status,
@@ -366,13 +441,11 @@ public class PaymentService {
                                 )
 
                                 .internalTransactionCode(
-                                        payment
-                                                .getInternalTransactionCode()
+                                        payment.getInternalTransactionCode()
                                 )
 
                                 .gatewayTransactionCode(
-                                        payment
-                                                .getGatewayTransactionCode()
+                                        payment.getGatewayTransactionCode()
                                 )
 
                                 .status(
@@ -418,6 +491,11 @@ public class PaymentService {
 
         return "DH" + suffix;
     }
+
+
+    // =========================
+    // DOANH THU HÔM NAY
+    // =========================
 
     public BigDecimal getTodayRevenue() {
 
