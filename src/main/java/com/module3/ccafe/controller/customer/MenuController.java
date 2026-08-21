@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -37,12 +38,15 @@ public class MenuController {
     public String showMenu(@RequestParam(required = false) Integer categoryId,
                            @RequestParam(required = false) String keyword,
                            HttpSession session,
-                           Model model) {
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
         Integer tableId = (Integer) session.getAttribute("TABLE_ID");
-        if (tableId != null) {
-            CafeTable table = cafeTableRepository.findById(tableId).orElse(null);
-            model.addAttribute("currentTable", table);
+        if (tableId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng quét mã QR tại bàn để xem menu và gọi món!");
+            return "customer/error-qr";
         }
+        CafeTable table = cafeTableRepository.findById(tableId).orElse(null);
+        model.addAttribute("currentTable", table);
         List<Category> categories = categoryService.findAll();
         List<Product> products = productService.findAvailableProducts();
         List<Map<String, Object>> categoryList = categories.stream().map(c -> {
@@ -59,10 +63,10 @@ public class MenuController {
             map.put("price", p.getPrice());
             map.put("image", p.getImage());
             map.put("category", p.getCategory() != null ? p.getCategory().getCategoryId() : null);
-            map.put("status",p.getStatus());
+            map.put("status", p.getStatus());
             return map;
         }).collect(Collectors.toList());
-        
+
         ObjectMapper mapper = new ObjectMapper();
         Cart cart = cartService.getCart(session);
         model.addAttribute("cart", cart);

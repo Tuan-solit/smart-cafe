@@ -1,4 +1,0 @@
-ALTER TABLE categories
-    ADD COLUMN status ENUM('ACTIVE', 'INACTIVE')
-DEFAULT 'ACTIVE'
-AFTER name;

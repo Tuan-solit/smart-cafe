@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 "/sepay-payment/**",
                                 "/images/**",
                                 "/ws/**",
-                                "/qr-scan",
+                                "/qr-scan/**",
                                 "/payment/**"
                         ).permitAll()
 

@@ -12,6 +12,7 @@
 </head>
 <body>
 
+
 <header class="site-header">
     <a th:href="@{/menu}" class="brand">
         <div class="cup">
@@ -45,10 +46,12 @@
     </div>
 </header>
 
-<div
-        th:if="${successMessage}"
-        class="success-message"
-        th:text="${successMessage}">
+<div th:if="${successMessage}" class="toast-message" id="toastSuccess">
+    <span class="toast-icon">💵</span>
+    <span th:text="${successMessage}"></span>
+</div>
+<div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"
+     style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin: 10px 20px; text-align: center;">
 </div>
 
 <div class="page-wrap">
@@ -69,6 +72,13 @@
         </div>
 
         <div class="product-grid" id="productGrid"></div>
+
+        <div id="loadMoreWrap" style="text-align: center; margin: 24px 0; display: none;">
+            <button id="loadMoreBtn" type="button"
+                    style="background: var(--brown-800, #5C3A21); color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+                Xem thêm món ☕
+            </button>
+        </div>
     </div>
 
     <aside class="cart-panel">
@@ -79,7 +89,8 @@
                 <svg class="icon" style="width:17px;height:17px" viewBox="0 0 24 24">
                     <path d="M3 3h18M3 3v18M21 3v18M3 21h18M3 9h18M3 15h18"/>
                 </svg>
-                <span id="tableLabel" th:text="${currentTable != null ? 'Bàn ' + currentTable.tableNumber : 'Chưa chọn bàn'}">Bàn A5</span>
+                <span id="tableLabel"
+                      th:text="${currentTable != null ? 'Bàn ' + currentTable.tableNumber : 'Chưa chọn bàn'}">Bàn A5</span>
             </div>
         </div>
 
@@ -104,7 +115,7 @@
                        placeholder="Ghi chú (ít đá, không cay...)"
                        class="cart-item-note-input"
                        form="placeOrderForm"/>
-                
+
                 <div class="qty-stepper">
                     <form th:action="@{/cart/items/{id}/decrease(id=${item.productId})}" method="post"
                           style="display:inline;">
@@ -229,6 +240,9 @@
         return '<svg class="icon" style="width:' + size + 'px;height:' + size + 'px" viewBox="0 0 24 24">' + iconPath + '</svg>';
     }
 
+    const PAGE_SIZE_INITIAL = 15;
+    const PAGE_SIZE_MORE = 5;
+    let visibleCount = PAGE_SIZE_INITIAL;
     let activeCategory = selectedCategory || 'all';
     let searchTerm = document.getElementById('searchInput').value || '';
 
@@ -247,6 +261,7 @@
         wrap.querySelectorAll('.cat-tab').forEach(btn => {
             btn.addEventListener('click', () => {
                 activeCategory = btn.dataset.cat;
+                visibleCount = PAGE_SIZE_INITIAL;
                 renderCategories();
                 renderProducts();
             });
@@ -255,6 +270,8 @@
 
     function renderProducts() {
         const grid = document.getElementById('productGrid');
+        const loadMoreWrap = document.getElementById('loadMoreWrap');
+
         const filtered = PRODUCTS.filter(p => {
             const matchCat = String(activeCategory) === 'all' || String(p.category) === String(activeCategory);
             const matchSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -263,10 +280,12 @@
 
         if (filtered.length === 0) {
             grid.innerHTML = '<div class="empty-state">Không có món nào phù hợp.</div>';
+            loadMoreWrap.style.display = 'none';
             return;
         }
+        const visibleProducts = filtered.slice(0, visibleCount);
 
-        grid.innerHTML = filtered.map(p => `
+        grid.innerHTML = visibleProducts.map(p => `
     <div class="product-card">
       <div class="product-image" style="background:${p.bg}">
         ${p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : ''}
@@ -283,27 +302,59 @@
         </div>
     </div>
   `).join('');
+        if (filtered.length > visibleCount) {
+            loadMoreWrap.style.display = 'block';
+        } else {
+            loadMoreWrap.style.display = 'none';
+        }
 
         grid.querySelectorAll('.add-btn').forEach(btn => {
-            btn.addEventListener('click', () => addToCart(Number(btn.dataset.id)));
+            btn.addEventListener('click', function () {
+                const productId = this.dataset.id;
+                addToCartAjax(productId);
+            });
         });
     }
 
+    function addToCartAjax(productId) {
+        const formData = new FormData();
+        formData.append('productId', productId);
+
+        fetch('/cart/items', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Không thể thêm món vào giỏ hàng.');
+            }
+        }).catch(err => console.error('Lỗi khi thêm món:', err));
+    }
+
+    document.getElementById('loadMoreBtn').addEventListener('click', () => {
+        visibleCount += PAGE_SIZE_MORE;
+        renderProducts();
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
-        const alertBox = document.querySelector('.success-message');
-        if (alertBox) {
+        const toast = document.getElementById('toastSuccess');
+        if (toast) {
             setTimeout(() => {
-                alertBox.style.transition = "opacity 0.5s ease";
-                alertBox.style.opacity = "0";
+                toast.style.transition = "all 0.5s ease";
+                toast.style.opacity = "0";
+                toast.style.transform = "translateX(100%)";
 
                 setTimeout(() => {
-                    alertBox.style.display = "none";
+                    toast.remove();
                 }, 500);
-            }, 4000); 
+            }, 4000);
         }
     });
+    
     document.getElementById('searchInput').addEventListener('input', (e) => {
         searchTerm = e.target.value;
+        visibleCount = PAGE_SIZE_INITIAL;
         renderProducts();
     });
 
