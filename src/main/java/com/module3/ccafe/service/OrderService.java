@@ -218,4 +218,14 @@ public class OrderService {
                 endOfDay
         );
     }
+
+    public Page<Order> getAllOrders(int page, int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size
+        );
+
+        return orderRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
 }
