@@ -74,7 +74,8 @@
 
 
         <li>
-            <a href="#">
+            <a th:href="@{/admin/orders}"
+               th:classappend="${active == 'orders'} ? 'active'">
 
                 <span>🧾</span>
                 <span>Đơn hàng</span>

@@ -17,6 +17,8 @@ public interface OrderRepository extends JpaRepository <Order,Integer>{
 
     Page<Order> findByStatusOrderByCreatedAt(OrderStatus status, Pageable pageable);
 
+    Page<Order> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
     List<Order> findByTable_TableIdInAndStatus(List<Integer> tableIds, OrderStatus status);
 
 

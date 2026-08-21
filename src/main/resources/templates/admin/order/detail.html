@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Chi tiết đơn hàng - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
+
+</head>
+
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =========================
+         SIDEBAR
+         ========================= -->
+
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='orders')}"></div>
+
+
+    <!-- =========================
+         MAIN
+         ========================= -->
+
+    <main class="admin-main">
+
+
+        <!-- =========================
+             HEADER
+             ========================= -->
+
+        <header class="admin-header">
+
+            <div class="header-title">
+
+                <p class="header-eyebrow">
+                    SMART CAFE MANAGEMENT
+                </p>
+
+                <h1>
+                    Chi tiết đơn hàng
+                </h1>
+
+            </div>
+
+
+            <div class="admin-info">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div class="admin-profile">
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Quản trị hệ thống
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             CONTENT
+             ========================= -->
+
+        <section class="admin-content">
+
+
+            <!-- =========================
+                 ERROR
+                 ========================= -->
+
+            <div class="card"
+                 th:if="${error}">
+
+                <p th:text="${error}">
+                    Không tìm thấy đơn hàng
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 ORDER DETAIL
+                 ========================= -->
+
+            <div th:if="${orderDetail}">
+
+
+                <!-- PAGE HEADER -->
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1 th:text="'Đơn hàng #' + ${orderDetail.orderId}">
+                            Đơn hàng #1
+                        </h1>
+
+                        <p class="page-description">
+                            Chi tiết các món trong đơn hàng
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <a th:href="@{/admin/orders}"
+                           class="btn btn-secondary">
+
+                            ← Quay lại
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     ORDER INFORMATION
+                     ========================= -->
+
+                <div class="card"
+                     style="margin-bottom: 24px;">
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 20px;
+                    ">
+
+
+                        <!-- TABLE -->
+
+                        <div>
+
+                            <div class="card-title">
+                                Bàn
+                            </div>
+
+                            <strong th:text="${orderDetail.tableNumber}">
+                                Bàn 01
+                            </strong>
+
+                        </div>
+
+
+                        <!-- CREATED TIME -->
+
+                        <div>
+
+                            <div class="card-title">
+                                Thời gian
+                            </div>
+
+                            <strong th:text="${#temporals.format(
+                                    orderDetail.createdAt,
+                                    'dd/MM/yyyy HH:mm'
+                                )}">
+                                20/08/2026 15:30
+                            </strong>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div>
+
+                            <div class="card-title">
+                                Trạng thái
+                            </div>
+
+
+                            <span th:if="${orderDetail.status == 'OPEN'}"
+                                  class="status-pending">
+
+                                Đang mở
+
+                            </span>
+
+
+                            <span th:if="${orderDetail.status == 'PAID'}"
+                                  class="status-success">
+
+                                Đã thanh toán
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     ORDER ITEMS
+                     ========================= -->
+
+                <div class="card">
+
+
+                    <h2 style="margin-bottom: 20px;">
+                        Danh sách món
+                    </h2>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="admin-table">
+
+
+                            <!-- TABLE HEADER -->
+
+                            <thead>
+
+                            <tr>
+
+                                <th>
+                                    Món
+                                </th>
+
+                                <th>
+                                    Số lượng
+                                </th>
+
+                                <th>
+                                    Đơn giá
+                                </th>
+
+                                <th>
+                                    Thành tiền
+                                </th>
+
+                                <th>
+                                    Ghi chú
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+
+                            <!-- TABLE BODY -->
+
+                            <tbody>
+
+                            <tr th:each="item : ${orderDetail.items}">
+
+
+                                <!-- PRODUCT NAME -->
+
+                                <td>
+
+                                    <strong th:text="${item.productName}">
+                                        Cafe
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- QUANTITY -->
+
+                                <td th:text="${item.quantity}">
+                                    2
+                                </td>
+
+
+                                <!-- PRICE -->
+
+                                <td th:text="${#numbers.formatDecimal(
+                                        item.price,
+                                        0,
+                                        'COMMA',
+                                        0,
+                                        'POINT'
+                                    ) + ' đ'}">
+
+                                    30.000 đ
+
+                                </td>
+
+
+                                <!-- SUBTOTAL -->
+
+                                <td>
+
+                                    <strong th:text="${#numbers.formatDecimal(
+                                            item.price * item.quantity,
+                                            0,
+                                            'COMMA',
+                                            0,
+                                            'POINT'
+                                        ) + ' đ'}">
+
+                                        60.000 đ
+
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- NOTE -->
+
+                                <td th:text="${item.note != null and !item.note.isEmpty() ? item.note : '-'}">
+                                    -
+                                </td>
+
+
+                            </tr>
+
+
+                            <!-- EMPTY STATE -->
+
+                            <tr th:if="${#lists.isEmpty(orderDetail.items)}">
+
+                                <td colspan="5"
+                                    style="text-align: center; padding: 30px;">
+
+                                    Chưa có món nào trong đơn hàng
+
+                                </td>
+
+                            </tr>
+
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =========================
+                         TOTAL
+                         ========================= -->
+
+                    <div style="
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+                        gap: 20px;
+                        padding-top: 20px;
+                    ">
+
+
+                        <span style="
+                            font-size: 16px;
+                            color: var(--text-secondary);
+                        ">
+
+                            Tổng cộng
+
+                        </span>
+
+
+                        <strong style="
+                            font-size: 26px;
+                            color: var(--coffee-primary);
+                        "
+                                th:text="${#numbers.formatDecimal(
+                                    orderDetail.total,
+                                    0,
+                                    'COMMA',
+                                    0,
+                                    'POINT'
+                                ) + ' đ'}">
+
+                            100.000 đ
+
+                        </strong>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>
