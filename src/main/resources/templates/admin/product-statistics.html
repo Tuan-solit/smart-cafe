@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Thống kê sản phẩm - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+
+<body>
+
+<div class="admin-layout">
+
+
+    <!-- SIDEBAR -->
+
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='product-statistics')}"></div>
+
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+
+        <!-- HEADER -->
+
+        <header class="admin-header">
+
+            <div class="header-title">
+
+                <p class="header-eyebrow">
+                    SMART CAFE MANAGEMENT
+                </p>
+
+                <h1>
+                    Thống kê sản phẩm
+                </h1>
+
+            </div>
+
+
+            <div class="admin-info">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div class="admin-profile">
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Quản trị hệ thống
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="admin-content">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1>
+                        Thống kê sản phẩm
+                    </h1>
+
+                    <p class="page-description">
+
+                        Theo dõi số lượng bán và doanh thu
+                        của từng sản phẩm
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTER -->
+
+            <form method="get"
+                  th:action="@{/admin/product-statistics}"
+                  class="filter-form">
+
+                <label style="font-weight:600;">
+                    Khoảng thời gian:
+                </label>
+
+
+                <select name="period"
+                        onchange="this.form.submit()">
+
+                    <option value="1"
+                            th:selected="${period == 1}">
+                        Hôm nay
+                    </option>
+
+                    <option value="7"
+                            th:selected="${period == 7}">
+                        7 ngày gần nhất
+                    </option>
+
+                    <option value="30"
+                            th:selected="${period == 30}">
+                        30 ngày gần nhất
+                    </option>
+
+                </select>
+
+            </form>
+
+
+            <!-- STATISTICS CARDS -->
+
+            <div class="stats">
+
+
+                <!-- TOTAL PRODUCT SOLD -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="stat-icon">
+                        📦
+                    </div>
+
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Tổng sản phẩm đã bán
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${totalQuantity}">
+                            0
+                        </div>
+
+                        <div class="stat-description">
+                            Số lượng sản phẩm
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOTAL REVENUE -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="stat-icon">
+                        💰
+                    </div>
+
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Doanh thu sản phẩm
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${#numbers.formatDecimal(
+                                 totalRevenue,
+                                 0,
+                                 'COMMA',
+                                 0,
+                                 'POINT'
+                             ) + ' đ'}">
+
+                            0 đ
+
+                        </div>
+
+                        <div class="stat-description">
+                            Doanh thu từ sản phẩm
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUCT COUNT -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="stat-icon">
+                        🏆
+                    </div>
+
+                    <div class="stat-content">
+
+                        <div class="card-title">
+                            Số sản phẩm bán được
+                        </div>
+
+                        <div class="card-value"
+                             th:text="${statistics.size()}">
+
+                            0
+
+                        </div>
+
+                        <div class="stat-description">
+                            Loại sản phẩm
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="page-header"
+                 style="margin-top:30px;">
+
+                <div>
+
+                    <h2>
+                        Sản phẩm bán chạy
+                    </h2>
+
+                    <p class="page-description">
+
+                        Danh sách được sắp xếp theo số lượng bán
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table class="admin-table">
+
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Sản phẩm
+                        </th>
+
+                        <th>
+                            Số lượng đã bán
+                        </th>
+
+                        <th>
+                            Doanh thu
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    <tr th:each="item, stat : ${statistics}">
+
+
+                        <!-- RANK -->
+
+                        <td>
+
+                            <strong
+                                    th:text="${stat.count}">
+
+                                1
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- PRODUCT -->
+
+                        <td>
+
+                            <strong
+                                    th:text="${item.productName}">
+
+                                Cafe sữa
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- QUANTITY -->
+
+                        <td>
+
+                            <span
+                                    th:text="${item.totalQuantity}">
+
+                                100
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- REVENUE -->
+
+                        <td>
+
+                            <strong
+                                    th:text="${#numbers.formatDecimal(
+                                        item.totalRevenue,
+                                        0,
+                                        'COMMA',
+                                        0,
+                                        'POINT'
+                                    ) + ' đ'}">
+
+                                3.000.000 đ
+
+                            </strong>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    <!-- EMPTY -->
+
+                    <tr th:if="${statistics.isEmpty()}">
+
+                        <td colspan="4">
+
+                            <div class="empty-state">
+
+                                <div>
+                                    📊
+                                </div>
+
+                                <p>
+                                    Chưa có dữ liệu thống kê
+                                    trong khoảng thời gian này
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
