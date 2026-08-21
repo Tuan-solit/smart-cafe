@@ -7,95 +7,197 @@
 <nav th:fragment="sidebar(active)"
      class="admin-sidebar">
 
+
+    <!-- =========================
+         BRAND
+         ========================= -->
+
     <div class="admin-brand">
 
-        <span>☕</span>
+        <span class="brand-icon">
+            <i class="fa-solid fa-mug-hot"></i>
+        </span>
 
-        <span>Smart Cafe</span>
+        <span class="brand-name">
+            Smart Cafe
+        </span>
 
     </div>
 
 
+    <!-- =========================
+         MENU
+         ========================= -->
+
     <ul class="admin-menu">
 
+
+        <!-- DASHBOARD -->
+
         <li>
+
             <a th:href="@{/admin/dashboard}"
                th:classappend="${active == 'dashboard'} ? 'active'">
 
-                <span>▦</span>
-                <span>Dashboard</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </span>
+
+                <span class="menu-text">
+                    Dashboard
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- NHÂN VIÊN -->
+
         <li>
+
             <a th:href="@{/admin/staff/page}"
                th:classappend="${active == 'staff'} ? 'active'">
 
-                <span>👥</span>
-                <span>Nhân viên</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span class="menu-text">
+                    Nhân viên
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- DANH MỤC -->
+
         <li>
+
             <a th:href="@{/admin/category/page}"
                th:classappend="${active == 'category'} ? 'active'">
 
-                <span>☷</span>
-                <span>Danh mục</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-tags"></i>
+                </span>
+
+                <span class="menu-text">
+                    Danh mục
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- SẢN PHẨM -->
+
         <li>
+
             <a th:href="@{/admin/product/page}"
                th:classappend="${active == 'product'} ? 'active'">
 
-                <span>☕</span>
-                <span>Sản phẩm</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-mug-saucer"></i>
+                </span>
+
+                <span class="menu-text">
+                    Sản phẩm
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- BÀN -->
+
         <li>
+
             <a th:href="@{/admin/table/page}"
                th:classappend="${active == 'table'} ? 'active'">
 
-                <span>🪑</span>
-                <span>Bàn</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-chair"></i>
+                </span>
+
+                <span class="menu-text">
+                    Bàn
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- LỊCH SỬ ĐƠN HÀNG -->
+
         <li>
+
             <a th:href="@{/admin/orders}"
                th:classappend="${active == 'orders'} ? 'active'">
 
-                <span>🧾</span>
-                <span>Đơn hàng</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </span>
+
+                <span class="menu-text">
+                    Lịch sử đơn hàng
+                </span>
 
             </a>
+
         </li>
 
 
+        <!-- THỐNG KÊ SẢN PHẨM -->
+
         <li>
+
+            <a th:href="@{/admin/product-statistics}"
+               th:classappend="${active == 'product-statistics'} ? 'active'">
+
+                <span class="menu-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </span>
+
+                <span class="menu-text">
+                    Thống kê sản phẩm
+                </span>
+
+            </a>
+
+        </li>
+
+
+        <!-- LỊCH SỬ GIAO DỊCH -->
+
+        <li>
+
             <a th:href="@{/admin/payments}"
                th:classappend="${active == 'payments'} ? 'active'">
 
-                <span>💰</span>
-                <span>Thanh toán</span>
+                <span class="menu-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+
+                <span class="menu-text">
+                    Lịch sử giao dịch
+                </span>
 
             </a>
+
         </li>
+
 
     </ul>
 
+
+    <!-- =========================
+         LOGOUT
+         ========================= -->
 
     <div class="admin-sidebar-bottom">
 
@@ -103,7 +205,15 @@
               method="post">
 
             <button type="submit">
-                ↪ Đăng xuất
+
+                <span class="menu-icon">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </span>
+
+                <span class="menu-text">
+                    Đăng xuất
+                </span>
+
             </button>
 
         </form>
@@ -111,6 +221,12 @@
     </div>
 
 </nav>
+
+
+<!-- Font Awesome -->
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>
 </html>
