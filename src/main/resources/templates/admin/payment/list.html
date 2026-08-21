@@ -323,110 +323,115 @@
 
 
             <!-- =========================
-                 PAGINATION
-                 ========================= -->
+     PAGINATION
+     ========================= -->
 
             <div class="pagination-wrapper"
                  th:if="${paymentPage.totalPages > 0}">
 
 
-                <!-- PREVIOUS -->
+                <!-- PAGE INFO -->
 
-                <a th:if="${!paymentPage.first}"
+                <div class="pagination-info">
 
-                   th:href="@{/admin/payments(
-                        page=${currentPage - 1},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        status=${status},
-                        paymentMethod=${paymentMethod}
-                   )}"
+                    Hiển thị
 
-                   class="pagination-btn">
+                    <strong th:text="${paymentPage.numberOfElements}">
+                        10
+                    </strong>
 
-                    ‹
+                    giao dịch
 
-                </a>
+                </div>
 
 
-                <!-- PAGE NUMBERS -->
+                <!-- PAGINATION -->
 
-                <a th:each="pageNumber :
-                   ${#numbers.sequence(
-                        0,
-                        paymentPage.totalPages - 1
-                   )}"
-
-                   th:href="@{/admin/payments(
-                        page=${pageNumber},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        status=${status},
-                        paymentMethod=${paymentMethod}
-                   )}"
-
-                   th:text="${pageNumber + 1}"
-
-                   th:classappend="${pageNumber == currentPage}
-                        ? ' active'"
-
-                   class="pagination-btn">
-
-                </a>
+                <div class="pagination">
 
 
-                <!-- NEXT -->
+                    <!-- PREVIOUS -->
 
-                <a th:if="${!paymentPage.last}"
+                    <a th:if="${paymentPage.hasPrevious()}"
 
-                   th:href="@{/admin/payments(
-                        page=${currentPage + 1},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        status=${status},
-                        paymentMethod=${paymentMethod}
-                   )}"
+                       th:href="@{/admin/payments(
+                page=${currentPage - 1},
+                size=${pageSize},
+                keyword=${keyword},
+                status=${status},
+                paymentMethod=${paymentMethod}
+           )}">
 
-                   class="pagination-btn">
+                        ‹
 
-                    ›
+                    </a>
 
-                </a>
 
+                    <span th:unless="${paymentPage.hasPrevious()}"
+                          class="disabled">
+
+            ‹
+
+        </span>
+
+
+                    <!-- PAGE NUMBERS -->
+
+                    <span th:each="pageNumber :
+              ${#numbers.sequence(
+                  0,
+                  paymentPage.totalPages - 1
+              )}">
+
+            <a th:href="@{/admin/payments(
+                    page=${pageNumber},
+                    size=${pageSize},
+                    keyword=${keyword},
+                    status=${status},
+                    paymentMethod=${paymentMethod}
+               )}"
+
+               th:text="${pageNumber + 1}"
+
+               th:classappend="${pageNumber == currentPage} ? 'active'">
+
+                1
+
+            </a>
+
+        </span>
+
+
+                    <!-- NEXT -->
+
+                    <a th:if="${paymentPage.hasNext()}"
+
+                       th:href="@{/admin/payments(
+                page=${currentPage + 1},
+                size=${pageSize},
+                keyword=${keyword},
+                status=${status},
+                paymentMethod=${paymentMethod}
+           )}">
+
+                        ›
+
+                    </a>
+
+
+                    <span th:unless="${paymentPage.hasNext()}"
+                          class="disabled">
+
+            ›
+
+        </span>
+
+
+                </div>
 
             </div>
 
 
-            <!-- =========================
-                 PAGE INFO
-                 ========================= -->
-
-            <div class="page-info"
-                 th:if="${paymentPage.totalElements > 0}">
-
-                Hiển thị
-
-                <span th:text="${paymentPage.number * paymentPage.size + 1}">
-                    1
-                </span>
-
-                -
-
-                <span th:text="${paymentPage.numberOfElements > 0
-                        ? paymentPage.number * paymentPage.size + paymentPage.numberOfElements
-                        : 0}">
-                    10
-                </span>
-
-                trong tổng số
-
-                <span th:text="${paymentPage.totalElements}">
-                    100
-                </span>
-
-                giao dịch
-
-            </div>
 
 
         </section>

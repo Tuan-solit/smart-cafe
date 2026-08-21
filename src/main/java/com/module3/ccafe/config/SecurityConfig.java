@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/ws/**",
                                 "/qr-scan/**",
-                                "/payment/cash/request"
+                                "/payment/**"
                         ).permitAll()
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")

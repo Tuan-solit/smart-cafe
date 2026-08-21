@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Đơn hàng - Smart Cafe</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin.css}">
+
+</head>
+
+
+<body>
+
+<div class="admin-layout">
+
+
+    <!-- SIDEBAR -->
+
+    <div th:replace="~{fragments/admin-sidebar :: sidebar(active='orders')}"></div>
+
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+
+        <!-- HEADER -->
+
+        <header class="admin-header">
+
+            <div class="header-title">
+
+                <p class="header-eyebrow">
+                    SMART CAFE MANAGEMENT
+                </p>
+
+                <h1>
+                    Quản lý đơn hàng
+                </h1>
+
+            </div>
+
+
+            <div class="admin-info">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div class="admin-profile">
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Quản trị hệ thống
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="admin-content">
+
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1>
+                        Danh sách đơn hàng
+                    </h1>
+
+                    <p class="page-description">
+                        Quản lý và theo dõi tất cả đơn hàng trong hệ thống
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            Mã đơn
+                        </th>
+
+                        <th>
+                            Bàn
+                        </th>
+
+                        <th>
+                            Nhân viên
+                        </th>
+
+                        <th>
+                            Thời gian
+                        </th>
+
+                        <th>
+                            Trạng thái
+                        </th>
+
+                        <th>
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="order : ${orderPage.content}">
+
+                        <td>
+
+                            <strong
+                                    th:text="'#' + ${order.orderId}">
+                                #1
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                    th:text="${order.table.tableNumber}">
+                                Bàn 01
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                    th:if="${order.user != null}"
+                                    th:text="${order.user.fullName}">
+                                Nhân viên
+                            </span>
+
+                            <span
+                                    th:unless="${order.user != null}">
+                                Khách hàng
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                    th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                20/08/2026 15:30
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                    th:if="${order.status.name() == 'OPEN'}"
+                                    class="status-pending">
+                                Đang mở
+                            </span>
+
+                            <span
+                                    th:if="${order.status.name() == 'PAID'}"
+                                    class="status-success">
+                                Đã thanh toán
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <a th:href="@{'/admin/orders/' + ${order.orderId}}"
+                               class="btn btn-secondary">
+
+                                Xem chi tiết
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPTY -->
+
+                    <tr th:if="${orderPage.content.isEmpty()}">
+
+                        <td colspan="6">
+
+                            <div class="empty-state">
+
+                                <div>
+                                    🧾
+                                </div>
+
+                                <p>
+                                    Chưa có đơn hàng nào
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- PAGINATION -->
+
+            <div class="pagination-wrapper"
+                 th:if="${orderPage.totalPages > 0}">
+
+
+                <div class="pagination-info">
+
+                    Hiển thị
+                    <strong
+                            th:text="${orderPage.numberOfElements}">
+                        10
+                    </strong>
+
+                    đơn hàng
+
+                </div>
+
+
+                <div class="pagination">
+
+
+                    <!-- PREVIOUS -->
+
+                    <a th:if="${orderPage.hasPrevious()}"
+                       th:href="@{/admin/orders(
+                           page=${currentPage - 1},
+                           size=10
+                       )}">
+                        ‹
+                    </a>
+
+
+                    <span
+                            th:unless="${orderPage.hasPrevious()}"
+                            class="disabled">
+                        ‹
+                    </span>
+
+
+                    <!-- PAGE NUMBERS -->
+
+                    <span
+                            th:each="i : ${#numbers.sequence(0, orderPage.totalPages - 1)}">
+
+                        <a th:href="@{/admin/orders(
+                                   page=${i},
+                                   size=10
+                               )}"
+                           th:text="${i + 1}"
+                           th:classappend="${i == currentPage} ? 'active'">
+                            1
+                        </a>
+
+                    </span>
+
+
+                    <!-- NEXT -->
+
+                    <a th:if="${orderPage.hasNext()}"
+                       th:href="@{/admin/orders(
+                           page=${currentPage + 1},
+                           size=10
+                       )}">
+                        ›
+                    </a>
+
+
+                    <span
+                            th:unless="${orderPage.hasNext()}"
+                            class="disabled">
+                        ›
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
