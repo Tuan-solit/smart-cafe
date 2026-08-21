@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Cafe - Quét mã QR</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; background: #f8f9fa;">
+<div style="background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 400px; width: 90%;">
+  <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
+  <h2 style="color: #5C3A21; margin-bottom: 12px;">Yêu cầu quét mã QR</h2>
+  <p th:text="${errorMessage ?: 'Bạn cần quét mã QR dán tại bàn để xem menu và thực hiện gọi món.'}" style="color: #666; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">
+    Vui lòng quét mã QR dán tại bàn để xem menu.
+  </p>
+</div>
+</body>
+</html>

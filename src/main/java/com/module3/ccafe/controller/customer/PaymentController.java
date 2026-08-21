@@ -28,7 +28,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     
     @PostMapping("/cash/request")
-    public String requestCashPayment(@RequestParam Integer orderId){
+    public String requestCashPayment(@RequestParam Integer orderId, RedirectAttributes redirectAttributes){
         Order order = orderRepository.findById(orderId).orElseThrow(()->new IllegalArgumentException("Đơn hàng không tồn tại"));
         CashPaymentRequest request = CashPaymentRequest.builder()
                 .orderId(order.getOrderId())
@@ -36,6 +36,7 @@ public class PaymentController {
                 .message("Bàn "+order.getTable().getTableNumber()+" yêu cầu thanh toán tiền mặt")
                 .createdAt(LocalDateTime.now()).build();
         webSocketService.sendCashPaymentRequest(request);
+        redirectAttributes.addFlashAttribute("successMessage","Yêu cầu thành công! Vui lòng đến quầy thu ngân để thanh toán.");
         return "redirect:/menu";
     }
     
