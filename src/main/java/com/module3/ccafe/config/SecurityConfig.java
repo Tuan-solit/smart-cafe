@@ -2,6 +2,7 @@ package com.module3.ccafe.config;
 
 import com.module3.ccafe.security.CustomUserDetailsService;
 import com.module3.ccafe.security.RoleBasedSuccessHandler;
+import com.module3.ccafe.security.CustomAuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
-
-    private final RoleBasedSuccessHandler roleBasedSuccessHandler; // thêm dòng này
+    private final RoleBasedSuccessHandler roleBasedSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
@@ -55,6 +56,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(roleBasedSuccessHandler)
+                        .failureHandler(customAuthenticationFailureHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
