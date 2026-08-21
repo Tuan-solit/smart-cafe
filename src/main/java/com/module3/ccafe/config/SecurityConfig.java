@@ -42,7 +42,9 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/sepay-payment/**",
                                 "/images/**",
-                                "/ws/**"
+                                "/ws/**",
+                                "/qr-scan/**",
+                                "/payment/cash/request"
                         ).permitAll()
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")

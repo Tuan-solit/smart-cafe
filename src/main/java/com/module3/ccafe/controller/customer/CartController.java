@@ -63,9 +63,9 @@ public class CartController {
         });
         try {
             cartService.placeOrder(session, notes);
-            redirectAttributes.addFlashAttribute("success", "Gọi món thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Gọi món thành công!");
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/menu";
     }

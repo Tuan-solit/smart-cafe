@@ -347,6 +347,38 @@ body {
     font-size: 14px;
 }
 
+.toast-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: #2e7d32; /* Màu xanh lá thông báo thành công */
+    color: #ffffff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.toast-icon {
+    font-size: 18px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 /* ---------- CART SIDEBAR ---------- */
 .cart-panel {
     background: var(--white);
