@@ -1,5 +1,6 @@
 package com.module3.ccafe.config;
 
+import com.module3.ccafe.security.CustomAccessDeniedHandler;
 import com.module3.ccafe.security.CustomUserDetailsService;
 import com.module3.ccafe.security.RoleBasedSuccessHandler;
 import com.module3.ccafe.security.CustomAuthenticationFailureHandler;
@@ -23,6 +24,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final RoleBasedSuccessHandler roleBasedSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
@@ -45,7 +47,8 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/ws/**",
                                 "/qr-scan/**",
-                                "/payment/**"
+                                "/payment/**",
+                                "/access-denied"
                         ).permitAll()
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -58,6 +61,12 @@ public class SecurityConfig {
                         .successHandler(roleBasedSuccessHandler)
                         .failureHandler(customAuthenticationFailureHandler)
                         .permitAll()
+                )
+
+                // XỬ LÝ KHI KHÔNG CÓ QUYỀN TRUY CẬP
+                .exceptionHandling(exception -> exception
+
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
